@@ -1,13 +1,14 @@
 import 'dart:io';
 import 'dart:typed_data';
-import 'package:firebase_storage/firebase_storage.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import '../../../../core/constants/supabase_constants.dart';
 import '../../../../core/utils/image_utils.dart';
 
 class StorageService {
-  final FirebaseStorage _storage;
+  final SupabaseClient _client;
 
-  StorageService({FirebaseStorage? storage})
-    : _storage = storage ?? FirebaseStorage.instance;
+  StorageService({SupabaseClient? client})
+    : _client = client ?? SupabaseConstants.client;
 
   Future<String> uploadImage({
     required String userId,
@@ -15,17 +16,22 @@ class StorageService {
     required String fileName,
   }) async {
     final storagePath = ImageUtils.generateStoragePath(userId, fileName);
-
     final compressedBytes = await _compressImageFile(filePath);
 
-    final ref = _storage.ref().child(storagePath);
-    final uploadTask = ref.putData(
-      Uint8List.fromList(compressedBytes),
-      SettableMetadata(contentType: 'image/jpeg'),
-    );
+    await _client.storage
+        .from(SupabaseStorage.submissionsBucket)
+        .uploadBinary(
+          storagePath,
+          Uint8List.fromList(compressedBytes),
+          fileOptions: const FileOptions(
+            contentType: 'image/jpeg',
+            upsert: false,
+          ),
+        );
 
-    final snapshot = await uploadTask;
-    final downloadUrl = await snapshot.ref.getDownloadURL();
+    final downloadUrl = _client.storage
+        .from(SupabaseStorage.submissionsBucket)
+        .getPublicUrl(storagePath);
 
     return downloadUrl;
   }
@@ -39,8 +45,9 @@ class StorageService {
   }
 
   Future<void> deleteImage(String storagePath) async {
-    final ref = _storage.ref().child(storagePath);
-    await ref.delete();
+    await _client.storage.from(SupabaseStorage.submissionsBucket).remove([
+      storagePath,
+    ]);
   }
 
   Future<List<int>> _compressImageFile(String filePath) async {

@@ -40,6 +40,8 @@ abstract class $AuthStateCopyWith<$Res> {
     UserProfile? user,
     String? error,
   });
+
+  $UserProfileCopyWith<$Res>? get user;
 }
 
 /// @nodoc
@@ -84,6 +86,20 @@ class _$AuthStateCopyWithImpl<$Res, $Val extends AuthState>
           as $Val,
     );
   }
+
+  /// Create a copy of AuthState
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @pragma('vm:prefer-inline')
+  $UserProfileCopyWith<$Res>? get user {
+    if (_value.user == null) {
+      return null;
+    }
+
+    return $UserProfileCopyWith<$Res>(_value.user!, (value) {
+      return _then(_value.copyWith(user: value) as $Val);
+    });
+  }
 }
 
 /// @nodoc
@@ -101,6 +117,9 @@ abstract class _$$AuthStateImplCopyWith<$Res>
     UserProfile? user,
     String? error,
   });
+
+  @override
+  $UserProfileCopyWith<$Res>? get user;
 }
 
 /// @nodoc
@@ -180,18 +199,13 @@ class _$AuthStateImpl extends _AuthState {
                 other.isLoading == isLoading) &&
             (identical(other.isAuthenticated, isAuthenticated) ||
                 other.isAuthenticated == isAuthenticated) &&
-            const DeepCollectionEquality().equals(other.user, user) &&
+            (identical(other.user, user) || other.user == user) &&
             (identical(other.error, error) || other.error == error));
   }
 
   @override
-  int get hashCode => Object.hash(
-    runtimeType,
-    isLoading,
-    isAuthenticated,
-    const DeepCollectionEquality().hash(user),
-    error,
-  );
+  int get hashCode =>
+      Object.hash(runtimeType, isLoading, isAuthenticated, user, error);
 
   /// Create a copy of AuthState
   /// with the given fields replaced by the non-null parameter values.

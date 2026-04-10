@@ -22,22 +22,34 @@ Submission _$SubmissionFromJson(Map<String, dynamic> json) {
 /// @nodoc
 mixin _$Submission {
   String get id => throw _privateConstructorUsedError;
+  @JsonKey(name: 'user_id')
   String get userId => throw _privateConstructorUsedError;
   String get username => throw _privateConstructorUsedError;
+  @JsonKey(name: 'image_url')
   String get imageUrl => throw _privateConstructorUsedError;
+  @JsonKey(name: 'storage_path')
   String get storagePath => throw _privateConstructorUsedError;
+  @JsonKey(name: 'image_hash')
   String? get imageHash => throw _privateConstructorUsedError;
   String? get category => throw _privateConstructorUsedError;
   String? get subcategory => throw _privateConstructorUsedError;
   double? get confidence => throw _privateConstructorUsedError;
+  @JsonKey(name: 'primary_approach')
   String get primaryApproach => throw _privateConstructorUsedError;
   SubmissionState get state => throw _privateConstructorUsedError;
+  @JsonKey(name: 'points_awarded')
   int get pointsAwarded => throw _privateConstructorUsedError;
+  @JsonKey(name: 'idempotency_key')
   String get idempotencyKey => throw _privateConstructorUsedError;
+  @JsonKey(name: 'flagged_reason')
   String? get flaggedReason => throw _privateConstructorUsedError;
+  @JsonKey(name: 'duplicate_of')
   String? get duplicateOf => throw _privateConstructorUsedError;
+  @JsonKey(name: 'classified_at')
   DateTime? get classifiedAt => throw _privateConstructorUsedError;
+  @JsonKey(name: 'created_at')
   DateTime get createdAt => throw _privateConstructorUsedError;
+  @JsonKey(name: 'updated_at')
   DateTime get updatedAt => throw _privateConstructorUsedError;
 
   /// Serializes this Submission to a JSON map.
@@ -59,23 +71,23 @@ abstract class $SubmissionCopyWith<$Res> {
   @useResult
   $Res call({
     String id,
-    String userId,
+    @JsonKey(name: 'user_id') String userId,
     String username,
-    String imageUrl,
-    String storagePath,
-    String? imageHash,
+    @JsonKey(name: 'image_url') String imageUrl,
+    @JsonKey(name: 'storage_path') String storagePath,
+    @JsonKey(name: 'image_hash') String? imageHash,
     String? category,
     String? subcategory,
     double? confidence,
-    String primaryApproach,
+    @JsonKey(name: 'primary_approach') String primaryApproach,
     SubmissionState state,
-    int pointsAwarded,
-    String idempotencyKey,
-    String? flaggedReason,
-    String? duplicateOf,
-    DateTime? classifiedAt,
-    DateTime createdAt,
-    DateTime updatedAt,
+    @JsonKey(name: 'points_awarded') int pointsAwarded,
+    @JsonKey(name: 'idempotency_key') String idempotencyKey,
+    @JsonKey(name: 'flagged_reason') String? flaggedReason,
+    @JsonKey(name: 'duplicate_of') String? duplicateOf,
+    @JsonKey(name: 'classified_at') DateTime? classifiedAt,
+    @JsonKey(name: 'created_at') DateTime createdAt,
+    @JsonKey(name: 'updated_at') DateTime updatedAt,
   });
 }
 
@@ -204,23 +216,23 @@ abstract class _$$SubmissionImplCopyWith<$Res>
   @useResult
   $Res call({
     String id,
-    String userId,
+    @JsonKey(name: 'user_id') String userId,
     String username,
-    String imageUrl,
-    String storagePath,
-    String? imageHash,
+    @JsonKey(name: 'image_url') String imageUrl,
+    @JsonKey(name: 'storage_path') String storagePath,
+    @JsonKey(name: 'image_hash') String? imageHash,
     String? category,
     String? subcategory,
     double? confidence,
-    String primaryApproach,
+    @JsonKey(name: 'primary_approach') String primaryApproach,
     SubmissionState state,
-    int pointsAwarded,
-    String idempotencyKey,
-    String? flaggedReason,
-    String? duplicateOf,
-    DateTime? classifiedAt,
-    DateTime createdAt,
-    DateTime updatedAt,
+    @JsonKey(name: 'points_awarded') int pointsAwarded,
+    @JsonKey(name: 'idempotency_key') String idempotencyKey,
+    @JsonKey(name: 'flagged_reason') String? flaggedReason,
+    @JsonKey(name: 'duplicate_of') String? duplicateOf,
+    @JsonKey(name: 'classified_at') DateTime? classifiedAt,
+    @JsonKey(name: 'created_at') DateTime createdAt,
+    @JsonKey(name: 'updated_at') DateTime updatedAt,
   });
 }
 
@@ -341,23 +353,23 @@ class __$$SubmissionImplCopyWithImpl<$Res>
 class _$SubmissionImpl implements _Submission {
   const _$SubmissionImpl({
     required this.id,
-    required this.userId,
+    @JsonKey(name: 'user_id') required this.userId,
     required this.username,
-    required this.imageUrl,
-    required this.storagePath,
-    this.imageHash,
+    @JsonKey(name: 'image_url') required this.imageUrl,
+    @JsonKey(name: 'storage_path') required this.storagePath,
+    @JsonKey(name: 'image_hash') this.imageHash,
     this.category,
     this.subcategory,
     this.confidence,
-    this.primaryApproach = 'gemini',
+    @JsonKey(name: 'primary_approach') this.primaryApproach = 'gemini',
     required this.state,
-    this.pointsAwarded = 0,
-    required this.idempotencyKey,
-    this.flaggedReason,
-    this.duplicateOf,
-    this.classifiedAt,
-    required this.createdAt,
-    required this.updatedAt,
+    @JsonKey(name: 'points_awarded') this.pointsAwarded = 0,
+    @JsonKey(name: 'idempotency_key') required this.idempotencyKey,
+    @JsonKey(name: 'flagged_reason') this.flaggedReason,
+    @JsonKey(name: 'duplicate_of') this.duplicateOf,
+    @JsonKey(name: 'classified_at') this.classifiedAt,
+    @JsonKey(name: 'created_at') required this.createdAt,
+    @JsonKey(name: 'updated_at') required this.updatedAt,
   });
 
   factory _$SubmissionImpl.fromJson(Map<String, dynamic> json) =>
@@ -366,14 +378,18 @@ class _$SubmissionImpl implements _Submission {
   @override
   final String id;
   @override
+  @JsonKey(name: 'user_id')
   final String userId;
   @override
   final String username;
   @override
+  @JsonKey(name: 'image_url')
   final String imageUrl;
   @override
+  @JsonKey(name: 'storage_path')
   final String storagePath;
   @override
+  @JsonKey(name: 'image_hash')
   final String? imageHash;
   @override
   final String? category;
@@ -382,24 +398,30 @@ class _$SubmissionImpl implements _Submission {
   @override
   final double? confidence;
   @override
-  @JsonKey()
+  @JsonKey(name: 'primary_approach')
   final String primaryApproach;
   @override
   final SubmissionState state;
   @override
-  @JsonKey()
+  @JsonKey(name: 'points_awarded')
   final int pointsAwarded;
   @override
+  @JsonKey(name: 'idempotency_key')
   final String idempotencyKey;
   @override
+  @JsonKey(name: 'flagged_reason')
   final String? flaggedReason;
   @override
+  @JsonKey(name: 'duplicate_of')
   final String? duplicateOf;
   @override
+  @JsonKey(name: 'classified_at')
   final DateTime? classifiedAt;
   @override
+  @JsonKey(name: 'created_at')
   final DateTime createdAt;
   @override
+  @JsonKey(name: 'updated_at')
   final DateTime updatedAt;
 
   @override
@@ -488,23 +510,23 @@ class _$SubmissionImpl implements _Submission {
 abstract class _Submission implements Submission {
   const factory _Submission({
     required final String id,
-    required final String userId,
+    @JsonKey(name: 'user_id') required final String userId,
     required final String username,
-    required final String imageUrl,
-    required final String storagePath,
-    final String? imageHash,
+    @JsonKey(name: 'image_url') required final String imageUrl,
+    @JsonKey(name: 'storage_path') required final String storagePath,
+    @JsonKey(name: 'image_hash') final String? imageHash,
     final String? category,
     final String? subcategory,
     final double? confidence,
-    final String primaryApproach,
+    @JsonKey(name: 'primary_approach') final String primaryApproach,
     required final SubmissionState state,
-    final int pointsAwarded,
-    required final String idempotencyKey,
-    final String? flaggedReason,
-    final String? duplicateOf,
-    final DateTime? classifiedAt,
-    required final DateTime createdAt,
-    required final DateTime updatedAt,
+    @JsonKey(name: 'points_awarded') final int pointsAwarded,
+    @JsonKey(name: 'idempotency_key') required final String idempotencyKey,
+    @JsonKey(name: 'flagged_reason') final String? flaggedReason,
+    @JsonKey(name: 'duplicate_of') final String? duplicateOf,
+    @JsonKey(name: 'classified_at') final DateTime? classifiedAt,
+    @JsonKey(name: 'created_at') required final DateTime createdAt,
+    @JsonKey(name: 'updated_at') required final DateTime updatedAt,
   }) = _$SubmissionImpl;
 
   factory _Submission.fromJson(Map<String, dynamic> json) =
@@ -513,14 +535,18 @@ abstract class _Submission implements Submission {
   @override
   String get id;
   @override
+  @JsonKey(name: 'user_id')
   String get userId;
   @override
   String get username;
   @override
+  @JsonKey(name: 'image_url')
   String get imageUrl;
   @override
+  @JsonKey(name: 'storage_path')
   String get storagePath;
   @override
+  @JsonKey(name: 'image_hash')
   String? get imageHash;
   @override
   String? get category;
@@ -529,22 +555,30 @@ abstract class _Submission implements Submission {
   @override
   double? get confidence;
   @override
+  @JsonKey(name: 'primary_approach')
   String get primaryApproach;
   @override
   SubmissionState get state;
   @override
+  @JsonKey(name: 'points_awarded')
   int get pointsAwarded;
   @override
+  @JsonKey(name: 'idempotency_key')
   String get idempotencyKey;
   @override
+  @JsonKey(name: 'flagged_reason')
   String? get flaggedReason;
   @override
+  @JsonKey(name: 'duplicate_of')
   String? get duplicateOf;
   @override
+  @JsonKey(name: 'classified_at')
   DateTime? get classifiedAt;
   @override
+  @JsonKey(name: 'created_at')
   DateTime get createdAt;
   @override
+  @JsonKey(name: 'updated_at')
   DateTime get updatedAt;
 
   /// Create a copy of Submission

@@ -7,13 +7,13 @@ part 'classification_model.g.dart';
 class Classification with _$Classification {
   const factory Classification({
     required String id,
-    required String submissionId,
+    @JsonKey(name: 'submission_id') required String submissionId,
     required String approach,
     required String category,
     String? subcategory,
     required double confidence,
-    required String modelVersion,
-    Map<String, dynamic>? rawResponse,
+    @JsonKey(name: 'model_version') required String modelVersion,
+    @JsonKey(name: 'raw_response') Map<String, dynamic>? rawResponse,
     required DateTime timestamp,
   }) = _Classification;
 

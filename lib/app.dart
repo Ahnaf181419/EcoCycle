@@ -6,6 +6,21 @@ import 'features/auth/logic/auth_provider.dart';
 import 'features/auth/ui/splash_screen.dart';
 import 'features/auth/ui/login_screen.dart';
 import 'features/auth/ui/register_screen.dart';
+import 'features/home/ui/home_screen.dart';
+import 'features/classification/ui/camera_screen.dart';
+import 'features/classification/ui/classification_result_screen.dart';
+import 'features/classification/ui/submission_history_screen.dart';
+import 'features/rewards/ui/rewards_screen.dart';
+import 'features/rewards/ui/redeem_screen.dart';
+import 'features/social/ui/leaderboard_screen.dart';
+import 'features/social/ui/own_profile_screen.dart';
+import 'features/social/ui/user_profile_screen.dart';
+import 'features/social/ui/feed_screen.dart';
+import 'features/settings/ui/settings_screen.dart';
+import 'features/disputes/ui/dispute_queue_screen.dart';
+import 'features/disputes/ui/dispute_detail_screen.dart';
+import 'features/admin/ui/admin_dashboard_screen.dart';
+import 'features/admin/ui/user_management_screen.dart';
 import 'shared/navigation/app_shell.dart';
 
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
@@ -73,8 +88,7 @@ final routerProvider = Provider<GoRouter>((ref) {
             routes: [
               GoRoute(
                 path: RouteConstants.home,
-                builder: (context, state) =>
-                    const _PlaceholderScreen(title: 'Home'),
+                builder: (context, state) => const HomeScreen(),
               ),
             ],
           ),
@@ -82,8 +96,7 @@ final routerProvider = Provider<GoRouter>((ref) {
             routes: [
               GoRoute(
                 path: RouteConstants.classify,
-                builder: (context, state) =>
-                    const _PlaceholderScreen(title: 'Classify'),
+                builder: (context, state) => const CameraScreen(),
               ),
             ],
           ),
@@ -91,8 +104,7 @@ final routerProvider = Provider<GoRouter>((ref) {
             routes: [
               GoRoute(
                 path: RouteConstants.leaderboard,
-                builder: (context, state) =>
-                    const _PlaceholderScreen(title: 'Leaderboard'),
+                builder: (context, state) => const LeaderboardScreen(),
               ),
             ],
           ),
@@ -100,13 +112,14 @@ final routerProvider = Provider<GoRouter>((ref) {
             routes: [
               GoRoute(
                 path: RouteConstants.profile,
-                builder: (context, state) =>
-                    const _PlaceholderScreen(title: 'Profile'),
+                builder: (context, state) => const OwnProfileScreen(),
                 routes: [
                   GoRoute(
                     path: ':uid',
-                    builder: (context, state) =>
-                        const _PlaceholderScreen(title: 'User Profile'),
+                    builder: (context, state) {
+                      final uid = state.pathParameters['uid']!;
+                      return UserProfileScreen(uid: uid);
+                    },
                   ),
                 ],
               ),
@@ -116,13 +129,14 @@ final routerProvider = Provider<GoRouter>((ref) {
             routes: [
               GoRoute(
                 path: RouteConstants.disputes,
-                builder: (context, state) =>
-                    const _PlaceholderScreen(title: 'Dispute Queue'),
+                builder: (context, state) => const DisputeQueueScreen(),
                 routes: [
                   GoRoute(
                     path: ':id',
-                    builder: (context, state) =>
-                        const _PlaceholderScreen(title: 'Dispute Detail'),
+                    builder: (context, state) {
+                      final id = state.pathParameters['id']!;
+                      return DisputeDetailScreen(disputeId: id);
+                    },
                   ),
                 ],
               ),
@@ -132,13 +146,11 @@ final routerProvider = Provider<GoRouter>((ref) {
             routes: [
               GoRoute(
                 path: RouteConstants.admin,
-                builder: (context, state) =>
-                    const _PlaceholderScreen(title: 'Admin Dashboard'),
+                builder: (context, state) => const AdminDashboardScreen(),
                 routes: [
                   GoRoute(
                     path: 'users',
-                    builder: (context, state) =>
-                        const _PlaceholderScreen(title: 'User Management'),
+                    builder: (context, state) => const UserManagementScreen(),
                   ),
                 ],
               ),
@@ -148,8 +160,10 @@ final routerProvider = Provider<GoRouter>((ref) {
             routes: [
               GoRoute(
                 path: '${RouteConstants.result}/:id',
-                builder: (context, state) =>
-                    const _PlaceholderScreen(title: 'Result'),
+                builder: (context, state) {
+                  final id = state.pathParameters['id']!;
+                  return ClassificationResultScreen(submissionId: id);
+                },
               ),
             ],
           ),
@@ -157,8 +171,7 @@ final routerProvider = Provider<GoRouter>((ref) {
             routes: [
               GoRoute(
                 path: RouteConstants.history,
-                builder: (context, state) =>
-                    const _PlaceholderScreen(title: 'History'),
+                builder: (context, state) => const SubmissionHistoryScreen(),
               ),
             ],
           ),
@@ -166,13 +179,11 @@ final routerProvider = Provider<GoRouter>((ref) {
             routes: [
               GoRoute(
                 path: RouteConstants.rewards,
-                builder: (context, state) =>
-                    const _PlaceholderScreen(title: 'Rewards'),
+                builder: (context, state) => const RewardsScreen(),
                 routes: [
                   GoRoute(
                     path: 'redeem',
-                    builder: (context, state) =>
-                        const _PlaceholderScreen(title: 'Redeem'),
+                    builder: (context, state) => const RedeemScreen(),
                   ),
                 ],
               ),
@@ -182,8 +193,7 @@ final routerProvider = Provider<GoRouter>((ref) {
             routes: [
               GoRoute(
                 path: RouteConstants.feed,
-                builder: (context, state) =>
-                    const _PlaceholderScreen(title: 'Activity Feed'),
+                builder: (context, state) => const FeedScreen(),
               ),
             ],
           ),
@@ -191,8 +201,7 @@ final routerProvider = Provider<GoRouter>((ref) {
             routes: [
               GoRoute(
                 path: RouteConstants.settings,
-                builder: (context, state) =>
-                    const _PlaceholderScreen(title: 'Settings'),
+                builder: (context, state) => const SettingsScreen(),
               ),
             ],
           ),
@@ -201,21 +210,3 @@ final routerProvider = Provider<GoRouter>((ref) {
     ],
   );
 });
-
-class _PlaceholderScreen extends StatelessWidget {
-  final String title;
-  const _PlaceholderScreen({required this.title});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text(title)),
-      body: Center(
-        child: Text(
-          title,
-          style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w600),
-        ),
-      ),
-    );
-  }
-}

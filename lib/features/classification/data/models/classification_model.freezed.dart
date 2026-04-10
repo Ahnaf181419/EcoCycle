@@ -22,12 +22,15 @@ Classification _$ClassificationFromJson(Map<String, dynamic> json) {
 /// @nodoc
 mixin _$Classification {
   String get id => throw _privateConstructorUsedError;
+  @JsonKey(name: 'submission_id')
   String get submissionId => throw _privateConstructorUsedError;
   String get approach => throw _privateConstructorUsedError;
   String get category => throw _privateConstructorUsedError;
   String? get subcategory => throw _privateConstructorUsedError;
   double get confidence => throw _privateConstructorUsedError;
+  @JsonKey(name: 'model_version')
   String get modelVersion => throw _privateConstructorUsedError;
+  @JsonKey(name: 'raw_response')
   Map<String, dynamic>? get rawResponse => throw _privateConstructorUsedError;
   DateTime get timestamp => throw _privateConstructorUsedError;
 
@@ -50,13 +53,13 @@ abstract class $ClassificationCopyWith<$Res> {
   @useResult
   $Res call({
     String id,
-    String submissionId,
+    @JsonKey(name: 'submission_id') String submissionId,
     String approach,
     String category,
     String? subcategory,
     double confidence,
-    String modelVersion,
-    Map<String, dynamic>? rawResponse,
+    @JsonKey(name: 'model_version') String modelVersion,
+    @JsonKey(name: 'raw_response') Map<String, dynamic>? rawResponse,
     DateTime timestamp,
   });
 }
@@ -141,13 +144,13 @@ abstract class _$$ClassificationImplCopyWith<$Res>
   @useResult
   $Res call({
     String id,
-    String submissionId,
+    @JsonKey(name: 'submission_id') String submissionId,
     String approach,
     String category,
     String? subcategory,
     double confidence,
-    String modelVersion,
-    Map<String, dynamic>? rawResponse,
+    @JsonKey(name: 'model_version') String modelVersion,
+    @JsonKey(name: 'raw_response') Map<String, dynamic>? rawResponse,
     DateTime timestamp,
   });
 }
@@ -224,13 +227,13 @@ class __$$ClassificationImplCopyWithImpl<$Res>
 class _$ClassificationImpl implements _Classification {
   const _$ClassificationImpl({
     required this.id,
-    required this.submissionId,
+    @JsonKey(name: 'submission_id') required this.submissionId,
     required this.approach,
     required this.category,
     this.subcategory,
     required this.confidence,
-    required this.modelVersion,
-    final Map<String, dynamic>? rawResponse,
+    @JsonKey(name: 'model_version') required this.modelVersion,
+    @JsonKey(name: 'raw_response') final Map<String, dynamic>? rawResponse,
     required this.timestamp,
   }) : _rawResponse = rawResponse;
 
@@ -240,6 +243,7 @@ class _$ClassificationImpl implements _Classification {
   @override
   final String id;
   @override
+  @JsonKey(name: 'submission_id')
   final String submissionId;
   @override
   final String approach;
@@ -250,9 +254,11 @@ class _$ClassificationImpl implements _Classification {
   @override
   final double confidence;
   @override
+  @JsonKey(name: 'model_version')
   final String modelVersion;
   final Map<String, dynamic>? _rawResponse;
   @override
+  @JsonKey(name: 'raw_response')
   Map<String, dynamic>? get rawResponse {
     final value = _rawResponse;
     if (value == null) return null;
@@ -330,13 +336,13 @@ class _$ClassificationImpl implements _Classification {
 abstract class _Classification implements Classification {
   const factory _Classification({
     required final String id,
-    required final String submissionId,
+    @JsonKey(name: 'submission_id') required final String submissionId,
     required final String approach,
     required final String category,
     final String? subcategory,
     required final double confidence,
-    required final String modelVersion,
-    final Map<String, dynamic>? rawResponse,
+    @JsonKey(name: 'model_version') required final String modelVersion,
+    @JsonKey(name: 'raw_response') final Map<String, dynamic>? rawResponse,
     required final DateTime timestamp,
   }) = _$ClassificationImpl;
 
@@ -346,6 +352,7 @@ abstract class _Classification implements Classification {
   @override
   String get id;
   @override
+  @JsonKey(name: 'submission_id')
   String get submissionId;
   @override
   String get approach;
@@ -356,8 +363,10 @@ abstract class _Classification implements Classification {
   @override
   double get confidence;
   @override
+  @JsonKey(name: 'model_version')
   String get modelVersion;
   @override
+  @JsonKey(name: 'raw_response')
   Map<String, dynamic>? get rawResponse;
   @override
   DateTime get timestamp;

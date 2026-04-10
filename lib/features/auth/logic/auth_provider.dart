@@ -1,5 +1,4 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
 import '../data/services/auth_service.dart';
 import '../data/repositories/auth_repository.dart';
 import 'auth_state.dart';
@@ -25,8 +24,9 @@ class AuthNotifier extends StateNotifier<AuthState> {
   }
 
   void _init() {
-    _repository.authStateChanges.listen((user) async {
-      if (user != null) {
+    _repository.authStateChanges.listen((event) async {
+      final session = event.session;
+      if (session != null) {
         final profile = await _repository.getCurrentUserProfile();
         state = state.copyWith(
           isAuthenticated: true,

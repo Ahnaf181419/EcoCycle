@@ -24,17 +24,27 @@ mixin _$UserProfile {
   String get uid => throw _privateConstructorUsedError;
   String get username => throw _privateConstructorUsedError;
   String get email => throw _privateConstructorUsedError;
+  @JsonKey(name: 'display_name')
   String get displayName => throw _privateConstructorUsedError;
+  @JsonKey(name: 'photo_url')
   String? get photoUrl => throw _privateConstructorUsedError;
   String get role => throw _privateConstructorUsedError;
   int get points => throw _privateConstructorUsedError;
+  @JsonKey(name: 'redeemed_points')
   int get redeemedPoints => throw _privateConstructorUsedError;
+  @JsonKey(name: 'classification_count')
   int get classificationCount => throw _privateConstructorUsedError;
+  @JsonKey(name: 'correct_count')
   int get correctCount => throw _privateConstructorUsedError;
+  @JsonKey(name: 'is_private')
   bool get isPrivate => throw _privateConstructorUsedError;
+  @JsonKey(name: 'follower_count')
   int get followerCount => throw _privateConstructorUsedError;
+  @JsonKey(name: 'following_count')
   int get followingCount => throw _privateConstructorUsedError;
+  @JsonKey(name: 'created_at')
   DateTime get createdAt => throw _privateConstructorUsedError;
+  @JsonKey(name: 'updated_at')
   DateTime get updatedAt => throw _privateConstructorUsedError;
 
   /// Serializes this UserProfile to a JSON map.
@@ -58,18 +68,18 @@ abstract class $UserProfileCopyWith<$Res> {
     String uid,
     String username,
     String email,
-    String displayName,
-    String? photoUrl,
+    @JsonKey(name: 'display_name') String displayName,
+    @JsonKey(name: 'photo_url') String? photoUrl,
     String role,
     int points,
-    int redeemedPoints,
-    int classificationCount,
-    int correctCount,
-    bool isPrivate,
-    int followerCount,
-    int followingCount,
-    DateTime createdAt,
-    DateTime updatedAt,
+    @JsonKey(name: 'redeemed_points') int redeemedPoints,
+    @JsonKey(name: 'classification_count') int classificationCount,
+    @JsonKey(name: 'correct_count') int correctCount,
+    @JsonKey(name: 'is_private') bool isPrivate,
+    @JsonKey(name: 'follower_count') int followerCount,
+    @JsonKey(name: 'following_count') int followingCount,
+    @JsonKey(name: 'created_at') DateTime createdAt,
+    @JsonKey(name: 'updated_at') DateTime updatedAt,
   });
 }
 
@@ -185,18 +195,18 @@ abstract class _$$UserProfileImplCopyWith<$Res>
     String uid,
     String username,
     String email,
-    String displayName,
-    String? photoUrl,
+    @JsonKey(name: 'display_name') String displayName,
+    @JsonKey(name: 'photo_url') String? photoUrl,
     String role,
     int points,
-    int redeemedPoints,
-    int classificationCount,
-    int correctCount,
-    bool isPrivate,
-    int followerCount,
-    int followingCount,
-    DateTime createdAt,
-    DateTime updatedAt,
+    @JsonKey(name: 'redeemed_points') int redeemedPoints,
+    @JsonKey(name: 'classification_count') int classificationCount,
+    @JsonKey(name: 'correct_count') int correctCount,
+    @JsonKey(name: 'is_private') bool isPrivate,
+    @JsonKey(name: 'follower_count') int followerCount,
+    @JsonKey(name: 'following_count') int followingCount,
+    @JsonKey(name: 'created_at') DateTime createdAt,
+    @JsonKey(name: 'updated_at') DateTime updatedAt,
   });
 }
 
@@ -304,18 +314,18 @@ class _$UserProfileImpl extends _UserProfile {
     required this.uid,
     required this.username,
     required this.email,
-    required this.displayName,
-    this.photoUrl,
+    @JsonKey(name: 'display_name') required this.displayName,
+    @JsonKey(name: 'photo_url') this.photoUrl,
     this.role = 'citizen',
     this.points = 0,
-    this.redeemedPoints = 0,
-    this.classificationCount = 0,
-    this.correctCount = 0,
-    this.isPrivate = false,
-    this.followerCount = 0,
-    this.followingCount = 0,
-    required this.createdAt,
-    required this.updatedAt,
+    @JsonKey(name: 'redeemed_points') this.redeemedPoints = 0,
+    @JsonKey(name: 'classification_count') this.classificationCount = 0,
+    @JsonKey(name: 'correct_count') this.correctCount = 0,
+    @JsonKey(name: 'is_private') this.isPrivate = false,
+    @JsonKey(name: 'follower_count') this.followerCount = 0,
+    @JsonKey(name: 'following_count') this.followingCount = 0,
+    @JsonKey(name: 'created_at') required this.createdAt,
+    @JsonKey(name: 'updated_at') required this.updatedAt,
   }) : super._();
 
   factory _$UserProfileImpl.fromJson(Map<String, dynamic> json) =>
@@ -328,8 +338,10 @@ class _$UserProfileImpl extends _UserProfile {
   @override
   final String email;
   @override
+  @JsonKey(name: 'display_name')
   final String displayName;
   @override
+  @JsonKey(name: 'photo_url')
   final String? photoUrl;
   @override
   @JsonKey()
@@ -338,26 +350,28 @@ class _$UserProfileImpl extends _UserProfile {
   @JsonKey()
   final int points;
   @override
-  @JsonKey()
+  @JsonKey(name: 'redeemed_points')
   final int redeemedPoints;
   @override
-  @JsonKey()
+  @JsonKey(name: 'classification_count')
   final int classificationCount;
   @override
-  @JsonKey()
+  @JsonKey(name: 'correct_count')
   final int correctCount;
   @override
-  @JsonKey()
+  @JsonKey(name: 'is_private')
   final bool isPrivate;
   @override
-  @JsonKey()
+  @JsonKey(name: 'follower_count')
   final int followerCount;
   @override
-  @JsonKey()
+  @JsonKey(name: 'following_count')
   final int followingCount;
   @override
+  @JsonKey(name: 'created_at')
   final DateTime createdAt;
   @override
+  @JsonKey(name: 'updated_at')
   final DateTime updatedAt;
 
   @override
@@ -438,18 +452,18 @@ abstract class _UserProfile extends UserProfile {
     required final String uid,
     required final String username,
     required final String email,
-    required final String displayName,
-    final String? photoUrl,
+    @JsonKey(name: 'display_name') required final String displayName,
+    @JsonKey(name: 'photo_url') final String? photoUrl,
     final String role,
     final int points,
-    final int redeemedPoints,
-    final int classificationCount,
-    final int correctCount,
-    final bool isPrivate,
-    final int followerCount,
-    final int followingCount,
-    required final DateTime createdAt,
-    required final DateTime updatedAt,
+    @JsonKey(name: 'redeemed_points') final int redeemedPoints,
+    @JsonKey(name: 'classification_count') final int classificationCount,
+    @JsonKey(name: 'correct_count') final int correctCount,
+    @JsonKey(name: 'is_private') final bool isPrivate,
+    @JsonKey(name: 'follower_count') final int followerCount,
+    @JsonKey(name: 'following_count') final int followingCount,
+    @JsonKey(name: 'created_at') required final DateTime createdAt,
+    @JsonKey(name: 'updated_at') required final DateTime updatedAt,
   }) = _$UserProfileImpl;
   const _UserProfile._() : super._();
 
@@ -463,28 +477,38 @@ abstract class _UserProfile extends UserProfile {
   @override
   String get email;
   @override
+  @JsonKey(name: 'display_name')
   String get displayName;
   @override
+  @JsonKey(name: 'photo_url')
   String? get photoUrl;
   @override
   String get role;
   @override
   int get points;
   @override
+  @JsonKey(name: 'redeemed_points')
   int get redeemedPoints;
   @override
+  @JsonKey(name: 'classification_count')
   int get classificationCount;
   @override
+  @JsonKey(name: 'correct_count')
   int get correctCount;
   @override
+  @JsonKey(name: 'is_private')
   bool get isPrivate;
   @override
+  @JsonKey(name: 'follower_count')
   int get followerCount;
   @override
+  @JsonKey(name: 'following_count')
   int get followingCount;
   @override
+  @JsonKey(name: 'created_at')
   DateTime get createdAt;
   @override
+  @JsonKey(name: 'updated_at')
   DateTime get updatedAt;
 
   /// Create a copy of UserProfile

@@ -4,7 +4,7 @@ import 'package:uuid/uuid.dart';
 import 'package:image_picker/image_picker.dart';
 import '../data/services/storage_service.dart';
 import '../data/services/tflite_service.dart';
-import '../data/services/cloud_function_service.dart';
+import '../data/services/supabase_function_service.dart';
 import '../data/repositories/submission_repository.dart';
 import '../data/models/submission_model.dart';
 import '../../auth/logic/auth_state.dart';
@@ -19,8 +19,10 @@ final tfLiteServiceProvider = Provider<TFLiteService>((ref) {
   return TFLiteService();
 });
 
-final cloudFunctionServiceProvider = Provider<CloudFunctionService>((ref) {
-  return CloudFunctionService();
+final supabaseFunctionServiceProvider = Provider<SupabaseFunctionService>((
+  ref,
+) {
+  return SupabaseFunctionService();
 });
 
 final submissionRepositoryProvider = Provider<SubmissionRepository>((ref) {
@@ -32,7 +34,7 @@ final classificationProvider =
       return ClassificationNotifier(
         storageService: ref.watch(storageServiceProvider),
         tfLiteService: ref.watch(tfLiteServiceProvider),
-        cloudFunctionService: ref.watch(cloudFunctionServiceProvider),
+        supabaseFunctionService: ref.watch(supabaseFunctionServiceProvider),
         authState: ref.watch(authProvider),
       );
     });
@@ -48,6 +50,11 @@ final submissionDetailProvider = StreamProvider.family<Submission?, String>((
 ) {
   final repo = ref.watch(submissionRepositoryProvider);
   return repo.watchSubmission(id);
+});
+
+final recentSubmissionsProvider = StreamProvider<List<Submission>>((ref) {
+  final repo = ref.watch(submissionRepositoryProvider);
+  return repo.getRecentSubmissions();
 });
 
 class ClassificationState {
@@ -119,18 +126,18 @@ class ClassificationState {
 class ClassificationNotifier extends StateNotifier<ClassificationState> {
   final StorageService _storageService;
   final TFLiteService _tfLiteService;
-  final CloudFunctionService _cloudFunctionService;
+  final SupabaseFunctionService _supabaseFunctionService;
   final AuthState _authState;
   final _uuid = const Uuid();
 
   ClassificationNotifier({
     required StorageService storageService,
     required TFLiteService tfLiteService,
-    required CloudFunctionService cloudFunctionService,
+    required SupabaseFunctionService supabaseFunctionService,
     required AuthState authState,
   }) : _storageService = storageService,
        _tfLiteService = tfLiteService,
-       _cloudFunctionService = cloudFunctionService,
+       _supabaseFunctionService = supabaseFunctionService,
        _authState = authState,
        super(const ClassificationState()) {
     _initTFLite();
@@ -202,7 +209,7 @@ class ClassificationNotifier extends StateNotifier<ClassificationState> {
         tfliteResult: tfliteResult,
       );
 
-      final result = await _cloudFunctionService.classifySubmission(
+      final result = await _supabaseFunctionService.classifySubmission(
         imageUrl: imageUrl,
         storagePath: storagePath,
         idempotencyKey: idempotencyKey,

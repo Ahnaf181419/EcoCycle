@@ -22,11 +22,15 @@ Reward _$RewardFromJson(Map<String, dynamic> json) {
 /// @nodoc
 mixin _$Reward {
   String get id => throw _privateConstructorUsedError;
+  @JsonKey(name: 'user_id')
   String get userId => throw _privateConstructorUsedError;
+  @JsonKey(name: 'submission_id')
   String? get submissionId => throw _privateConstructorUsedError;
   int get points => throw _privateConstructorUsedError;
   String get type => throw _privateConstructorUsedError;
+  @JsonKey(name: 'idempotency_key')
   String get idempotencyKey => throw _privateConstructorUsedError;
+  @JsonKey(name: 'created_at')
   DateTime get createdAt => throw _privateConstructorUsedError;
 
   /// Serializes this Reward to a JSON map.
@@ -45,12 +49,12 @@ abstract class $RewardCopyWith<$Res> {
   @useResult
   $Res call({
     String id,
-    String userId,
-    String? submissionId,
+    @JsonKey(name: 'user_id') String userId,
+    @JsonKey(name: 'submission_id') String? submissionId,
     int points,
     String type,
-    String idempotencyKey,
-    DateTime createdAt,
+    @JsonKey(name: 'idempotency_key') String idempotencyKey,
+    @JsonKey(name: 'created_at') DateTime createdAt,
   });
 }
 
@@ -123,12 +127,12 @@ abstract class _$$RewardImplCopyWith<$Res> implements $RewardCopyWith<$Res> {
   @useResult
   $Res call({
     String id,
-    String userId,
-    String? submissionId,
+    @JsonKey(name: 'user_id') String userId,
+    @JsonKey(name: 'submission_id') String? submissionId,
     int points,
     String type,
-    String idempotencyKey,
-    DateTime createdAt,
+    @JsonKey(name: 'idempotency_key') String idempotencyKey,
+    @JsonKey(name: 'created_at') DateTime createdAt,
   });
 }
 
@@ -194,12 +198,12 @@ class __$$RewardImplCopyWithImpl<$Res>
 class _$RewardImpl implements _Reward {
   const _$RewardImpl({
     required this.id,
-    required this.userId,
-    this.submissionId,
+    @JsonKey(name: 'user_id') required this.userId,
+    @JsonKey(name: 'submission_id') this.submissionId,
     required this.points,
     required this.type,
-    required this.idempotencyKey,
-    required this.createdAt,
+    @JsonKey(name: 'idempotency_key') required this.idempotencyKey,
+    @JsonKey(name: 'created_at') required this.createdAt,
   });
 
   factory _$RewardImpl.fromJson(Map<String, dynamic> json) =>
@@ -208,16 +212,20 @@ class _$RewardImpl implements _Reward {
   @override
   final String id;
   @override
+  @JsonKey(name: 'user_id')
   final String userId;
   @override
+  @JsonKey(name: 'submission_id')
   final String? submissionId;
   @override
   final int points;
   @override
   final String type;
   @override
+  @JsonKey(name: 'idempotency_key')
   final String idempotencyKey;
   @override
+  @JsonKey(name: 'created_at')
   final DateTime createdAt;
 
   @override
@@ -272,12 +280,12 @@ class _$RewardImpl implements _Reward {
 abstract class _Reward implements Reward {
   const factory _Reward({
     required final String id,
-    required final String userId,
-    final String? submissionId,
+    @JsonKey(name: 'user_id') required final String userId,
+    @JsonKey(name: 'submission_id') final String? submissionId,
     required final int points,
     required final String type,
-    required final String idempotencyKey,
-    required final DateTime createdAt,
+    @JsonKey(name: 'idempotency_key') required final String idempotencyKey,
+    @JsonKey(name: 'created_at') required final DateTime createdAt,
   }) = _$RewardImpl;
 
   factory _Reward.fromJson(Map<String, dynamic> json) = _$RewardImpl.fromJson;
@@ -285,16 +293,20 @@ abstract class _Reward implements Reward {
   @override
   String get id;
   @override
+  @JsonKey(name: 'user_id')
   String get userId;
   @override
+  @JsonKey(name: 'submission_id')
   String? get submissionId;
   @override
   int get points;
   @override
   String get type;
   @override
+  @JsonKey(name: 'idempotency_key')
   String get idempotencyKey;
   @override
+  @JsonKey(name: 'created_at')
   DateTime get createdAt;
 
   /// Create a copy of Reward

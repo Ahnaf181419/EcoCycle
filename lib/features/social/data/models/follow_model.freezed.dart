@@ -21,8 +21,11 @@ Follow _$FollowFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$Follow {
+  @JsonKey(name: 'follower_id')
   String get followerId => throw _privateConstructorUsedError;
+  @JsonKey(name: 'followee_id')
   String get followeeId => throw _privateConstructorUsedError;
+  @JsonKey(name: 'created_at')
   DateTime get createdAt => throw _privateConstructorUsedError;
 
   /// Serializes this Follow to a JSON map.
@@ -39,7 +42,11 @@ abstract class $FollowCopyWith<$Res> {
   factory $FollowCopyWith(Follow value, $Res Function(Follow) then) =
       _$FollowCopyWithImpl<$Res, Follow>;
   @useResult
-  $Res call({String followerId, String followeeId, DateTime createdAt});
+  $Res call({
+    @JsonKey(name: 'follower_id') String followerId,
+    @JsonKey(name: 'followee_id') String followeeId,
+    @JsonKey(name: 'created_at') DateTime createdAt,
+  });
 }
 
 /// @nodoc
@@ -89,7 +96,11 @@ abstract class _$$FollowImplCopyWith<$Res> implements $FollowCopyWith<$Res> {
   ) = __$$FollowImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({String followerId, String followeeId, DateTime createdAt});
+  $Res call({
+    @JsonKey(name: 'follower_id') String followerId,
+    @JsonKey(name: 'followee_id') String followeeId,
+    @JsonKey(name: 'created_at') DateTime createdAt,
+  });
 }
 
 /// @nodoc
@@ -133,19 +144,22 @@ class __$$FollowImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$FollowImpl implements _Follow {
   const _$FollowImpl({
-    required this.followerId,
-    required this.followeeId,
-    required this.createdAt,
+    @JsonKey(name: 'follower_id') required this.followerId,
+    @JsonKey(name: 'followee_id') required this.followeeId,
+    @JsonKey(name: 'created_at') required this.createdAt,
   });
 
   factory _$FollowImpl.fromJson(Map<String, dynamic> json) =>
       _$$FollowImplFromJson(json);
 
   @override
+  @JsonKey(name: 'follower_id')
   final String followerId;
   @override
+  @JsonKey(name: 'followee_id')
   final String followeeId;
   @override
+  @JsonKey(name: 'created_at')
   final DateTime createdAt;
 
   @override
@@ -187,18 +201,21 @@ class _$FollowImpl implements _Follow {
 
 abstract class _Follow implements Follow {
   const factory _Follow({
-    required final String followerId,
-    required final String followeeId,
-    required final DateTime createdAt,
+    @JsonKey(name: 'follower_id') required final String followerId,
+    @JsonKey(name: 'followee_id') required final String followeeId,
+    @JsonKey(name: 'created_at') required final DateTime createdAt,
   }) = _$FollowImpl;
 
   factory _Follow.fromJson(Map<String, dynamic> json) = _$FollowImpl.fromJson;
 
   @override
+  @JsonKey(name: 'follower_id')
   String get followerId;
   @override
+  @JsonKey(name: 'followee_id')
   String get followeeId;
   @override
+  @JsonKey(name: 'created_at')
   DateTime get createdAt;
 
   /// Create a copy of Follow

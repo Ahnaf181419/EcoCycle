@@ -7,19 +7,19 @@ part 'dispute_model.g.dart';
 class Dispute with _$Dispute {
   const factory Dispute({
     required String id,
-    required String submissionId,
-    required String submitterId,
-    required String originalCategory,
-    required double originalConfidence,
-    String? secondaryCategory,
-    double? secondaryConfidence,
-    String? resolvedCategory,
-    String? resolvedBy,
+    @JsonKey(name: 'submission_id') required String submissionId,
+    @JsonKey(name: 'submitter_id') required String submitterId,
+    @JsonKey(name: 'original_category') required String originalCategory,
+    @JsonKey(name: 'original_confidence') required double originalConfidence,
+    @JsonKey(name: 'secondary_category') String? secondaryCategory,
+    @JsonKey(name: 'secondary_confidence') double? secondaryConfidence,
+    @JsonKey(name: 'resolved_category') String? resolvedCategory,
+    @JsonKey(name: 'resolved_by') String? resolvedBy,
     String? resolution,
-    String? resolutionNote,
+    @JsonKey(name: 'resolution_note') String? resolutionNote,
     required String status,
-    required DateTime createdAt,
-    DateTime? resolvedAt,
+    @JsonKey(name: 'created_at') required DateTime createdAt,
+    @JsonKey(name: 'resolved_at') DateTime? resolvedAt,
   }) = _Dispute;
 
   factory Dispute.fromJson(Map<String, dynamic> json) =>

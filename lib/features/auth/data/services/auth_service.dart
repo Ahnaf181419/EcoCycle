@@ -1,59 +1,57 @@
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:supabase_flutter/supabase_flutter.dart' hide AuthState;
 import '../../../social/data/models/user_profile_model.dart';
-import '../../../../core/constants/firestore_constants.dart';
+import '../../../../core/constants/supabase_constants.dart';
 import '../../../../core/errors/app_error.dart';
 
 class AuthService {
-  final FirebaseAuth _firebaseAuth;
-  final FirebaseFirestore _firestore;
+  final SupabaseClient _client;
 
-  AuthService({FirebaseAuth? firebaseAuth, FirebaseFirestore? firestore})
-    : _firebaseAuth = firebaseAuth ?? FirebaseAuth.instance,
-      _firestore = firestore ?? FirebaseFirestore.instance;
+  AuthService({SupabaseClient? client})
+    : _client = client ?? SupabaseConstants.client;
 
-  Stream<User?> get authStateChanges => _firebaseAuth.authStateChanges();
+  Stream<dynamic> get authStateChanges => _client.auth.onAuthStateChange;
 
-  User? get currentUser => _firebaseAuth.currentUser;
+  dynamic get currentUser => _client.auth.currentUser;
 
-  Future<UserCredential> signInWithEmailAndPassword({
+  Future<AuthResponse> signInWithEmailAndPassword({
     required String email,
     required String password,
   }) async {
     try {
-      return await _firebaseAuth.signInWithEmailAndPassword(
+      return await _client.auth.signInWithPassword(
         email: email,
         password: password,
       );
-    } on FirebaseAuthException catch (e) {
-      throw AuthError.fromFirebaseCode(e.code);
+    } on AuthException catch (e) {
+      throw AuthError.fromSupabaseMessage(e.message);
     }
   }
 
-  Future<UserCredential> registerWithEmailAndPassword({
+  Future<AuthResponse> registerWithEmailAndPassword({
     required String email,
     required String password,
     required String username,
     required String displayName,
   }) async {
     try {
-      final credential = await _firebaseAuth.createUserWithEmailAndPassword(
+      final response = await _client.auth.signUp(
         email: email,
         password: password,
+        data: {'username': username, 'display_name': displayName},
       );
 
-      await credential.user!.updateDisplayName(displayName);
+      if (response.user != null) {
+        await _createUserProfile(
+          uid: response.user!.id,
+          email: email,
+          username: username,
+          displayName: displayName,
+        );
+      }
 
-      await _createUserProfile(
-        uid: credential.user!.uid,
-        email: email,
-        username: username,
-        displayName: displayName,
-      );
-
-      return credential;
-    } on FirebaseAuthException catch (e) {
-      throw AuthError.fromFirebaseCode(e.code);
+      return response;
+    } on AuthException catch (e) {
+      throw AuthError.fromSupabaseMessage(e.message);
     }
   }
 
@@ -63,7 +61,7 @@ class AuthService {
     required String username,
     required String displayName,
   }) async {
-    final now = DateTime.now();
+    final now = DateTime.now().toUtc();
     final profile = UserProfile(
       uid: uid,
       username: username,
@@ -81,27 +79,25 @@ class AuthService {
       updatedAt: now,
     );
 
-    await _firestore
-        .collection(FirestoreConstants.usersCollection)
-        .doc(uid)
-        .set(profile.toJson());
+    await _client.from(SupabaseTables.profiles).insert(profile.toJson());
   }
 
   Future<void> signOut() async {
-    await _firebaseAuth.signOut();
+    await _client.auth.signOut();
   }
 
   Future<UserProfile?> getCurrentUserProfile() async {
     final user = currentUser;
     if (user == null) return null;
 
-    final doc = await _firestore
-        .collection(FirestoreConstants.usersCollection)
-        .doc(user.uid)
-        .get();
+    final response = await _client
+        .from(SupabaseTables.profiles)
+        .select()
+        .eq('uid', user.id)
+        .maybeSingle();
 
-    if (!doc.exists) return null;
+    if (response == null) return null;
 
-    return UserProfile.fromJson(doc.data()!);
+    return UserProfile.fromJson(response);
   }
 }

@@ -22,18 +22,29 @@ Dispute _$DisputeFromJson(Map<String, dynamic> json) {
 /// @nodoc
 mixin _$Dispute {
   String get id => throw _privateConstructorUsedError;
+  @JsonKey(name: 'submission_id')
   String get submissionId => throw _privateConstructorUsedError;
+  @JsonKey(name: 'submitter_id')
   String get submitterId => throw _privateConstructorUsedError;
+  @JsonKey(name: 'original_category')
   String get originalCategory => throw _privateConstructorUsedError;
+  @JsonKey(name: 'original_confidence')
   double get originalConfidence => throw _privateConstructorUsedError;
+  @JsonKey(name: 'secondary_category')
   String? get secondaryCategory => throw _privateConstructorUsedError;
+  @JsonKey(name: 'secondary_confidence')
   double? get secondaryConfidence => throw _privateConstructorUsedError;
+  @JsonKey(name: 'resolved_category')
   String? get resolvedCategory => throw _privateConstructorUsedError;
+  @JsonKey(name: 'resolved_by')
   String? get resolvedBy => throw _privateConstructorUsedError;
   String? get resolution => throw _privateConstructorUsedError;
+  @JsonKey(name: 'resolution_note')
   String? get resolutionNote => throw _privateConstructorUsedError;
   String get status => throw _privateConstructorUsedError;
+  @JsonKey(name: 'created_at')
   DateTime get createdAt => throw _privateConstructorUsedError;
+  @JsonKey(name: 'resolved_at')
   DateTime? get resolvedAt => throw _privateConstructorUsedError;
 
   /// Serializes this Dispute to a JSON map.
@@ -52,19 +63,19 @@ abstract class $DisputeCopyWith<$Res> {
   @useResult
   $Res call({
     String id,
-    String submissionId,
-    String submitterId,
-    String originalCategory,
-    double originalConfidence,
-    String? secondaryCategory,
-    double? secondaryConfidence,
-    String? resolvedCategory,
-    String? resolvedBy,
+    @JsonKey(name: 'submission_id') String submissionId,
+    @JsonKey(name: 'submitter_id') String submitterId,
+    @JsonKey(name: 'original_category') String originalCategory,
+    @JsonKey(name: 'original_confidence') double originalConfidence,
+    @JsonKey(name: 'secondary_category') String? secondaryCategory,
+    @JsonKey(name: 'secondary_confidence') double? secondaryConfidence,
+    @JsonKey(name: 'resolved_category') String? resolvedCategory,
+    @JsonKey(name: 'resolved_by') String? resolvedBy,
     String? resolution,
-    String? resolutionNote,
+    @JsonKey(name: 'resolution_note') String? resolutionNote,
     String status,
-    DateTime createdAt,
-    DateTime? resolvedAt,
+    @JsonKey(name: 'created_at') DateTime createdAt,
+    @JsonKey(name: 'resolved_at') DateTime? resolvedAt,
   });
 }
 
@@ -172,19 +183,19 @@ abstract class _$$DisputeImplCopyWith<$Res> implements $DisputeCopyWith<$Res> {
   @useResult
   $Res call({
     String id,
-    String submissionId,
-    String submitterId,
-    String originalCategory,
-    double originalConfidence,
-    String? secondaryCategory,
-    double? secondaryConfidence,
-    String? resolvedCategory,
-    String? resolvedBy,
+    @JsonKey(name: 'submission_id') String submissionId,
+    @JsonKey(name: 'submitter_id') String submitterId,
+    @JsonKey(name: 'original_category') String originalCategory,
+    @JsonKey(name: 'original_confidence') double originalConfidence,
+    @JsonKey(name: 'secondary_category') String? secondaryCategory,
+    @JsonKey(name: 'secondary_confidence') double? secondaryConfidence,
+    @JsonKey(name: 'resolved_category') String? resolvedCategory,
+    @JsonKey(name: 'resolved_by') String? resolvedBy,
     String? resolution,
-    String? resolutionNote,
+    @JsonKey(name: 'resolution_note') String? resolutionNote,
     String status,
-    DateTime createdAt,
-    DateTime? resolvedAt,
+    @JsonKey(name: 'created_at') DateTime createdAt,
+    @JsonKey(name: 'resolved_at') DateTime? resolvedAt,
   });
 }
 
@@ -285,19 +296,19 @@ class __$$DisputeImplCopyWithImpl<$Res>
 class _$DisputeImpl implements _Dispute {
   const _$DisputeImpl({
     required this.id,
-    required this.submissionId,
-    required this.submitterId,
-    required this.originalCategory,
-    required this.originalConfidence,
-    this.secondaryCategory,
-    this.secondaryConfidence,
-    this.resolvedCategory,
-    this.resolvedBy,
+    @JsonKey(name: 'submission_id') required this.submissionId,
+    @JsonKey(name: 'submitter_id') required this.submitterId,
+    @JsonKey(name: 'original_category') required this.originalCategory,
+    @JsonKey(name: 'original_confidence') required this.originalConfidence,
+    @JsonKey(name: 'secondary_category') this.secondaryCategory,
+    @JsonKey(name: 'secondary_confidence') this.secondaryConfidence,
+    @JsonKey(name: 'resolved_category') this.resolvedCategory,
+    @JsonKey(name: 'resolved_by') this.resolvedBy,
     this.resolution,
-    this.resolutionNote,
+    @JsonKey(name: 'resolution_note') this.resolutionNote,
     required this.status,
-    required this.createdAt,
-    this.resolvedAt,
+    @JsonKey(name: 'created_at') required this.createdAt,
+    @JsonKey(name: 'resolved_at') this.resolvedAt,
   });
 
   factory _$DisputeImpl.fromJson(Map<String, dynamic> json) =>
@@ -306,30 +317,41 @@ class _$DisputeImpl implements _Dispute {
   @override
   final String id;
   @override
+  @JsonKey(name: 'submission_id')
   final String submissionId;
   @override
+  @JsonKey(name: 'submitter_id')
   final String submitterId;
   @override
+  @JsonKey(name: 'original_category')
   final String originalCategory;
   @override
+  @JsonKey(name: 'original_confidence')
   final double originalConfidence;
   @override
+  @JsonKey(name: 'secondary_category')
   final String? secondaryCategory;
   @override
+  @JsonKey(name: 'secondary_confidence')
   final double? secondaryConfidence;
   @override
+  @JsonKey(name: 'resolved_category')
   final String? resolvedCategory;
   @override
+  @JsonKey(name: 'resolved_by')
   final String? resolvedBy;
   @override
   final String? resolution;
   @override
+  @JsonKey(name: 'resolution_note')
   final String? resolutionNote;
   @override
   final String status;
   @override
+  @JsonKey(name: 'created_at')
   final DateTime createdAt;
   @override
+  @JsonKey(name: 'resolved_at')
   final DateTime? resolvedAt;
 
   @override
@@ -407,19 +429,20 @@ class _$DisputeImpl implements _Dispute {
 abstract class _Dispute implements Dispute {
   const factory _Dispute({
     required final String id,
-    required final String submissionId,
-    required final String submitterId,
-    required final String originalCategory,
+    @JsonKey(name: 'submission_id') required final String submissionId,
+    @JsonKey(name: 'submitter_id') required final String submitterId,
+    @JsonKey(name: 'original_category') required final String originalCategory,
+    @JsonKey(name: 'original_confidence')
     required final double originalConfidence,
-    final String? secondaryCategory,
-    final double? secondaryConfidence,
-    final String? resolvedCategory,
-    final String? resolvedBy,
+    @JsonKey(name: 'secondary_category') final String? secondaryCategory,
+    @JsonKey(name: 'secondary_confidence') final double? secondaryConfidence,
+    @JsonKey(name: 'resolved_category') final String? resolvedCategory,
+    @JsonKey(name: 'resolved_by') final String? resolvedBy,
     final String? resolution,
-    final String? resolutionNote,
+    @JsonKey(name: 'resolution_note') final String? resolutionNote,
     required final String status,
-    required final DateTime createdAt,
-    final DateTime? resolvedAt,
+    @JsonKey(name: 'created_at') required final DateTime createdAt,
+    @JsonKey(name: 'resolved_at') final DateTime? resolvedAt,
   }) = _$DisputeImpl;
 
   factory _Dispute.fromJson(Map<String, dynamic> json) = _$DisputeImpl.fromJson;
@@ -427,30 +450,41 @@ abstract class _Dispute implements Dispute {
   @override
   String get id;
   @override
+  @JsonKey(name: 'submission_id')
   String get submissionId;
   @override
+  @JsonKey(name: 'submitter_id')
   String get submitterId;
   @override
+  @JsonKey(name: 'original_category')
   String get originalCategory;
   @override
+  @JsonKey(name: 'original_confidence')
   double get originalConfidence;
   @override
+  @JsonKey(name: 'secondary_category')
   String? get secondaryCategory;
   @override
+  @JsonKey(name: 'secondary_confidence')
   double? get secondaryConfidence;
   @override
+  @JsonKey(name: 'resolved_category')
   String? get resolvedCategory;
   @override
+  @JsonKey(name: 'resolved_by')
   String? get resolvedBy;
   @override
   String? get resolution;
   @override
+  @JsonKey(name: 'resolution_note')
   String? get resolutionNote;
   @override
   String get status;
   @override
+  @JsonKey(name: 'created_at')
   DateTime get createdAt;
   @override
+  @JsonKey(name: 'resolved_at')
   DateTime? get resolvedAt;
 
   /// Create a copy of Dispute

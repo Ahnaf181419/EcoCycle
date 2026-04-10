@@ -1,24 +1,21 @@
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:supabase_flutter/supabase_flutter.dart' hide AuthState;
 import '../services/auth_service.dart';
 import '../../../social/data/models/user_profile_model.dart';
-import '../../../../core/constants/firestore_constants.dart';
+import '../../../../core/constants/supabase_constants.dart';
 
 class AuthRepository {
   final AuthService _authService;
-  final FirebaseFirestore _firestore;
+  final SupabaseClient _client;
 
-  AuthRepository({
-    required AuthService authService,
-    FirebaseFirestore? firestore,
-  }) : _authService = authService,
-       _firestore = firestore ?? FirebaseFirestore.instance;
+  AuthRepository({required AuthService authService, SupabaseClient? client})
+    : _authService = authService,
+      _client = client ?? SupabaseConstants.client;
 
-  Stream<User?> get authStateChanges => _authService.authStateChanges;
+  Stream<dynamic> get authStateChanges => _authService.authStateChanges;
 
-  User? get currentUser => _authService.currentUser;
+  dynamic get currentUser => _authService.currentUser;
 
-  Future<UserCredential> signIn({
+  Future<AuthResponse> signIn({
     required String email,
     required String password,
   }) {
@@ -28,7 +25,7 @@ class AuthRepository {
     );
   }
 
-  Future<UserCredential> register({
+  Future<AuthResponse> register({
     required String email,
     required String password,
     required String username,
@@ -45,13 +42,13 @@ class AuthRepository {
   Future<void> signOut() => _authService.signOut();
 
   Stream<UserProfile?> userProfileStream(String uid) {
-    return _firestore
-        .collection(FirestoreConstants.usersCollection)
-        .doc(uid)
-        .snapshots()
-        .map((doc) {
-          if (!doc.exists) return null;
-          return UserProfile.fromJson(doc.data()!);
+    return _client
+        .from(SupabaseTables.profiles)
+        .stream(primaryKey: ['uid'])
+        .eq('uid', uid)
+        .map((rows) {
+          if (rows.isEmpty) return null;
+          return UserProfile.fromJson(rows.first);
         });
   }
 

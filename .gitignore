@@ -43,23 +43,15 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 
-# Firebase
-firebase.json
-.firebaserc
-functions/node_modules/
-functions/lib/
-functions/.env
-firebase-debug.log
-firestore-debug.log
-ui-debug.log
+# Supabase
+supabase/.temp/
+supabase/.branches/
 
 # Environment & secrets
 .env
 .env.*
 *.keystore
 *.jks
-google-services.json
-GoogleService-Info.plist
 
 # Docs
 docs/

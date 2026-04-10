@@ -1,76 +1,71 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../models/submission_model.dart';
 import '../models/classification_model.dart';
-import '../../../../core/constants/firestore_constants.dart';
+import '../../../../core/constants/supabase_constants.dart';
 
 class SubmissionRepository {
-  final FirebaseFirestore _firestore;
-  final FirebaseAuth _auth;
+  final SupabaseClient _client;
 
-  SubmissionRepository({FirebaseFirestore? firestore, FirebaseAuth? auth})
-    : _firestore = firestore ?? FirebaseFirestore.instance,
-      _auth = auth ?? FirebaseAuth.instance;
+  SubmissionRepository({SupabaseClient? client})
+    : _client = client ?? SupabaseConstants.client;
 
   Stream<List<Submission>> getSubmissionHistory({int limit = 20}) {
-    final uid = _auth.currentUser?.uid;
+    final uid = _client.auth.currentUser?.id;
     if (uid == null) return Stream.value([]);
 
-    return _firestore
-        .collection(FirestoreConstants.submissionsCollection)
-        .where(FirestoreConstants.userId, isEqualTo: uid)
-        .orderBy(FirestoreConstants.createdAt, descending: true)
+    return _client
+        .from(SupabaseTables.submissions)
+        .stream(primaryKey: ['id'])
+        .eq('user_id', uid)
+        .order('created_at')
         .limit(limit)
-        .snapshots()
         .map(
-          (snapshot) => snapshot.docs
-              .map((doc) => Submission.fromJson(doc.data()))
-              .toList(),
+          (rows) =>
+              rows.reversed.map((row) => Submission.fromJson(row)).toList(),
         );
   }
 
   Stream<Submission?> watchSubmission(String submissionId) {
-    return _firestore
-        .collection(FirestoreConstants.submissionsCollection)
-        .doc(submissionId)
-        .snapshots()
-        .map((doc) {
-          if (!doc.exists) return null;
-          return Submission.fromJson(doc.data()!);
+    return _client
+        .from(SupabaseTables.submissions)
+        .stream(primaryKey: ['id'])
+        .eq('id', submissionId)
+        .limit(1)
+        .map((rows) {
+          if (rows.isEmpty) return null;
+          return Submission.fromJson(rows.first);
         });
   }
 
   Future<Submission?> getSubmission(String submissionId) async {
-    final doc = await _firestore
-        .collection(FirestoreConstants.submissionsCollection)
-        .doc(submissionId)
-        .get();
+    final response = await _client
+        .from(SupabaseTables.submissions)
+        .select()
+        .eq('id', submissionId)
+        .maybeSingle();
 
-    if (!doc.exists) return null;
-    return Submission.fromJson(doc.data()!);
+    if (response == null) return null;
+    return Submission.fromJson(response);
   }
 
   Future<List<Classification>> getClassifications(String submissionId) async {
-    final snapshot = await _firestore
-        .collection(FirestoreConstants.classificationsCollection)
-        .where(FirestoreConstants.submissionId, isEqualTo: submissionId)
-        .get();
+    final response = await _client
+        .from(SupabaseTables.classifications)
+        .select()
+        .eq('submission_id', submissionId);
 
-    return snapshot.docs
-        .map((doc) => Classification.fromJson(doc.data()))
-        .toList();
+    return response.map((row) => Classification.fromJson(row)).toList();
   }
 
   Stream<List<Submission>> getRecentSubmissions({int limit = 10}) {
-    return _firestore
-        .collection(FirestoreConstants.submissionsCollection)
-        .orderBy(FirestoreConstants.createdAt, descending: true)
+    return _client
+        .from(SupabaseTables.submissions)
+        .stream(primaryKey: ['id'])
+        .order('created_at')
         .limit(limit)
-        .snapshots()
         .map(
-          (snapshot) => snapshot.docs
-              .map((doc) => Submission.fromJson(doc.data()))
-              .toList(),
+          (rows) =>
+              rows.reversed.map((row) => Submission.fromJson(row)).toList(),
         );
   }
 }
