@@ -75,6 +75,13 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: RouteConstants.register,
         builder: (context, state) => const RegisterScreen(),
       ),
+      GoRoute(
+        path: '${RouteConstants.result}/:id',
+        builder: (context, state) {
+          final id = state.pathParameters['id']!;
+          return ClassificationResultScreen(submissionId: id);
+        },
+      ),
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) {
           final authState = ref.read(authProvider);
@@ -153,17 +160,6 @@ final routerProvider = Provider<GoRouter>((ref) {
                     builder: (context, state) => const UserManagementScreen(),
                   ),
                 ],
-              ),
-            ],
-          ),
-          StatefulShellBranch(
-            routes: [
-              GoRoute(
-                path: '${RouteConstants.result}/:id',
-                builder: (context, state) {
-                  final id = state.pathParameters['id']!;
-                  return ClassificationResultScreen(submissionId: id);
-                },
               ),
             ],
           ),

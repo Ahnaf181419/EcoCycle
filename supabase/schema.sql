@@ -5,7 +5,7 @@
 -- 1. PROFILES TABLE
 -- ============================================================
 CREATE TABLE public.profiles (
-  uid TEXT PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
+  uid UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
   username TEXT NOT NULL UNIQUE,
   email TEXT NOT NULL,
   display_name TEXT NOT NULL,
@@ -46,7 +46,7 @@ CREATE TRIGGER on_auth_user_created
 -- ============================================================
 CREATE TABLE public.submissions (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id TEXT NOT NULL REFERENCES public.profiles(uid) ON DELETE CASCADE,
+  user_id UUID NOT NULL REFERENCES public.profiles(uid) ON DELETE CASCADE,
   username TEXT NOT NULL,
   image_url TEXT NOT NULL,
   storage_path TEXT NOT NULL,
@@ -87,13 +87,13 @@ CREATE TABLE public.classifications (
 CREATE TABLE public.disputes (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   submission_id UUID NOT NULL REFERENCES public.submissions(id) ON DELETE CASCADE,
-  submitter_id TEXT NOT NULL REFERENCES public.profiles(uid) ON DELETE CASCADE,
+  submitter_id UUID NOT NULL REFERENCES public.profiles(uid) ON DELETE CASCADE,
   original_category TEXT NOT NULL,
   original_confidence DOUBLE PRECISION NOT NULL,
   secondary_category TEXT,
   secondary_confidence DOUBLE PRECISION,
   resolved_category TEXT,
-  resolved_by TEXT REFERENCES public.profiles(uid),
+  resolved_by UUID REFERENCES public.profiles(uid),
   resolution TEXT,
   resolution_note TEXT,
   status TEXT NOT NULL DEFAULT 'PENDING' CHECK (status IN ('PENDING','APPROVED','OVERRIDDEN','REJECTED')),
@@ -106,7 +106,7 @@ CREATE TABLE public.disputes (
 -- ============================================================
 CREATE TABLE public.rewards (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id TEXT NOT NULL REFERENCES public.profiles(uid) ON DELETE CASCADE,
+  user_id UUID NOT NULL REFERENCES public.profiles(uid) ON DELETE CASCADE,
   submission_id UUID REFERENCES public.submissions(id) ON DELETE SET NULL,
   points INTEGER NOT NULL,
   type TEXT NOT NULL CHECK (type IN ('CLASSIFICATION','REDEMPTION','DISPUTE_BONUS')),
@@ -118,8 +118,8 @@ CREATE TABLE public.rewards (
 -- 6. FOLLOWS TABLE
 -- ============================================================
 CREATE TABLE public.follows (
-  follower_id TEXT NOT NULL REFERENCES public.profiles(uid) ON DELETE CASCADE,
-  followee_id TEXT NOT NULL REFERENCES public.profiles(uid) ON DELETE CASCADE,
+  follower_id UUID NOT NULL REFERENCES public.profiles(uid) ON DELETE CASCADE,
+  followee_id UUID NOT NULL REFERENCES public.profiles(uid) ON DELETE CASCADE,
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   PRIMARY KEY (follower_id, followee_id),
   CHECK (follower_id != followee_id)
@@ -131,7 +131,7 @@ CREATE TABLE public.follows (
 CREATE TABLE public.audit_log (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   event_type TEXT NOT NULL,
-  actor_id TEXT NOT NULL,
+  actor_id UUID NOT NULL,
   actor_role TEXT NOT NULL,
   target_type TEXT NOT NULL,
   target_id TEXT NOT NULL,
@@ -155,6 +155,22 @@ INSERT INTO public.config (key, value) VALUES ('system', '{
   "maxDailySubmissions": 50,
   "leaderboardCacheSeconds": 300
 }');
+
+-- ============================================================
+-- HELPER FUNCTIONS
+-- ============================================================
+CREATE OR REPLACE FUNCTION public.increment_profile_points(
+  user_id UUID,
+  amount INTEGER
+)
+RETURNS void AS $$
+BEGIN
+  UPDATE public.profiles
+  SET points = points + amount,
+      classification_count = classification_count + 1
+  WHERE public.profiles.uid = user_id;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
 
 -- ============================================================
 -- INDEXES
@@ -215,11 +231,11 @@ CREATE POLICY "Profiles are viewable by everyone"
 
 CREATE POLICY "Users can update their own profile"
   ON public.profiles FOR UPDATE
-  USING (auth.uid()::text = uid);
+  USING (auth.uid() = uid);
 
 CREATE POLICY "Users can delete their own profile"
   ON public.profiles FOR DELETE
-  USING (auth.uid()::text = uid);
+  USING (auth.uid() = uid);
 
 -- SUBMISSIONS
 ALTER TABLE public.submissions ENABLE ROW LEVEL SECURITY;
@@ -230,11 +246,11 @@ CREATE POLICY "Submissions viewable by owner or public profiles"
 
 CREATE POLICY "Authenticated users can insert submissions"
   ON public.submissions FOR INSERT
-  WITH CHECK (auth.uid()::text = user_id);
+  WITH CHECK (auth.uid() = user_id);
 
 CREATE POLICY "Users can update their own submissions"
   ON public.submissions FOR UPDATE
-  USING (auth.uid()::text = user_id);
+  USING (auth.uid() = user_id);
 
 -- CLASSIFICATIONS
 ALTER TABLE public.classifications ENABLE ROW LEVEL SECURITY;
@@ -245,7 +261,7 @@ CREATE POLICY "Classifications are viewable by everyone"
 
 CREATE POLICY "Authenticated users can insert classifications"
   ON public.classifications FOR INSERT
-  WITH CHECK (auth.uid()::text IS NOT NULL);
+  WITH CHECK (auth.uid() IS NOT NULL);
 
 -- DISPUTES
 ALTER TABLE public.disputes ENABLE ROW LEVEL SECURITY;
@@ -253,23 +269,23 @@ ALTER TABLE public.disputes ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Disputes viewable by owner or moderators"
   ON public.disputes FOR SELECT
   USING (
-    auth.uid()::text = submitter_id
+    auth.uid() = submitter_id
     OR EXISTS (
       SELECT 1 FROM public.profiles
-      WHERE uid = auth.uid()::text AND role IN ('moderator', 'admin')
+      WHERE uid = auth.uid() AND role IN ('moderator', 'admin')
     )
   );
 
 CREATE POLICY "Authenticated users can insert disputes"
   ON public.disputes FOR INSERT
-  WITH CHECK (auth.uid()::text = submitter_id);
+  WITH CHECK (auth.uid() = submitter_id);
 
 CREATE POLICY "Moderators can update disputes"
   ON public.disputes FOR UPDATE
   USING (
     EXISTS (
       SELECT 1 FROM public.profiles
-      WHERE uid = auth.uid()::text AND role IN ('moderator', 'admin')
+      WHERE uid = auth.uid() AND role IN ('moderator', 'admin')
     )
   );
 
@@ -278,11 +294,11 @@ ALTER TABLE public.rewards ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY "Users can view their own rewards"
   ON public.rewards FOR SELECT
-  USING (auth.uid()::text = user_id);
+  USING (auth.uid() = user_id);
 
 CREATE POLICY "System can insert rewards"
   ON public.rewards FOR INSERT
-  WITH CHECK (auth.uid()::text IS NOT NULL);
+  WITH CHECK (auth.uid() IS NOT NULL);
 
 -- FOLLOWS
 ALTER TABLE public.follows ENABLE ROW LEVEL SECURITY;
@@ -293,11 +309,11 @@ CREATE POLICY "Follows are viewable by everyone"
 
 CREATE POLICY "Users can insert their own follows"
   ON public.follows FOR INSERT
-  WITH CHECK (auth.uid()::text = follower_id);
+  WITH CHECK (auth.uid() = follower_id);
 
 CREATE POLICY "Users can delete their own follows"
   ON public.follows FOR DELETE
-  USING (auth.uid()::text = follower_id);
+  USING (auth.uid() = follower_id);
 
 -- AUDIT LOG
 ALTER TABLE public.audit_log ENABLE ROW LEVEL SECURITY;
@@ -307,13 +323,13 @@ CREATE POLICY "Audit log viewable by admins only"
   USING (
     EXISTS (
       SELECT 1 FROM public.profiles
-      WHERE uid = auth.uid()::text AND role = 'admin'
+      WHERE uid = auth.uid() AND role = 'admin'
     )
   );
 
 CREATE POLICY "System can insert audit log entries"
   ON public.audit_log FOR INSERT
-  WITH CHECK (auth.uid()::text IS NOT NULL);
+  WITH CHECK (auth.uid() IS NOT NULL);
 
 -- CONFIG
 ALTER TABLE public.config ENABLE ROW LEVEL SECURITY;
@@ -327,7 +343,7 @@ CREATE POLICY "Only admins can update config"
   USING (
     EXISTS (
       SELECT 1 FROM public.profiles
-      WHERE uid = auth.uid()::text AND role = 'admin'
+      WHERE uid = auth.uid() AND role = 'admin'
     )
   );
 
@@ -340,7 +356,7 @@ CREATE POLICY "Only admins can update config"
 -- Storage policies for the submissions bucket:
 -- CREATE POLICY "Authenticated users can upload"
 --   ON storage.objects FOR INSERT
---   WITH CHECK (bucket_id = 'submissions' AND auth.uid()::text IS NOT NULL);
+--   WITH CHECK (bucket_id = 'submissions' AND auth.uid() IS NOT NULL);
 
 -- CREATE POLICY "Anyone can view submissions"
 --   ON storage.objects FOR SELECT

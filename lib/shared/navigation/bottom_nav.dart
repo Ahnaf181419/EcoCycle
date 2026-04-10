@@ -125,6 +125,13 @@ class BottomNav extends StatelessWidget {
       currentIndex: currentIndex,
       onTap: onTap,
       items: items,
+      type: BottomNavigationBarType.fixed,
+      backgroundColor: AppColors.surface,
+      selectedItemColor: AppColors.primary,
+      unselectedItemColor: AppColors.textTertiary,
+      showUnselectedLabels: true,
+      selectedFontSize: 12,
+      unselectedFontSize: 12,
     );
   }
 

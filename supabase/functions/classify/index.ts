@@ -215,8 +215,20 @@ Deno.serve(async (req: Request) => {
 });
 
 async function classifyWithGemini(imageUrl: string) {
-  const prompt1 = `Analyze this waste image and classify it. Respond in JSON format only:
+  const prompt = `Analyze this waste image and classify it. Respond in JSON format only:
 {"category": "organic|recyclable|hazardous|general", "subcategory": "specific item name", "confidence": 0.0-1.0, "reasoning": "brief explanation"}`;
+
+  const imageResponse = await fetch(imageUrl);
+  if (!imageResponse.ok) {
+    throw new Error(`Failed to fetch image: ${imageResponse.status}`);
+  }
+  const imageBuffer = await imageResponse.arrayBuffer();
+  const uint8Array = new Uint8Array(imageBuffer);
+  let binary = '';
+  for (let i = 0; i < uint8Array.length; i++) {
+    binary += String.fromCharCode(uint8Array[i]);
+  }
+  const base64Image = btoa(binary);
 
   const response = await fetch(
     `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`,
@@ -224,27 +236,20 @@ async function classifyWithGemini(imageUrl: string) {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        contents: [{ parts: [{ text: prompt1 }, { inline_data: { mime_type: 'image/jpeg', data: '' } }] }],
-      }),
-    }
-  );
-
-  // Use URL-based approach for public images
-  const response2 = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`,
-    {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
         contents: [{ parts: [
-          { text: prompt1 },
-          { file_data: { mime_type: 'image/jpeg', file_uri: imageUrl } }
+          { text: prompt },
+          { inline_data: { mime_type: 'image/jpeg', data: base64Image } }
         ]}],
       }),
     }
   );
 
-  const data = await response2.json();
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(`Gemini API error: ${JSON.stringify(data)}`);
+  }
+
   const text = data?.candidates?.[0]?.content?.parts?.[0]?.text ?? '';
 
   try {
@@ -253,7 +258,7 @@ async function classifyWithGemini(imageUrl: string) {
       const parsed = JSON.parse(jsonMatch[0]);
       return {
         category: parsed.category ?? 'general',
-        subcategory: parsed.subcategory,
+        subcategory: parsed.subcategory ?? null,
         confidence: Math.min(1.0, Math.max(0.0, Number(parsed.confidence) || 0.5)),
         rawResponse: data,
       };
