@@ -39,9 +39,24 @@ class StorageService {
   Future<String> uploadImageBytes({
     required String userId,
     required String fileName,
+    required List<int> bytes,
   }) async {
     final storagePath = ImageUtils.generateStoragePath(userId, fileName);
-    return storagePath;
+
+    await _client.storage
+        .from(SupabaseStorage.submissionsBucket)
+        .uploadBinary(
+          storagePath,
+          Uint8List.fromList(bytes),
+          fileOptions: const FileOptions(
+            contentType: 'image/jpeg',
+            upsert: false,
+          ),
+        );
+
+    return _client.storage
+        .from(SupabaseStorage.submissionsBucket)
+        .getPublicUrl(storagePath);
   }
 
   Future<void> deleteImage(String storagePath) async {

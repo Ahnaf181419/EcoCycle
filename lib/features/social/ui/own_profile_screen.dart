@@ -5,7 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hugeicons/hugeicons.dart';
 import '../../auth/logic/auth_provider.dart';
-import '../../home/ui/home_screen.dart' show recentSubmissionsProvider;
+import '../../classification/logic/classification_provider.dart';
 import '../../classification/data/models/submission_model.dart';
 import '../../rewards/logic/reward_provider.dart';
 import '../../../core/theme/app_colors.dart';

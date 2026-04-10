@@ -36,8 +36,8 @@ class SupabaseStorage {
   static const String submissionsBucket = 'submissions';
 }
 
-class SupabaseFunctions {
-  SupabaseFunctions._();
+class EdgeFunctionNames {
+  EdgeFunctionNames._();
 
   static const String classify = 'classify';
   static const String rewards = 'rewards';

@@ -53,6 +53,11 @@ Deno.serve(async (req: Request) => {
 
       if (!dispute) throw new Error('Dispute not found');
 
+      // State transition guard — only PENDING disputes can be resolved
+      if (dispute.status !== 'PENDING') {
+        throw new Error('Dispute is not in PENDING state');
+      }
+
       // Update dispute
       const disputeUpdate: any = {
         status: resolution === 'approve' ? 'APPROVED' : resolution === 'override' ? 'OVERRIDDEN' : 'REJECTED',
@@ -96,7 +101,7 @@ Deno.serve(async (req: Request) => {
         const pts = pointsPerCategory[cat] ?? pointsPerCategory['general'] ?? 5;
         submissionUpdate.points_awarded = pts;
 
-        // Create reward
+        // Create reward (with idempotency via UNIQUE constraint on idempotency_key)
         await supabaseAdmin.from('rewards').insert({
           user_id: dispute.submitter_id,
           submission_id: dispute.submission_id,
@@ -105,23 +110,11 @@ Deno.serve(async (req: Request) => {
           idempotency_key: `dispute_${disputeId}_reward`,
         });
 
-        // Increment profile points
-        const { data: userProfile } = await supabaseAdmin
-          .from('profiles')
-          .select('points, classification_count, correct_count')
-          .eq('uid', dispute.submitter_id)
-          .single();
+        // Atomically increment profile points via RPC
+        await supabaseAdmin.rpc('increment_profile_points', { user_id: dispute.submitter_id, amount: pts });
 
-        if (userProfile) {
-          await supabaseAdmin
-            .from('profiles')
-            .update({
-              points: userProfile.points + pts,
-              classification_count: (userProfile.classification_count ?? 0) + 1,
-              correct_count: (userProfile.correct_count ?? 0) + 1,
-            })
-            .eq('uid', dispute.submitter_id);
-        }
+        // Atomically increment correct_count via RPC
+        await supabaseAdmin.rpc('increment_correct_count', { p_user_id: dispute.submitter_id });
       }
 
       await supabaseAdmin

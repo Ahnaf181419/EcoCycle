@@ -3,7 +3,9 @@ import 'package:uuid/uuid.dart';
 import '../data/models/reward_model.dart';
 import '../data/repositories/reward_repository.dart';
 import '../../classification/data/services/supabase_function_service.dart';
+import '../../classification/logic/classification_provider.dart';
 import '../../auth/logic/auth_provider.dart';
+import '../../auth/logic/auth_state.dart';
 
 final rewardRepositoryProvider = Provider<RewardRepository>((ref) {
   return RewardRepository();
@@ -56,7 +58,7 @@ final redeemProvider = StateNotifierProvider<RedeemNotifier, RedeemState>((
   ref,
 ) {
   return RedeemNotifier(
-    supabaseFunctionService: SupabaseFunctionService(),
+    supabaseFunctionService: ref.watch(supabaseFunctionServiceProvider),
     authState: ref.watch(authProvider),
   );
 });
@@ -95,7 +97,7 @@ class RedeemNotifier extends StateNotifier<RedeemState> {
 
   RedeemNotifier({
     required SupabaseFunctionService supabaseFunctionService,
-    required dynamic authState,
+    required AuthState authState,
   }) : _supabaseFunctionService = supabaseFunctionService,
        super(const RedeemState());
 

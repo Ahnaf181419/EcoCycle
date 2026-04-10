@@ -37,6 +37,12 @@ class AuthError extends AppError {
     if (lower.contains('network') || lower.contains('connection')) {
       return const AuthError(message: 'Network error. Check your connection.');
     }
+    if (lower.contains('email not confirmed') ||
+        lower.contains('not confirmed')) {
+      return const AuthError(
+        message: 'Please confirm your email before signing in.',
+      );
+    }
     if (lower.contains('not found')) {
       return const AuthError(message: 'No user found with this email.');
     }

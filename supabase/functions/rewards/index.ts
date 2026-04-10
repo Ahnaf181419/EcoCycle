@@ -32,61 +32,38 @@ Deno.serve(async (req: Request) => {
 
     if (action === 'redeem') {
       if (!points || points <= 0) throw new Error('Invalid points amount');
+      if (!idempotencyKey) throw new Error('Missing idempotencyKey');
 
-      // Check idempotency
-      const { data: existing } = await supabaseAdmin
-        .from('rewards')
-        .select('id')
-        .eq('idempotency_key', idempotencyKey)
-        .maybeSingle();
-      if (existing) {
-        const { data: profile } = await supabaseAdmin
-          .from('profiles')
-          .select('points, redeemed_points')
-          .eq('uid', user.id)
-          .single();
-        return new Response(JSON.stringify({
-          availableBalance: (profile?.points ?? 0) - (profile?.redeemed_points ?? 0),
-        }), { headers: { ...corsHeaders(), 'Content-Type': 'application/json' } });
-      }
+      // Atomically redeem points via SQL function (handles race conditions)
+      const { data: result, error: rpcError } = await supabaseAdmin
+        .rpc('atomic_redeem_points', {
+          p_user_id: user.id,
+          p_points: points,
+          p_idempotency_key: idempotencyKey,
+        });
 
-      // Get current balance
+      if (rpcError) throw rpcError;
+      if (result?.error) throw new Error(result.error);
+
+      // Get user role for audit
       const { data: profile } = await supabaseAdmin
         .from('profiles')
-        .select('points, redeemed_points')
+        .select('role')
         .eq('uid', user.id)
         .single();
-
-      if (!profile) throw new Error('Profile not found');
-      const available = profile.points - profile.redeemed_points;
-      if (available < points) throw new Error('Insufficient points');
-
-      // Insert redemption reward
-      await supabaseAdmin.from('rewards').insert({
-        user_id: user.id,
-        points: -points,
-        type: 'REDEMPTION',
-        idempotency_key: idempotencyKey,
-      });
-
-      // Update redeemed_points on profile
-      await supabaseAdmin
-        .from('profiles')
-        .update({ redeemed_points: profile.redeemed_points + points })
-        .eq('uid', user.id);
 
       // Audit log
       await supabaseAdmin.from('audit_log').insert({
         event_type: 'REDEMPTION',
         actor_id: user.id,
-        actor_role: 'citizen',
+        actor_role: profile?.role ?? 'citizen',
         target_type: 'reward',
         target_id: idempotencyKey,
-        details: { points, previousRedeemed: profile.redeemed_points },
+        details: { points },
       });
 
       return new Response(JSON.stringify({
-        availableBalance: available - points,
+        availableBalance: result?.availableBalance ?? 0,
       }), { headers: { ...corsHeaders(), 'Content-Type': 'application/json' } });
     }
 

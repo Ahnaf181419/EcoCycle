@@ -1,3 +1,5 @@
+import 'dart:async';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../data/services/auth_service.dart';
 import '../data/repositories/auth_repository.dart';
@@ -18,37 +20,64 @@ final authProvider = StateNotifierProvider<AuthNotifier, AuthState>((ref) {
 
 class AuthNotifier extends StateNotifier<AuthState> {
   final AuthRepository _repository;
+  StreamSubscription<dynamic>? _authSubscription;
 
   AuthNotifier(this._repository) : super(const AuthState()) {
     _init();
   }
 
   void _init() {
-    _repository.authStateChanges.listen((event) async {
+    _authSubscription = _repository.authStateChanges.listen((event) async {
+      debugPrint('[Auth] onAuthStateChange event: ${event.event}');
       final session = event.session;
       if (session != null) {
-        final profile = await _repository.getCurrentUserProfile();
-        state = state.copyWith(
-          isAuthenticated: true,
-          user: profile,
-          isLoading: false,
-        );
+        debugPrint('[Auth] Session found for user: ${session.user.id}');
+        UserProfile? profile;
+        try {
+          profile = await _repository.getCurrentUserProfile();
+          debugPrint('[Auth] Profile fetched: ${profile?.username ?? "null"}');
+        } catch (e) {
+          debugPrint('[Auth] Profile fetch error: $e');
+        }
+        if (mounted) {
+          state = state.copyWith(
+            isAuthenticated: true,
+            user: profile,
+            isLoading: false,
+            error: null,
+          );
+        }
       } else {
-        state = state.copyWith(
-          isAuthenticated: false,
-          user: null,
-          isLoading: false,
-        );
+        debugPrint('[Auth] No session — unauthenticated');
+        if (mounted) {
+          state = state.copyWith(
+            isAuthenticated: false,
+            user: null,
+            isLoading: false,
+            error: null,
+          );
+        }
       }
     });
+  }
+
+  @override
+  void dispose() {
+    _authSubscription?.cancel();
+    super.dispose();
   }
 
   Future<void> signIn({required String email, required String password}) async {
     state = state.copyWith(isLoading: true, error: null);
     try {
       await _repository.signIn(email: email, password: password);
+      debugPrint('[Auth] signIn completed — fetching profile directly');
+      await _fetchProfileAndSetAuthenticated();
     } catch (e) {
-      state = state.copyWith(isLoading: false, error: e.toString());
+      debugPrint('[Auth] signIn error: $e');
+      if (mounted) {
+        state = state.copyWith(isLoading: false, error: e.toString());
+      }
       rethrow;
     }
   }
@@ -67,9 +96,32 @@ class AuthNotifier extends StateNotifier<AuthState> {
         username: username,
         displayName: displayName,
       );
+      debugPrint('[Auth] register completed — fetching profile directly');
+      await _fetchProfileAndSetAuthenticated();
     } catch (e) {
-      state = state.copyWith(isLoading: false, error: e.toString());
+      debugPrint('[Auth] register error: $e');
+      if (mounted) {
+        state = state.copyWith(isLoading: false, error: e.toString());
+      }
       rethrow;
+    }
+  }
+
+  Future<void> _fetchProfileAndSetAuthenticated() async {
+    UserProfile? profile;
+    try {
+      profile = await _repository.getCurrentUserProfile();
+      debugPrint('[Auth] Direct profile fetch: ${profile?.username ?? "null"}');
+    } catch (e) {
+      debugPrint('[Auth] Direct profile fetch error: $e');
+    }
+    if (mounted) {
+      state = state.copyWith(
+        isAuthenticated: true,
+        user: profile,
+        isLoading: false,
+        error: null,
+      );
     }
   }
 

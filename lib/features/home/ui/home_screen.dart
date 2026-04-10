@@ -499,8 +499,3 @@ class _RecentTile extends StatelessWidget {
     );
   }
 }
-
-final recentSubmissionsProvider = StreamProvider<List<Submission>>((ref) {
-  final repo = ref.watch(submissionRepositoryProvider);
-  return repo.getRecentSubmissions(limit: 5);
-});

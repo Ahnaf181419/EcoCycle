@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../data/models/user_profile_model.dart';
 import '../data/repositories/user_repository.dart';
 import '../../auth/logic/auth_provider.dart';
+import '../../auth/logic/auth_state.dart';
 
 final userRepositoryProvider = Provider<UserRepository>((ref) {
   return UserRepository();
@@ -50,7 +51,7 @@ class ProfileEditState {
 
 class ProfileEditNotifier extends StateNotifier<ProfileEditState> {
   final UserRepository _userRepository;
-  final dynamic authState;
+  final AuthState authState;
 
   ProfileEditNotifier({
     required UserRepository userRepository,

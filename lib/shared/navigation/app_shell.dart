@@ -27,23 +27,27 @@ class AppShell extends StatelessWidget {
 
   int _calculateSelectedIndex(BuildContext context) {
     final String location = GoRouterState.of(context).matchedLocation;
+    bool hasDisputes = userRole == 'moderator' || userRole == 'admin';
+    bool hasAdmin = userRole == 'admin';
+
     if (location.startsWith(RouteConstants.home)) return 0;
     if (location.startsWith(RouteConstants.classify)) return 1;
     if (location.startsWith(RouteConstants.leaderboard)) return 2;
-    if (location.startsWith(RouteConstants.disputes) &&
-        (userRole == 'moderator' || userRole == 'admin')) {
+
+    if (location.startsWith(RouteConstants.disputes) && hasDisputes) {
       return 3;
     }
-    if (location.startsWith(RouteConstants.admin) && userRole == 'admin') {
-      if (userRole == 'moderator' || userRole == 'admin') {
-        return 4;
-      }
-      return 4;
+    if (location.startsWith(RouteConstants.admin) && hasAdmin) {
+      return hasDisputes ? 4 : 3;
     }
+
     if (location.startsWith(RouteConstants.profile) ||
-        location.startsWith(RouteConstants.settings)) {
-      if (userRole == 'admin') return 5;
-      if (userRole == 'moderator') return 4;
+        location.startsWith(RouteConstants.settings) ||
+        location.startsWith(RouteConstants.history) ||
+        location.startsWith(RouteConstants.rewards) ||
+        location.startsWith(RouteConstants.feed)) {
+      if (hasAdmin) return 5;
+      if (hasDisputes) return 4;
       return 3;
     }
     return 0;

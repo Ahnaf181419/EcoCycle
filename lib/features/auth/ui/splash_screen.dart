@@ -1,5 +1,3 @@
-// ignore_for_file: use_build_context_synchronously
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -15,25 +13,41 @@ class SplashScreen extends ConsumerStatefulWidget {
 }
 
 class _SplashScreenState extends ConsumerState<SplashScreen> {
+  bool _redirected = false;
+
   @override
   void initState() {
     super.initState();
-    _redirect();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _tryRedirect();
+    });
   }
 
-  void _redirect() {
-    Future.microtask(() {
-      final authState = ref.read(authProvider);
-      if (authState.isAuthenticated) {
-        context.go(RouteConstants.home);
-      } else {
-        context.go(RouteConstants.login);
-      }
-    });
+  void _tryRedirect() {
+    if (_redirected || !mounted) return;
+    final authState = ref.read(authProvider);
+    if (authState.isLoading) return;
+    _redirected = true;
+    if (authState.isAuthenticated) {
+      context.go(RouteConstants.home);
+    } else {
+      context.go(RouteConstants.login);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    ref.listen(authProvider, (prev, next) {
+      if (!next.isLoading && !_redirected && mounted) {
+        _redirected = true;
+        if (next.isAuthenticated) {
+          context.go(RouteConstants.home);
+        } else {
+          context.go(RouteConstants.login);
+        }
+      }
+    });
+
     return const Scaffold(
       backgroundColor: AppColors.primary,
       body: Center(

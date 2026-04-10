@@ -40,46 +40,13 @@ class AuthService {
         data: {'username': username, 'display_name': displayName},
       );
 
-      if (response.user != null) {
-        await _createUserProfile(
-          uid: response.user!.id,
-          email: email,
-          username: username,
-          displayName: displayName,
-        );
-      }
+      // Profile creation is handled by the database trigger (handle_new_user)
+      // No need to create profile here -- the trigger fires on auth.users INSERT
 
       return response;
     } on AuthException catch (e) {
       throw AuthError.fromSupabaseMessage(e.message);
     }
-  }
-
-  Future<void> _createUserProfile({
-    required String uid,
-    required String email,
-    required String username,
-    required String displayName,
-  }) async {
-    final now = DateTime.now().toUtc();
-    final profile = UserProfile(
-      uid: uid,
-      username: username,
-      email: email,
-      displayName: displayName,
-      role: 'citizen',
-      points: 0,
-      redeemedPoints: 0,
-      classificationCount: 0,
-      correctCount: 0,
-      isPrivate: false,
-      followerCount: 0,
-      followingCount: 0,
-      createdAt: now,
-      updatedAt: now,
-    );
-
-    await _client.from(SupabaseTables.profiles).insert(profile.toJson());
   }
 
   Future<void> signOut() async {

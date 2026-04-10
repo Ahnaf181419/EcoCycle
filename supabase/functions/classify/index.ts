@@ -32,6 +32,12 @@ Deno.serve(async (req: Request) => {
     const body = await req.json();
     const { action, imageUrl, storagePath, idempotencyKey, tfliteResult } = body;
 
+    if (!imageUrl || !storagePath || !idempotencyKey) {
+      throw new Error('Missing required fields: imageUrl, storagePath, idempotencyKey');
+    }
+
+    const VALID_CATEGORIES = ['organic', 'recyclable', 'hazardous', 'general'];
+
     if (action === 'classify') {
       // Idempotency check
       const { data: existing } = await supabaseAdmin
@@ -75,6 +81,9 @@ Deno.serve(async (req: Request) => {
       const geminiResult = await classifyWithGemini(imageUrl);
 
       let finalCategory = geminiResult.category;
+      if (!VALID_CATEGORIES.includes(finalCategory.toLowerCase())) {
+        finalCategory = 'general';
+      }
       let finalConfidence = geminiResult.confidence;
       let finalSubcategory = geminiResult.subcategory;
       let finalApproach = 'gemini';
@@ -91,24 +100,43 @@ Deno.serve(async (req: Request) => {
 
       // Check confidence threshold
       if (finalConfidence < confidenceThreshold) {
-        // Auto-create dispute for low confidence
-        const { data: submission } = await supabaseAdmin
-          .from('submissions')
-          .insert({
-            user_id: user.id,
-            username: profile?.username ?? 'unknown',
-            image_url: imageUrl,
-            storage_path: storagePath,
-            category: finalCategory,
-            subcategory: finalSubcategory,
-            confidence: finalConfidence,
-            primary_approach: finalApproach,
-            state: 'DISPUTED',
-            idempotency_key: idempotencyKey,
-            classified_at: new Date().toISOString(),
-          })
-          .select('id')
-          .single();
+        let submission;
+        try {
+          const { data } = await supabaseAdmin
+            .from('submissions')
+            .insert({
+              user_id: user.id,
+              username: profile?.username ?? 'unknown',
+              image_url: imageUrl,
+              storage_path: storagePath,
+              category: finalCategory,
+              subcategory: finalSubcategory,
+              confidence: finalConfidence,
+              primary_approach: finalApproach,
+              state: 'DISPUTED',
+              idempotency_key: idempotencyKey,
+              classified_at: new Date().toISOString(),
+            })
+            .select('id')
+            .single();
+          submission = data;
+        } catch (insertError: any) {
+          if (insertError?.code === '23505') {
+            const { data: existing } = await supabaseAdmin
+              .from('submissions')
+              .select('id, state, category, confidence, points_awarded')
+              .eq('idempotency_key', idempotencyKey)
+              .single();
+            return new Response(JSON.stringify({
+              submissionId: existing.id,
+              state: existing.state,
+              category: existing.category,
+              confidence: existing.confidence,
+              pointsAwarded: existing.points_awarded,
+            }), { headers: { ...corsHeaders(), 'Content-Type': 'application/json' } });
+          }
+          throw insertError;
+        }
 
         await supabaseAdmin.from('disputes').insert({
           submission_id: submission.id,
@@ -152,24 +180,44 @@ Deno.serve(async (req: Request) => {
 
       const pointsAwarded = state === 'REWARDED' ? pointsForCategory : 0;
 
-      const { data: submission } = await supabaseAdmin
-        .from('submissions')
-        .insert({
-          user_id: user.id,
-          username: profile?.username ?? 'unknown',
-          image_url: imageUrl,
-          storage_path: storagePath,
-          category: finalCategory,
-          subcategory: finalSubcategory,
-          confidence: finalConfidence,
-          primary_approach: finalApproach,
-          state: state,
-          points_awarded: pointsAwarded,
-          idempotency_key: idempotencyKey,
-          classified_at: new Date().toISOString(),
-        })
-        .select('id')
-        .single();
+      let submission;
+      try {
+        const { data } = await supabaseAdmin
+          .from('submissions')
+          .insert({
+            user_id: user.id,
+            username: profile?.username ?? 'unknown',
+            image_url: imageUrl,
+            storage_path: storagePath,
+            category: finalCategory,
+            subcategory: finalSubcategory,
+            confidence: finalConfidence,
+            primary_approach: finalApproach,
+            state: state,
+            points_awarded: pointsAwarded,
+            idempotency_key: idempotencyKey,
+            classified_at: new Date().toISOString(),
+          })
+          .select('id')
+          .single();
+        submission = data;
+      } catch (insertError: any) {
+        if (insertError?.code === '23505') {
+          const { data: existing } = await supabaseAdmin
+            .from('submissions')
+            .select('id, state, category, confidence, points_awarded')
+            .eq('idempotency_key', idempotencyKey)
+            .single();
+          return new Response(JSON.stringify({
+            submissionId: existing.id,
+            state: existing.state,
+            category: existing.category,
+            confidence: existing.confidence,
+            pointsAwarded: existing.points_awarded,
+          }), { headers: { ...corsHeaders(), 'Content-Type': 'application/json' } });
+        }
+        throw insertError;
+      }
 
       // Insert classification record
       await supabaseAdmin.from('classifications').insert({

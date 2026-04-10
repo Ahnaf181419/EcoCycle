@@ -53,14 +53,14 @@ CREATE TABLE public.submissions (
   image_hash TEXT,
   category TEXT,
   subcategory TEXT,
-  confidence DOUBLE PRECISION,
-  primary_approach TEXT NOT NULL DEFAULT 'gemini',
+  confidence DOUBLE PRECISION CHECK (confidence IS NULL OR (confidence >= 0.0 AND confidence <= 1.0)),
+  primary_approach TEXT NOT NULL DEFAULT 'gemini' CHECK (primary_approach IN ('gemini', 'tflite', 'ensemble', 'manual')),
   state TEXT NOT NULL DEFAULT 'SUBMITTED'
     CHECK (state IN ('SUBMITTED','CLASSIFIED','VERIFIED','REWARDED','DISPUTED','RESOLVED','REJECTED','FLAGGED_DUPLICATE')),
   points_awarded INTEGER NOT NULL DEFAULT 0,
   idempotency_key TEXT NOT NULL UNIQUE,
   flagged_reason TEXT,
-  duplicate_of UUID,
+  duplicate_of UUID REFERENCES public.submissions(id) ON DELETE SET NULL,
   classified_at TIMESTAMPTZ,
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
@@ -72,10 +72,10 @@ CREATE TABLE public.submissions (
 CREATE TABLE public.classifications (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   submission_id UUID NOT NULL REFERENCES public.submissions(id) ON DELETE CASCADE,
-  approach TEXT NOT NULL,
+  approach TEXT NOT NULL CHECK (approach IN ('gemini', 'tflite', 'ensemble', 'manual')),
   category TEXT NOT NULL,
   subcategory TEXT,
-  confidence DOUBLE PRECISION NOT NULL,
+  confidence DOUBLE PRECISION NOT NULL CHECK (confidence >= 0.0 AND confidence <= 1.0),
   model_version TEXT NOT NULL,
   raw_response JSONB,
   timestamp TIMESTAMPTZ NOT NULL DEFAULT now()
@@ -89,11 +89,11 @@ CREATE TABLE public.disputes (
   submission_id UUID NOT NULL REFERENCES public.submissions(id) ON DELETE CASCADE,
   submitter_id UUID NOT NULL REFERENCES public.profiles(uid) ON DELETE CASCADE,
   original_category TEXT NOT NULL,
-  original_confidence DOUBLE PRECISION NOT NULL,
+  original_confidence DOUBLE PRECISION NOT NULL CHECK (original_confidence >= 0.0 AND original_confidence <= 1.0),
   secondary_category TEXT,
-  secondary_confidence DOUBLE PRECISION,
+  secondary_confidence DOUBLE PRECISION CHECK (secondary_confidence IS NULL OR (secondary_confidence >= 0.0 AND secondary_confidence <= 1.0)),
   resolved_category TEXT,
-  resolved_by UUID REFERENCES public.profiles(uid),
+  resolved_by UUID REFERENCES public.profiles(uid) ON DELETE SET NULL,
   resolution TEXT,
   resolution_note TEXT,
   status TEXT NOT NULL DEFAULT 'PENDING' CHECK (status IN ('PENDING','APPROVED','OVERRIDDEN','REJECTED')),
@@ -154,7 +154,7 @@ INSERT INTO public.config (key, value) VALUES ('system', '{
   "duplicateTimeWindowHours": 24,
   "maxDailySubmissions": 50,
   "leaderboardCacheSeconds": 300
-}');
+}') ON CONFLICT (key) DO NOTHING;
 
 -- ============================================================
 -- HELPER FUNCTIONS
@@ -172,6 +172,60 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
+CREATE OR REPLACE FUNCTION public.increment_correct_count(
+  p_user_id UUID
+)
+RETURNS void AS $$
+BEGIN
+  UPDATE public.profiles SET correct_count = correct_count + 1 WHERE uid = p_user_id;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+CREATE OR REPLACE FUNCTION public.atomic_increment_follow(
+  p_follower_id UUID,
+  p_followee_id UUID
+)
+RETURNS void AS $$
+BEGIN
+  UPDATE public.profiles SET following_count = following_count + 1 WHERE uid = p_follower_id;
+  UPDATE public.profiles SET follower_count = follower_count + 1 WHERE uid = p_followee_id;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+CREATE OR REPLACE FUNCTION public.atomic_decrement_follow(
+  p_follower_id UUID,
+  p_followee_id UUID
+)
+RETURNS void AS $$
+BEGIN
+  UPDATE public.profiles SET following_count = GREATEST(following_count - 1, 0) WHERE uid = p_follower_id;
+  UPDATE public.profiles SET follower_count = GREATEST(follower_count - 1, 0) WHERE uid = p_followee_id;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+CREATE OR REPLACE FUNCTION public.atomic_redeem_points(
+  p_user_id UUID,
+  p_points INTEGER,
+  p_idempotency_key TEXT
+)
+RETURNS JSONB AS $$
+DECLARE
+  v_available INTEGER;
+  v_profile RECORD;
+BEGIN
+  SELECT points, redeemed_points INTO v_profile FROM public.profiles WHERE uid = p_user_id FOR UPDATE;
+  v_available := v_profile.points - v_profile.redeemed_points;
+  IF v_available < p_points THEN
+    RETURN jsonb_build_object('error', 'Insufficient points', 'available', v_available);
+  END IF;
+  UPDATE public.profiles SET redeemed_points = redeemed_points + p_points WHERE uid = p_user_id;
+  INSERT INTO public.rewards (user_id, points, type, idempotency_key)
+    VALUES (p_user_id, -p_points, 'REDEMPTION', p_idempotency_key)
+    ON CONFLICT (idempotency_key) DO NOTHING;
+  RETURN jsonb_build_object('availableBalance', v_available - p_points);
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
 -- ============================================================
 -- INDEXES
 -- ============================================================
@@ -185,6 +239,7 @@ CREATE INDEX idx_classifications_submission_id ON public.classifications(submiss
 
 CREATE INDEX idx_disputes_status ON public.disputes(status);
 CREATE INDEX idx_disputes_submitter_id ON public.disputes(submitter_id);
+CREATE INDEX idx_disputes_submission_id ON public.disputes(submission_id);
 
 CREATE INDEX idx_rewards_user_id ON public.rewards(user_id);
 CREATE INDEX idx_rewards_created_at ON public.rewards(created_at DESC);
@@ -348,10 +403,23 @@ CREATE POLICY "Only admins can update config"
   );
 
 -- ============================================================
+-- REALTIME PUBLICATIONS
+-- ============================================================
+ALTER PUBLICATION supabase_realtime ADD TABLE public.profiles;
+ALTER PUBLICATION supabase_realtime ADD TABLE public.submissions;
+ALTER PUBLICATION supabase_realtime ADD TABLE public.classifications;
+ALTER PUBLICATION supabase_realtime ADD TABLE public.disputes;
+ALTER PUBLICATION supabase_realtime ADD TABLE public.rewards;
+ALTER PUBLICATION supabase_realtime ADD TABLE public.follows;
+ALTER PUBLICATION supabase_realtime ADD TABLE public.audit_log;
+
+-- ============================================================
 -- STORAGE BUCKET
 -- ============================================================
--- Run this in the SQL editor or create via Supabase Dashboard:
--- INSERT INTO storage.buckets (id, name, public) VALUES ('submissions', 'submissions', true);
+-- Run in the SQL editor or create via Supabase Dashboard:
+-- INSERT INTO storage.buckets (id, name, public)
+--   VALUES ('submissions', 'submissions', true)
+--   ON CONFLICT (id) DO NOTHING;
 
 -- Storage policies for the submissions bucket:
 -- CREATE POLICY "Authenticated users can upload"

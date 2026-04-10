@@ -16,7 +16,7 @@ class SupabaseFunctionService {
     Map<String, dynamic>? tfliteResult,
   }) async {
     final response = await _client.functions.invoke(
-      SupabaseFunctions.classify,
+      EdgeFunctionNames.classify,
       body: {
         'action': 'classify',
         'imageUrl': imageUrl,
@@ -33,7 +33,7 @@ class SupabaseFunctionService {
     required String idempotencyKey,
   }) async {
     final response = await _client.functions.invoke(
-      SupabaseFunctions.rewards,
+      EdgeFunctionNames.rewards,
       body: {
         'action': 'redeem',
         'points': points,
@@ -50,7 +50,7 @@ class SupabaseFunctionService {
     String? note,
   }) async {
     final response = await _client.functions.invoke(
-      SupabaseFunctions.disputes,
+      EdgeFunctionNames.disputes,
       body: {
         'action': 'resolve',
         'disputeId': disputeId,
@@ -66,7 +66,7 @@ class SupabaseFunctionService {
     required String targetUserId,
   }) async {
     final response = await _client.functions.invoke(
-      SupabaseFunctions.social,
+      EdgeFunctionNames.social,
       body: {'action': 'follow', 'targetUserId': targetUserId},
     );
     return _parseResponse(response);
@@ -76,7 +76,7 @@ class SupabaseFunctionService {
     required String targetUserId,
   }) async {
     final response = await _client.functions.invoke(
-      SupabaseFunctions.social,
+      EdgeFunctionNames.social,
       body: {'action': 'unfollow', 'targetUserId': targetUserId},
     );
     return _parseResponse(response);
@@ -87,7 +87,7 @@ class SupabaseFunctionService {
     required String newRole,
   }) async {
     final response = await _client.functions.invoke(
-      SupabaseFunctions.admin,
+      EdgeFunctionNames.admin,
       body: {
         'action': 'updateRole',
         'targetUserId': targetUserId,
@@ -99,7 +99,7 @@ class SupabaseFunctionService {
 
   Future<Map<String, dynamic>> updateConfig(Map<String, dynamic> config) async {
     final response = await _client.functions.invoke(
-      SupabaseFunctions.admin,
+      EdgeFunctionNames.admin,
       body: {'action': 'updateConfig', ...config},
     );
     return _parseResponse(response);

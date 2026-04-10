@@ -9,7 +9,7 @@ class RouteConstants {
   static const String result = '/result';
   static const String history = '/history';
   static const String rewards = '/rewards';
-  static const String redeem = '/redeem';
+  static const String redeem = '/rewards/redeem';
   static const String profile = '/profile';
   static const String leaderboard = '/leaderboard';
   static const String feed = '/feed';

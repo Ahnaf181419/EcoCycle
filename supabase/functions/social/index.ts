@@ -54,33 +54,11 @@ Deno.serve(async (req: Request) => {
         followee_id: targetUserId,
       });
 
-      // Increment follower_count on target
-      const { data: targetProfile } = await supabaseAdmin
-        .from('profiles')
-        .select('follower_count')
-        .eq('uid', targetUserId)
-        .single();
-
-      if (targetProfile) {
-        await supabaseAdmin
-          .from('profiles')
-          .update({ follower_count: (targetProfile.follower_count ?? 0) + 1 })
-          .eq('uid', targetUserId);
-      }
-
-      // Increment following_count on current user
-      const { data: myProfile } = await supabaseAdmin
-        .from('profiles')
-        .select('following_count')
-        .eq('uid', user.id)
-        .single();
-
-      if (myProfile) {
-        await supabaseAdmin
-          .from('profiles')
-          .update({ following_count: (myProfile.following_count ?? 0) + 1 })
-          .eq('uid', user.id);
-      }
+      // Atomically increment counters
+      await supabaseAdmin.rpc('atomic_increment_follow', {
+        p_follower_id: user.id,
+        p_followee_id: targetUserId,
+      });
 
       return new Response(JSON.stringify({ success: true }), {
         headers: { ...corsHeaders(), 'Content-Type': 'application/json' },
@@ -99,33 +77,11 @@ Deno.serve(async (req: Request) => {
 
       if (deleteError) throw deleteError;
 
-      // Decrement follower_count on target
-      const { data: targetProfile } = await supabaseAdmin
-        .from('profiles')
-        .select('follower_count')
-        .eq('uid', targetUserId)
-        .single();
-
-      if (targetProfile && targetProfile.follower_count > 0) {
-        await supabaseAdmin
-          .from('profiles')
-          .update({ follower_count: targetProfile.follower_count - 1 })
-          .eq('uid', targetUserId);
-      }
-
-      // Decrement following_count on current user
-      const { data: myProfile } = await supabaseAdmin
-        .from('profiles')
-        .select('following_count')
-        .eq('uid', user.id)
-        .single();
-
-      if (myProfile && myProfile.following_count > 0) {
-        await supabaseAdmin
-          .from('profiles')
-          .update({ following_count: myProfile.following_count - 1 })
-          .eq('uid', user.id);
-      }
+      // Atomically decrement counters
+      await supabaseAdmin.rpc('atomic_decrement_follow', {
+        p_follower_id: user.id,
+        p_followee_id: targetUserId,
+      });
 
       return new Response(JSON.stringify({ success: true }), {
         headers: { ...corsHeaders(), 'Content-Type': 'application/json' },
