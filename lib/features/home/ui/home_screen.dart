@@ -21,8 +21,9 @@ class HomeScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final authState = ref.watch(authProvider);
-    final user = authState.user;
+    // Narrow: this screen only re-renders when the user profile changes.
+    // Ignore isLoading/error churn from sign-in/register flows.
+    final user = ref.watch(authProvider.select((s) => s.user));
     final balance = ref.watch(rewardBalanceProvider);
     final recentAsync = ref.watch(recentSubmissionsProvider);
 

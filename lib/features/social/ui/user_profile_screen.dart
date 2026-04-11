@@ -19,8 +19,9 @@ class UserProfileScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final authState = ref.watch(authProvider);
-    final currentUid = authState.user?.uid;
+    // Narrow: only the viewer's uid matters here (to detect self-profile).
+    final currentUid =
+        ref.watch(authProvider.select((s) => s.user?.uid));
 
     if (uid == currentUid) {
       return const OwnProfileScreen();

@@ -7,11 +7,13 @@ class AuthService {
   final SupabaseClient _client;
 
   AuthService({SupabaseClient? client})
-    : _client = client ?? SupabaseConstants.client;
+      : _client = client ?? SupabaseConstants.client;
 
   Stream<dynamic> get authStateChanges => _client.auth.onAuthStateChange;
 
   dynamic get currentUser => _client.auth.currentUser;
+
+  dynamic get currentSession => _client.auth.currentSession;
 
   Future<AuthResponse> signInWithEmailAndPassword({
     required String email,

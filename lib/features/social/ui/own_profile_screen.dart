@@ -23,8 +23,8 @@ class OwnProfileScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final authState = ref.watch(authProvider);
-    final user = authState.user;
+    // Narrow: only react to profile changes, not transient loading flags.
+    final user = ref.watch(authProvider.select((s) => s.user));
     final balance = ref.watch(rewardBalanceProvider);
     final recentAsync = ref.watch(recentSubmissionsProvider);
 

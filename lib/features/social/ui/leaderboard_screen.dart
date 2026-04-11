@@ -20,8 +20,9 @@ class LeaderboardScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final leaderboardAsync = ref.watch(leaderboardProvider);
     final rankAsync = ref.watch(currentUserRankProvider);
-    final authState = ref.watch(authProvider);
-    final currentUid = authState.user?.uid;
+    // Narrow: only need the viewer's uid to highlight their row.
+    final currentUid =
+        ref.watch(authProvider.select((s) => s.user?.uid));
 
     return Scaffold(
       backgroundColor: AppColors.background,

@@ -23,8 +23,9 @@ class SettingsScreen extends ConsumerStatefulWidget {
 class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   @override
   Widget build(BuildContext context) {
-    final authState = ref.watch(authProvider);
-    final user = authState.user;
+    // Narrow: this screen only cares about the profile object, not the
+    // transient loading/error fields on AuthState.
+    final user = ref.watch(authProvider.select((s) => s.user));
     final privacyState = ref.watch(privacyToggleProvider);
 
     return LoadingOverlay(

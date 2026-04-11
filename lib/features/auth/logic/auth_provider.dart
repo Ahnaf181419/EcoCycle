@@ -37,6 +37,22 @@ class AuthNotifier extends StateNotifier<AuthState> {
       (event) async {
         _log('onAuthStateChange event: ${event.event}');
         final session = event.session;
+
+        // Fallback: if stream says no session, check if currentSession exists
+        // This handles race condition where stream fires before session is restored
+        if (session == null) {
+          final currentSession = _repository.currentSession;
+          if (currentSession != null) {
+            _log('Using currentSession from repository (stream delay)');
+            if (_handlingExplicitAuth) {
+              _handlingExplicitAuth = false;
+              return;
+            }
+            await _fetchProfileAndSetAuthenticated();
+            return;
+          }
+        }
+
         if (session != null) {
           _log('Session found');
           if (_handlingExplicitAuth) {

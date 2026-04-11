@@ -54,12 +54,16 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final authState = ref.watch(authProvider);
+    // Narrow the watch: this screen only cares about the loading flag, so
+    // `.select` keeps the whole form from rebuilding when unrelated auth
+    // state (user, error) changes.
+    final isLoading =
+        ref.watch(authProvider.select((s) => s.isLoading));
 
     return Scaffold(
       backgroundColor: AppColors.background,
       body: LoadingOverlay(
-        isLoading: authState.isLoading,
+        isLoading: isLoading,
         message: 'Signing in...',
         child: SafeArea(
           child: Center(
@@ -122,7 +126,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     ),
                     const SizedBox(height: AppSpacing.space2XL),
                     FilledButton(
-                      onPressed: authState.isLoading ? null : _submit,
+                      onPressed: isLoading ? null : _submit,
                       child: const Text('Sign In'),
                     ),
                     const SizedBox(height: AppSpacing.spaceLG),

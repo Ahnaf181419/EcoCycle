@@ -14,7 +14,14 @@ class CameraScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final state = ref.watch(classificationProvider);
+    // Narrow via `.select` so intermediate-state writes (category, confidence,
+    // tfliteResult, etc.) during `classifyImage` don't churn the capture/
+    // preview branches. The sub-widgets pull detail state themselves.
+    final isProcessing =
+        ref.watch(classificationProvider.select((s) => s.isProcessing));
+    final hasImage = ref.watch(
+      classificationProvider.select((s) => s.imagePath != null),
+    );
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -25,10 +32,11 @@ class CameraScreen extends ConsumerWidget {
         backgroundColor: AppColors.surface,
         foregroundColor: AppColors.textPrimary,
       ),
-      body: state.isProcessing
-          ? _buildProcessingState(context, state)
-          : state.imagePath != null
-          ? _buildPreviewState(context, ref, state)
+      body: isProcessing
+          ? _buildProcessingState(context, ref.watch(classificationProvider))
+          : hasImage
+          ? _buildPreviewState(
+              context, ref, ref.watch(classificationProvider))
           : _buildCaptureState(context, ref),
     );
   }

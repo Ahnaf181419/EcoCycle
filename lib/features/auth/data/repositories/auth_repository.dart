@@ -8,12 +8,14 @@ class AuthRepository {
   final SupabaseClient _client;
 
   AuthRepository({required AuthService authService, SupabaseClient? client})
-    : _authService = authService,
-      _client = client ?? SupabaseConstants.client;
+      : _authService = authService,
+        _client = client ?? SupabaseConstants.client;
 
   Stream<dynamic> get authStateChanges => _authService.authStateChanges;
 
   dynamic get currentUser => _authService.currentUser;
+
+  dynamic get currentSession => _authService.currentSession;
 
   Future<AuthResponse> signIn({
     required String email,
