@@ -27,7 +27,8 @@ class UserProfileScreen extends ConsumerWidget {
 
     final userAsync = ref.watch(userProfileProvider(uid));
     final followAsync = ref.watch(isFollowingProvider(uid));
-    final followState = ref.watch(followActionProvider(uid));
+    final isFollowLoading =
+        ref.watch(followActionProvider(uid).select((s) => s.isLoading));
 
     return userAsync.when(
       loading: () => const Scaffold(
@@ -59,7 +60,7 @@ class UserProfileScreen extends ConsumerWidget {
         return _PublicProfile(
           user: user,
           isFollowing: followAsync.valueOrNull ?? false,
-          isFollowLoading: followState.isLoading,
+          isFollowLoading: isFollowLoading,
           onFollowToggle: () async {
             if (ref.read(followActionProvider(uid)).isLoading) return;
             final notifier = ref.read(followActionProvider(uid).notifier);

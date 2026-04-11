@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -12,7 +13,9 @@ void main() async {
 
     FlutterError.onError = (details) {
       FlutterError.presentError(details);
-      debugPrint('Flutter error: ${details.exceptionAsString()}');
+      if (kDebugMode) {
+        debugPrint('Flutter error: ${details.exceptionAsString()}');
+      }
     };
 
     SupabaseConstants.assertConfigured();
@@ -23,7 +26,7 @@ void main() async {
 
     runApp(const ProviderScope(child: EcoCycleApp()));
   }, (error, stack) {
-    debugPrint('Unhandled async error: $error\n$stack');
+    if (kDebugMode) debugPrint('Unhandled async error: $error\n$stack');
   });
 }
 

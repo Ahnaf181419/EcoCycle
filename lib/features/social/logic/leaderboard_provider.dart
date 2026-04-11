@@ -14,7 +14,7 @@ final leaderboardProvider =
 });
 
 final currentUserRankProvider = StreamProvider.autoDispose<int>((ref) {
-  ref.watch(authProvider);
+  ref.watch(authProvider.select((s) => s.user?.uid));
   final repo = ref.watch(leaderboardRepositoryProvider);
   return repo.currentUserRank();
 });

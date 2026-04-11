@@ -37,6 +37,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
       (event) async {
         _log('onAuthStateChange event: ${event.event}');
         final session = event.session;
+        final wasHandlingExplicitAuth = _handlingExplicitAuth;
 
         // Fallback: if stream says no session, check if currentSession exists
         // This handles race condition where stream fires before session is restored
@@ -44,7 +45,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
           final currentSession = _repository.currentSession;
           if (currentSession != null) {
             _log('Using currentSession from repository (stream delay)');
-            if (_handlingExplicitAuth) {
+            if (wasHandlingExplicitAuth) {
               _handlingExplicitAuth = false;
               return;
             }
@@ -55,16 +56,14 @@ class AuthNotifier extends StateNotifier<AuthState> {
 
         if (session != null) {
           _log('Session found');
-          if (_handlingExplicitAuth) {
+          if (wasHandlingExplicitAuth) {
             _handlingExplicitAuth = false;
             return;
           }
           await _fetchProfileAndSetAuthenticated();
         } else {
           _log('No session — unauthenticated');
-          if (_handlingExplicitAuth) {
-            _handlingExplicitAuth = false;
-          }
+          _handlingExplicitAuth = false;
           if (mounted) {
             state = state.copyWith(
               isAuthenticated: false,

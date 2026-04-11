@@ -163,7 +163,7 @@ class ClassificationNotifier extends StateNotifier<ClassificationState> {
     try {
       await _tfLiteService.loadModel();
     } catch (e) {
-      debugPrint('Failed to load TFLite model: $e');
+      if (kDebugMode) debugPrint('Failed to load TFLite model: $e');
     }
   }
 
@@ -207,6 +207,7 @@ class ClassificationNotifier extends StateNotifier<ClassificationState> {
     final file = File(imagePath);
     if (!await file.exists()) {
       state = state.copyWith(
+        isCapturing: false,
         isUploading: false,
         isClassifying: false,
         error: 'Captured image is no longer available. Please retake it.',
@@ -253,6 +254,8 @@ class ClassificationNotifier extends StateNotifier<ClassificationState> {
         imageUrl: imageUrl,
         storagePath: storagePath,
         idempotencyKey: idempotencyKey,
+        userId: user.uid,
+        username: user.username ?? 'anonymous',
         tfliteResult: tfliteResult,
       );
       if (!mounted) return;

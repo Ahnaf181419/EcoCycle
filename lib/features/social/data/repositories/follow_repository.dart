@@ -5,7 +5,7 @@ class FollowRepository {
   final SupabaseClient _client;
 
   FollowRepository({SupabaseClient? client})
-    : _client = client ?? SupabaseConstants.client;
+      : _client = client ?? SupabaseConstants.client;
 
   // Performance concern: This streams the entire follow list just to check
   // one boolean. Consider using checkFollowStatus() for one-shot checks.
@@ -45,7 +45,10 @@ class FollowRepository {
         .stream(primaryKey: ['follower_id', 'followee_id'])
         .eq('follower_id', uid)
         .map(
-          (rows) => rows.map((row) => row['followee_id'] as String).toList(),
+          (rows) => rows
+              .where((row) => row['followee_id'] != null)
+              .map((row) => row['followee_id'] as String)
+              .toList(),
         );
   }
 }

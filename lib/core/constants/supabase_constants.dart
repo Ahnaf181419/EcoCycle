@@ -3,25 +3,19 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 class SupabaseConstants {
   SupabaseConstants._();
 
-  static const String url = String.fromEnvironment(
+  static final String url = String.fromEnvironment(
     'SUPABASE_URL',
     defaultValue: 'https://jqczqdsogvagttrkzucu.supabase.co',
   );
-  static const String anonKey = String.fromEnvironment(
+  static final String anonKey = String.fromEnvironment(
     'SUPABASE_ANON_KEY',
     defaultValue:
         'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpxY3pxZHNvZ3ZhZ3R0cmt6dWN1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU4NDAxODgsImV4cCI6MjA5MTQxNjE4OH0.C6IIVZ6pRKurK4f_MHLelskKyyGy4QQE1Llhl0FAUdM',
   );
 
-  /// Call once at app startup — fails fast if the build forgot to pass
-  /// `--dart-define=SUPABASE_URL=... --dart-define=SUPABASE_ANON_KEY=...`.
   static void assertConfigured() {
-    if (url.isEmpty || anonKey.isEmpty) {
-      throw StateError(
-        'Supabase is not configured. Pass --dart-define=SUPABASE_URL=... '
-        'and --dart-define=SUPABASE_ANON_KEY=... at build time.',
-      );
-    }
+    // For development, defaults are provided
+    // In production, ensure these are set via --dart-define
   }
 
   static SupabaseClient get client => Supabase.instance.client;

@@ -1,4 +1,4 @@
-import 'package:supabase_flutter/supabase_flutter.dart' hide AuthState;
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../social/data/models/user_profile_model.dart';
 import '../../../../core/constants/supabase_constants.dart';
 import '../../../../core/errors/app_error.dart';
@@ -9,11 +9,11 @@ class AuthService {
   AuthService({SupabaseClient? client})
       : _client = client ?? SupabaseConstants.client;
 
-  Stream<dynamic> get authStateChanges => _client.auth.onAuthStateChange;
+  Stream<AuthState> get authStateChanges => _client.auth.onAuthStateChange;
 
-  dynamic get currentUser => _client.auth.currentUser;
+  User? get currentUser => _client.auth.currentUser;
 
-  dynamic get currentSession => _client.auth.currentSession;
+  Session? get currentSession => _client.auth.currentSession;
 
   Future<AuthResponse> signInWithEmailAndPassword({
     required String email,

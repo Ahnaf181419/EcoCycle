@@ -8,13 +8,31 @@ class AdminRepository {
   AdminRepository({SupabaseClient? client})
       : _client = client ?? SupabaseConstants.client;
 
-  /// Streams the most recent users for the admin dashboard.
-  ///
-  /// Supabase realtime streams don't support server-side pagination offset,
-  /// so the [limit] caps what's watched live. For deeper pages use
-  /// [getUsersPage] which reads via a one-shot query and does not leak a
-  /// realtime channel.
+  Future<void> _verifyAdminRole() async {
+    final user = _client.auth.currentUser;
+    if (user == null) {
+      throw Exception('Unauthorized: User not authenticated');
+    }
+
+    final response = await _client
+        .from(SupabaseTables.profiles)
+        .select('role')
+        .eq('uid', user.id)
+        .maybeSingle();
+
+    if (response?['role'] != 'admin') {
+      throw Exception('Unauthorized: Admin access required');
+    }
+  }
+
+  /// Returns all users. Should ONLY be called after verifying user is admin.
+  /// The calling provider (allUsersProvider) handles the admin check.
   Stream<List<UserProfile>> getAllUsers({int limit = 50}) {
+    final user = _client.auth.currentUser;
+    if (user == null) {
+      return Stream.error(StateError('Unauthorized: User not authenticated'));
+    }
+
     return _client
         .from(SupabaseTables.profiles)
         .stream(primaryKey: ['uid'])
@@ -25,12 +43,11 @@ class AdminRepository {
         );
   }
 
-  /// One-shot paginated read. Safe to call from non-autoDispose scopes
-  /// because it does not open a realtime subscription.
   Future<List<UserProfile>> getUsersPage({
     int offset = 0,
     int limit = 20,
   }) async {
+    await _verifyAdminRole();
     final rows = await _client
         .from(SupabaseTables.profiles)
         .select()
@@ -40,16 +57,19 @@ class AdminRepository {
   }
 
   Future<int> getTotalUsers() async {
+    await _verifyAdminRole();
     final response = await _client.rpc('count_users').select();
     return response.first['count'] as int? ?? 0;
   }
 
   Future<int> getTotalSubmissions() async {
+    await _verifyAdminRole();
     final response = await _client.rpc('count_submissions').select();
     return response.first['count'] as int? ?? 0;
   }
 
   Future<int> getPendingDisputesCount() async {
+    await _verifyAdminRole();
     final response = await _client.rpc('count_pending_disputes').select();
     return response.first['count'] as int? ?? 0;
   }

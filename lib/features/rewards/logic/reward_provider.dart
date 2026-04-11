@@ -37,7 +37,8 @@ final rewardBalanceProvider = Provider<RewardBalance?>((ref) {
   return RewardBalance(
     totalEarned: earnedValue,
     totalRedeemed: redeemedValue,
-    available: (earnedValue - redeemedValue).clamp(0, earnedValue),
+    available:
+        earnedValue - redeemedValue < 0 ? 0 : earnedValue - redeemedValue,
   );
 });
 
@@ -107,15 +108,15 @@ class RedeemNotifier extends StateNotifier<RedeemState> {
         _userId = userId,
         super(const RedeemState());
 
-  Future<bool> redeemPoints(int points) async {
+  Future<({bool success, String? error})> redeemPoints(int points) async {
     if (_userId == null) {
       state = state.copyWith(
         isRedeeming: false,
         error: 'You must be signed in to redeem points.',
       );
-      return false;
+      return (success: false, error: 'You must be signed in to redeem points.');
     }
-    if (points <= 0) return false;
+    if (points <= 0) return (success: false, error: 'Invalid points amount');
 
     state = state.copyWith(
       isRedeeming: true,
@@ -130,18 +131,19 @@ class RedeemNotifier extends StateNotifier<RedeemState> {
         points: points,
         idempotencyKey: idempotencyKey,
       );
-      if (!mounted) return true;
+      if (!mounted) return (success: true, error: null);
 
       state = state.copyWith(
         isRedeeming: false,
         redeemedPoints: points,
         newBalance: result['availableBalance'] as int?,
       );
-      return true;
+      return (success: true, error: null);
     } catch (e) {
-      if (!mounted) return false;
-      state = state.copyWith(isRedeeming: false, error: e.toString());
-      return false;
+      if (!mounted) return (success: false, error: e.toString());
+      final errorMsg = e.toString();
+      state = state.copyWith(isRedeeming: false, error: errorMsg);
+      return (success: false, error: errorMsg);
     }
   }
 

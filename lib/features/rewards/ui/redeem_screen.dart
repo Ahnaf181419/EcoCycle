@@ -385,11 +385,11 @@ class _RedeemScreenState extends ConsumerState<RedeemScreen> {
       return;
     }
 
-    final ok = await ref.read(redeemProvider.notifier).redeemPoints(amount);
+    final result = await ref.read(redeemProvider.notifier).redeemPoints(amount);
     if (!mounted) return;
 
-    if (!ok) {
-      final err = ref.read(redeemProvider).error ?? 'Redeem failed';
+    if (!result.success) {
+      final err = result.error ?? 'Redeem failed';
       messenger.showSnackBar(
         SnackBar(
           content: Text(err),

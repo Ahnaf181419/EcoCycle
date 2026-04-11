@@ -17,7 +17,7 @@ final isFollowingProvider = StreamProvider.autoDispose.family<bool, String>((
 });
 
 final followingIdsProvider = StreamProvider.autoDispose<List<String>>((ref) {
-  ref.watch(authProvider);
+  ref.watch(authProvider.select((s) => s.user?.uid));
   final repo = ref.watch(followRepositoryProvider);
   return repo.getFollowingIds();
 });

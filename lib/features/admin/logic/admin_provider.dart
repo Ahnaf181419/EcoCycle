@@ -14,7 +14,9 @@ final adminRepositoryProvider = Provider<AdminRepository>((ref) {
 /// closes as soon as the admin dashboard leaves the navigation stack.
 /// Non-admin callers get a stream error instead of silently relying on RLS.
 final allUsersProvider = StreamProvider.autoDispose<List<UserProfile>>((ref) {
-  final role = UserRole.fromString(ref.watch(authProvider).user?.role);
+  final role = UserRole.fromString(
+    ref.watch(authProvider.select((s) => s.user?.role)),
+  );
   if (!role.isAdmin) {
     return Stream.error(StateError('Not authorized'));
   }
