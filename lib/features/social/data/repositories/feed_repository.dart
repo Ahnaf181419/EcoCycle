@@ -33,20 +33,31 @@ class FeedRepository {
               .order('created_at', ascending: false)
               .limit(limit);
 
-          final items = <FeedItem>[];
-          for (final row in submissionsSnapshot) {
-            final submission = Submission.fromJson(row);
-            final userResponse = await _client
-                .from(SupabaseTables.profiles)
-                .select()
-                .eq('uid', submission.userId)
-                .maybeSingle();
+          final submissions = submissionsSnapshot
+              .map((row) => Submission.fromJson(row))
+              .toList();
 
-            if (userResponse != null) {
-              final user = UserProfile.fromJson(userResponse);
-              if (!user.isPrivate) {
-                items.add(FeedItem(submission: submission, user: user));
-              }
+          final userIds = submissions
+              .map((s) => s.userId)
+              .toSet()
+              .toList();
+
+          final usersSnapshot = await _client
+              .from(SupabaseTables.profiles)
+              .select()
+              .inFilter('uid', userIds);
+
+          final userMap = <String, UserProfile>{};
+          for (final row in usersSnapshot) {
+            final user = UserProfile.fromJson(row);
+            userMap[user.uid] = user;
+          }
+
+          final items = <FeedItem>[];
+          for (final submission in submissions) {
+            final user = userMap[submission.userId];
+            if (user != null && !user.isPrivate) {
+              items.add(FeedItem(submission: submission, user: user));
             }
           }
           return items;
@@ -78,20 +89,33 @@ class FeedRepository {
         .order('created_at', ascending: false)
         .range(offset, offset + limit - 1);
 
-    final items = <FeedItem>[];
-    for (final row in snapshot) {
-      final submission = Submission.fromJson(row);
-      final userResponse = await _client
-          .from(SupabaseTables.profiles)
-          .select()
-          .eq('uid', submission.userId)
-          .maybeSingle();
+    final submissions = snapshot
+        .map((row) => Submission.fromJson(row))
+        .toList();
 
-      if (userResponse != null) {
-        final user = UserProfile.fromJson(userResponse);
-        if (!user.isPrivate) {
-          items.add(FeedItem(submission: submission, user: user));
-        }
+    final userIds = submissions
+        .map((s) => s.userId)
+        .toSet()
+        .toList();
+
+    if (userIds.isEmpty) return [];
+
+    final usersSnapshot = await _client
+        .from(SupabaseTables.profiles)
+        .select()
+        .inFilter('uid', userIds);
+
+    final userMap = <String, UserProfile>{};
+    for (final row in usersSnapshot) {
+      final user = UserProfile.fromJson(row);
+      userMap[user.uid] = user;
+    }
+
+    final items = <FeedItem>[];
+    for (final submission in submissions) {
+      final user = userMap[submission.userId];
+      if (user != null && !user.isPrivate) {
+        items.add(FeedItem(submission: submission, user: user));
       }
     }
     return items;

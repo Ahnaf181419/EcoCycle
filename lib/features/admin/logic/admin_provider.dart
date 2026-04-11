@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../data/repositories/admin_repository.dart';
 import '../../classification/data/services/supabase_function_service.dart';
+import '../../classification/logic/classification_provider.dart';
 import '../../social/data/models/user_profile_model.dart';
 
 final adminRepositoryProvider = Provider<AdminRepository>((ref) {
@@ -34,10 +35,10 @@ final recentAuditLogProvider = StreamProvider<List<AuditLogEntry>>((ref) {
 
 final roleUpdateProvider =
     StateNotifierProvider<RoleUpdateNotifier, RoleUpdateState>((ref) {
-      return RoleUpdateNotifier(
-        supabaseFunctionService: SupabaseFunctionService(),
-      );
-    });
+  return RoleUpdateNotifier(
+    supabaseFunctionService: ref.watch(supabaseFunctionServiceProvider),
+  );
+});
 
 class RoleUpdateState {
   final bool isLoading;
@@ -63,8 +64,8 @@ class RoleUpdateNotifier extends StateNotifier<RoleUpdateState> {
   final SupabaseFunctionService _supabaseFunctionService;
 
   RoleUpdateNotifier({required SupabaseFunctionService supabaseFunctionService})
-    : _supabaseFunctionService = supabaseFunctionService,
-      super(const RoleUpdateState());
+      : _supabaseFunctionService = supabaseFunctionService,
+        super(const RoleUpdateState());
 
   Future<bool> updateRole(String targetUserId, String newRole) async {
     state = state.copyWith(isLoading: true, error: null, success: false);

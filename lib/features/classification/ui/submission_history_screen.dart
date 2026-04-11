@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hugeicons/hugeicons.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import '../data/models/submission_model.dart';
 import '../logic/classification_provider.dart';
 import '../../../../core/theme/app_colors.dart';
@@ -158,10 +159,13 @@ class _SubmissionCard extends StatelessWidget {
           color: AppColors.surfaceVariant,
           borderRadius: BorderRadius.circular(12),
         ),
-        child: Image.network(
-          submission.imageUrl,
+        child: CachedNetworkImage(
+          imageUrl: submission.imageUrl,
           fit: BoxFit.cover,
-          errorBuilder: (_, __, ___) => const Center(
+          placeholder: (_, __) => const Center(
+            child: CircularProgressIndicator(strokeWidth: 2),
+          ),
+          errorWidget: (_, __, ___) => const Center(
             child: Icon(
               Icons.broken_image,
               color: AppColors.textTertiary,

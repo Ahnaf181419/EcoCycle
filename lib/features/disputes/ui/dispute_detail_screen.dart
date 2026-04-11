@@ -10,6 +10,7 @@ import '../../../shared/widgets/category_badge.dart';
 import '../../../shared/widgets/confidence_bar.dart';
 import '../../../shared/widgets/loading_overlay.dart';
 import '../../../shared/widgets/error_view.dart';
+import '../data/models/dispute_model.dart';
 
 class DisputeDetailScreen extends ConsumerStatefulWidget {
   final String disputeId;
@@ -78,6 +79,16 @@ class _DisputeDetailScreenState extends ConsumerState<DisputeDetailScreen> {
   }
 
   void _handleResolve() {
+    if (_selectedResolution == 'OVERRIDE' && _selectedCategory == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please select a category for override'),
+          backgroundColor: AppColors.error,
+        ),
+      );
+      return;
+    }
+
     String? category;
     if (_selectedResolution == 'OVERRIDE') {
       category = _selectedCategory;
@@ -117,7 +128,7 @@ class _DisputeDetailScreenState extends ConsumerState<DisputeDetailScreen> {
 }
 
 class _PendingView extends StatelessWidget {
-  final dynamic dispute;
+  final Dispute dispute;
   final TextEditingController noteController;
   final String? selectedCategory;
   final String selectedResolution;
@@ -412,7 +423,7 @@ class _ResolutionOption extends StatelessWidget {
 }
 
 class _ResolvedView extends StatelessWidget {
-  final dynamic dispute;
+  final Dispute dispute;
 
   const _ResolvedView({required this.dispute});
 

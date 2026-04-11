@@ -48,7 +48,7 @@ extension StringExtensions on String {
   }
 
   bool get isValidEmail {
-    final regex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
+    final regex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,}$');
     return regex.hasMatch(this);
   }
 

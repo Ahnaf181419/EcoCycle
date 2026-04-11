@@ -16,10 +16,10 @@ class RewardRepository {
         .from(SupabaseTables.rewards)
         .stream(primaryKey: ['id'])
         .eq('user_id', uid)
-        .order('created_at')
+        .order('created_at', ascending: false)
         .limit(limit)
         .map(
-          (rows) => rows.reversed.map((row) => Reward.fromJson(row)).toList(),
+          (rows) => rows.map((row) => Reward.fromJson(row)).toList(),
         );
   }
 

@@ -28,11 +28,12 @@ final _rootNavigatorKey = GlobalKey<NavigatorState>();
 final routerProvider = Provider<GoRouter>((ref) {
   final authState = ref.watch(authProvider);
 
-  return GoRouter(
+  final router = GoRouter(
     navigatorKey: _rootNavigatorKey,
     initialLocation: RouteConstants.splash,
     redirect: (context, state) {
       final isPublicRoute = [
+        RouteConstants.splash,
         RouteConstants.login,
         RouteConstants.register,
       ].contains(state.matchedLocation);
@@ -84,7 +85,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       ),
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) {
-          final authState = ref.read(authProvider);
+          final authState = ref.watch(authProvider);
           return AppShell(
             navigationShell: navigationShell,
             userRole: authState.user?.role ?? 'citizen',
@@ -205,4 +206,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       ),
     ],
   );
+
+  ref.onDispose(router.dispose);
+  return router;
 });

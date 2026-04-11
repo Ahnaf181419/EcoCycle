@@ -8,6 +8,7 @@ import '../../auth/logic/auth_provider.dart';
 import '../../classification/logic/classification_provider.dart';
 import '../../classification/data/models/submission_model.dart';
 import '../../rewards/logic/reward_provider.dart';
+import '../data/models/user_profile_model.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_typography.dart';
@@ -198,7 +199,7 @@ class OwnProfileScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildQuickStats(BuildContext context, user, RewardBalance? balance) {
+  Widget _buildQuickStats(BuildContext context, UserProfile? user, RewardBalance? balance) {
     final accuracy = user?.accuracyRate ?? 0.0;
 
     return Padding(

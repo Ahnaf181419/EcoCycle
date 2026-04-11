@@ -8,9 +8,9 @@ class StorageService {
   final SupabaseClient _client;
 
   StorageService({SupabaseClient? client})
-    : _client = client ?? SupabaseConstants.client;
+      : _client = client ?? SupabaseConstants.client;
 
-  Future<String> uploadImage({
+  Future<({String imageUrl, String storagePath})> uploadImage({
     required String userId,
     required String filePath,
     required String fileName,
@@ -18,9 +18,7 @@ class StorageService {
     final storagePath = ImageUtils.generateStoragePath(userId, fileName);
     final compressedBytes = await _compressImageFile(filePath);
 
-    await _client.storage
-        .from(SupabaseStorage.submissionsBucket)
-        .uploadBinary(
+    await _client.storage.from(SupabaseStorage.submissionsBucket).uploadBinary(
           storagePath,
           Uint8List.fromList(compressedBytes),
           fileOptions: const FileOptions(
@@ -29,11 +27,11 @@ class StorageService {
           ),
         );
 
-    final downloadUrl = _client.storage
+    final imageUrl = _client.storage
         .from(SupabaseStorage.submissionsBucket)
         .getPublicUrl(storagePath);
 
-    return downloadUrl;
+    return (imageUrl: imageUrl, storagePath: storagePath);
   }
 
   Future<String> uploadImageBytes({
@@ -43,9 +41,7 @@ class StorageService {
   }) async {
     final storagePath = ImageUtils.generateStoragePath(userId, fileName);
 
-    await _client.storage
-        .from(SupabaseStorage.submissionsBucket)
-        .uploadBinary(
+    await _client.storage.from(SupabaseStorage.submissionsBucket).uploadBinary(
           storagePath,
           Uint8List.fromList(bytes),
           fileOptions: const FileOptions(
@@ -68,6 +64,6 @@ class StorageService {
   Future<List<int>> _compressImageFile(String filePath) async {
     final file = File(filePath);
     final bytes = await file.readAsBytes();
-    return ImageUtils.compressForUpload(bytes);
+    return await ImageUtils.compressForUploadAsync(bytes);
   }
 }

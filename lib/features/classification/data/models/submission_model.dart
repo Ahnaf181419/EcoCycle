@@ -29,7 +29,7 @@ class Submission with _$Submission {
   const factory Submission({
     required String id,
     @JsonKey(name: 'user_id') required String userId,
-    required String username,
+    @Default('') String username,
     @JsonKey(name: 'image_url') required String imageUrl,
     @JsonKey(name: 'storage_path') required String storagePath,
     @JsonKey(name: 'image_hash') String? imageHash,

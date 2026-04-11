@@ -21,6 +21,7 @@ final authProvider = StateNotifierProvider<AuthNotifier, AuthState>((ref) {
 class AuthNotifier extends StateNotifier<AuthState> {
   final AuthRepository _repository;
   StreamSubscription<dynamic>? _authSubscription;
+  bool _handlingExplicitAuth = false;
 
   AuthNotifier(this._repository) : super(const AuthState()) {
     _init();
@@ -31,11 +32,15 @@ class AuthNotifier extends StateNotifier<AuthState> {
       debugPrint('[Auth] onAuthStateChange event: ${event.event}');
       final session = event.session;
       if (session != null) {
-        debugPrint('[Auth] Session found for user: ${session.user.id}');
+        debugPrint('[Auth] Session found');
+        if (_handlingExplicitAuth) {
+          _handlingExplicitAuth = false;
+          return;
+        }
         UserProfile? profile;
         try {
           profile = await _repository.getCurrentUserProfile();
-          debugPrint('[Auth] Profile fetched: ${profile?.username ?? "null"}');
+          debugPrint('[Auth] Profile fetched successfully');
         } catch (e) {
           debugPrint('[Auth] Profile fetch error: $e');
         }
@@ -49,6 +54,9 @@ class AuthNotifier extends StateNotifier<AuthState> {
         }
       } else {
         debugPrint('[Auth] No session — unauthenticated');
+        if (_handlingExplicitAuth) {
+          _handlingExplicitAuth = false;
+        }
         if (mounted) {
           state = state.copyWith(
             isAuthenticated: false,
@@ -69,12 +77,14 @@ class AuthNotifier extends StateNotifier<AuthState> {
 
   Future<void> signIn({required String email, required String password}) async {
     state = state.copyWith(isLoading: true, error: null);
+    _handlingExplicitAuth = true;
     try {
       await _repository.signIn(email: email, password: password);
       debugPrint('[Auth] signIn completed — fetching profile directly');
       await _fetchProfileAndSetAuthenticated();
     } catch (e) {
       debugPrint('[Auth] signIn error: $e');
+      _handlingExplicitAuth = false;
       if (mounted) {
         state = state.copyWith(isLoading: false, error: e.toString());
       }
@@ -89,6 +99,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
     required String displayName,
   }) async {
     state = state.copyWith(isLoading: true, error: null);
+    _handlingExplicitAuth = true;
     try {
       await _repository.register(
         email: email,
@@ -100,6 +111,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
       await _fetchProfileAndSetAuthenticated();
     } catch (e) {
       debugPrint('[Auth] register error: $e');
+      _handlingExplicitAuth = false;
       if (mounted) {
         state = state.copyWith(isLoading: false, error: e.toString());
       }
@@ -111,9 +123,9 @@ class AuthNotifier extends StateNotifier<AuthState> {
     UserProfile? profile;
     try {
       profile = await _repository.getCurrentUserProfile();
-      debugPrint('[Auth] Direct profile fetch: ${profile?.username ?? "null"}');
+      debugPrint('[Auth] Profile fetched successfully');
     } catch (e) {
-      debugPrint('[Auth] Direct profile fetch error: $e');
+      debugPrint('[Auth] Profile fetch error: $e');
     }
     if (mounted) {
       state = state.copyWith(
@@ -127,7 +139,22 @@ class AuthNotifier extends StateNotifier<AuthState> {
 
   Future<void> signOut() async {
     state = state.copyWith(isLoading: true);
-    await _repository.signOut();
+    try {
+      await _repository.signOut();
+      if (mounted) {
+        state = state.copyWith(
+          isLoading: false,
+          isAuthenticated: false,
+          user: null,
+          error: null,
+        );
+      }
+    } catch (e) {
+      debugPrint('[Auth] signOut error: $e');
+      if (mounted) {
+        state = state.copyWith(isLoading: false, error: e.toString());
+      }
+    }
   }
 
   void updateUserProfile(UserProfile profile) {

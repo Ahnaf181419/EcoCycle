@@ -24,6 +24,7 @@ class ErrorHandler {
   }
 
   static void showSnackBar(BuildContext context, dynamic error) {
+    if (!context.mounted) return;
     final message = getUserMessage(error);
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(

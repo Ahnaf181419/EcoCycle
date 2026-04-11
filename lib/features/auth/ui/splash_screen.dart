@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../logic/auth_provider.dart';
+import '../logic/auth_state.dart';
 import '../../../../core/constants/route_constants.dart';
 import '../../../../core/theme/app_colors.dart';
 
@@ -15,17 +16,8 @@ class SplashScreen extends ConsumerStatefulWidget {
 class _SplashScreenState extends ConsumerState<SplashScreen> {
   bool _redirected = false;
 
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _tryRedirect();
-    });
-  }
-
-  void _tryRedirect() {
+  void _redirect(AuthState authState) {
     if (_redirected || !mounted) return;
-    final authState = ref.read(authProvider);
     if (authState.isLoading) return;
     _redirected = true;
     if (authState.isAuthenticated) {
@@ -38,15 +30,16 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     ref.listen(authProvider, (prev, next) {
-      if (!next.isLoading && !_redirected && mounted) {
-        _redirected = true;
-        if (next.isAuthenticated) {
-          context.go(RouteConstants.home);
-        } else {
-          context.go(RouteConstants.login);
-        }
-      }
+      _redirect(next);
     });
+
+    // Handle the "already loaded" case on first build.
+    final currentAuth = ref.read(authProvider);
+    if (!currentAuth.isLoading && !_redirected) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _redirect(currentAuth);
+      });
+    }
 
     return const Scaffold(
       backgroundColor: AppColors.primary,

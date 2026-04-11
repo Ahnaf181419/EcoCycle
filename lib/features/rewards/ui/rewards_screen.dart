@@ -220,7 +220,7 @@ class _RewardTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isRedemption = reward.type == 'redemption';
-    final displayPoints = isRedemption ? reward.points : reward.points;
+    final displayPoints = reward.points;
 
     return Card(
       elevation: 0,
@@ -273,7 +273,7 @@ class _RewardTile extends StatelessWidget {
               ),
             ),
             Text(
-              '${isRedemption ? "" : "+"}$displayPoints',
+              '${isRedemption ? "-" : "+"}$displayPoints',
               style: AppTypography.statMedium.copyWith(
                 color: isRedemption ? AppColors.error : AppColors.success,
                 fontSize: 18,

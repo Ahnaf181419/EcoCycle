@@ -7,6 +7,8 @@ class FollowRepository {
   FollowRepository({SupabaseClient? client})
     : _client = client ?? SupabaseConstants.client;
 
+  // Performance concern: This streams the entire follow list just to check
+  // one boolean. Consider using checkFollowStatus() for one-shot checks.
   Stream<bool> isFollowing(String targetUid) {
     final uid = _client.auth.currentUser?.id;
     if (uid == null) return Stream.value(false);

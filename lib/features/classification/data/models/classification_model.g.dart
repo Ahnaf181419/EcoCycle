@@ -20,15 +20,15 @@ _$ClassificationImpl _$$ClassificationImplFromJson(Map<String, dynamic> json) =>
     );
 
 Map<String, dynamic> _$$ClassificationImplToJson(
-  _$ClassificationImpl instance,
-) => <String, dynamic>{
-  'id': instance.id,
-  'submission_id': instance.submissionId,
-  'approach': instance.approach,
-  'category': instance.category,
-  'subcategory': instance.subcategory,
-  'confidence': instance.confidence,
-  'model_version': instance.modelVersion,
-  'raw_response': instance.rawResponse,
-  'timestamp': instance.timestamp.toIso8601String(),
-};
+        _$ClassificationImpl instance) =>
+    <String, dynamic>{
+      'id': instance.id,
+      'submission_id': instance.submissionId,
+      'approach': instance.approach,
+      'category': instance.category,
+      'subcategory': instance.subcategory,
+      'confidence': instance.confidence,
+      'model_version': instance.modelVersion,
+      'raw_response': instance.rawResponse,
+      'timestamp': instance.timestamp.toIso8601String(),
+    };

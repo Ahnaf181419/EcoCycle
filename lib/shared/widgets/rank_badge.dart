@@ -27,17 +27,29 @@ class RankBadge extends StatelessWidget {
       textColor = AppColors.textSecondary;
     }
 
-    return Container(
-      width: 36,
-      height: 36,
-      decoration: BoxDecoration(
+    final BoxDecoration decoration;
+    if (rank <= 3) {
+      decoration = BoxDecoration(
         color: bgColor,
-        shape: rank <= 3 ? BoxShape.circle : BoxShape.rectangle,
-        borderRadius: rank > 3 ? BorderRadius.circular(8) : null,
+        shape: BoxShape.circle,
         border: isCurrentUser
             ? Border.all(color: AppColors.primary, width: 2)
             : null,
-      ),
+      );
+    } else {
+      decoration = BoxDecoration(
+        color: bgColor,
+        borderRadius: BorderRadius.circular(8),
+        border: isCurrentUser
+            ? Border.all(color: AppColors.primary, width: 2)
+            : null,
+      );
+    }
+
+    return Container(
+      width: 36,
+      height: 36,
+      decoration: decoration,
       child: Center(
         child: Text(
           '$rank',

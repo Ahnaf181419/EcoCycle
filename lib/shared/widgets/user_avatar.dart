@@ -16,6 +16,17 @@ class UserAvatar extends StatelessWidget {
     this.onTap,
   });
 
+  Widget _buildInitialLetter() {
+    return Text(
+      username.isNotEmpty ? username[0].toUpperCase() : '?',
+      style: TextStyle(
+        color: AppColors.primary,
+        fontSize: radius * 0.8,
+        fontWeight: FontWeight.w600,
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -23,19 +34,22 @@ class UserAvatar extends StatelessWidget {
       child: CircleAvatar(
         radius: radius,
         backgroundColor: AppColors.primaryLight.withValues(alpha: 0.2),
-        backgroundImage: photoUrl != null
-            ? CachedNetworkImageProvider(photoUrl!)
-            : null,
-        child: photoUrl == null
-            ? Text(
-                username.isNotEmpty ? username[0].toUpperCase() : '?',
-                style: TextStyle(
-                  color: AppColors.primary,
-                  fontSize: radius * 0.8,
-                  fontWeight: FontWeight.w600,
+        child: photoUrl != null
+            ? ClipOval(
+                child: CachedNetworkImage(
+                  imageUrl: photoUrl!,
+                  width: radius * 2,
+                  height: radius * 2,
+                  fit: BoxFit.cover,
+                  placeholder: (context, url) => SizedBox(
+                    width: radius,
+                    height: radius,
+                    child: const CircularProgressIndicator(strokeWidth: 2),
+                  ),
+                  errorWidget: (context, url, error) => _buildInitialLetter(),
                 ),
               )
-            : null,
+            : _buildInitialLetter(),
       ),
     );
   }

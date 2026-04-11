@@ -49,7 +49,7 @@ class _ConfidenceBarState extends State<ConfidenceBar>
     super.didUpdateWidget(oldWidget);
     if (oldWidget.confidence != widget.confidence) {
       _animation = Tween<double>(
-        begin: 0,
+        begin: _animation.value,
         end: widget.confidence,
       ).animate(CurvedAnimation(parent: _controller, curve: Curves.decelerate));
       _controller.forward(from: 0);

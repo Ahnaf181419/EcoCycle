@@ -8,18 +8,23 @@ class AdminRepository {
   AdminRepository({SupabaseClient? client})
     : _client = client ?? SupabaseConstants.client;
 
+  // TODO: Supabase stream does not support pagination offset. Consider a
+  // server-side paginated query for large user bases. The limit parameter caps
+  // the number of rows returned; callers should be aware of this ceiling.
   Stream<List<UserProfile>> getAllUsers({int limit = 100}) {
     return _client
         .from(SupabaseTables.profiles)
         .stream(primaryKey: ['uid'])
-        .order('created_at')
+        .order('created_at', ascending: false)
         .limit(limit)
         .map(
           (rows) =>
-              rows.reversed.map((row) => UserProfile.fromJson(row)).toList(),
+              rows.map((row) => UserProfile.fromJson(row)).toList(),
         );
   }
 
+  // TODO: Replace with a server-side function for true count query.
+  // Supabase stream doesn't support count; selecting only primary key to reduce data transfer.
   Stream<int> getTotalUsers() {
     return _client
         .from(SupabaseTables.profiles)
@@ -27,6 +32,8 @@ class AdminRepository {
         .map((rows) => rows.length);
   }
 
+  // TODO: Replace with a server-side function for true count query.
+  // Supabase stream doesn't support count; selecting only primary key to reduce data transfer.
   Stream<int> getTotalSubmissions() {
     return _client
         .from(SupabaseTables.submissions)
@@ -34,6 +41,7 @@ class AdminRepository {
         .map((rows) => rows.length);
   }
 
+  // TODO: Replace with a server-side function for true count query.
   Stream<int> getPendingDisputesCount() {
     return _client
         .from(SupabaseTables.disputes)
@@ -46,11 +54,11 @@ class AdminRepository {
     return _client
         .from(SupabaseTables.auditLog)
         .stream(primaryKey: ['id'])
-        .order('timestamp')
+        .order('timestamp', ascending: false)
         .limit(limit)
         .map(
           (rows) =>
-              rows.reversed.map((row) => AuditLogEntry.fromJson(row)).toList(),
+              rows.map((row) => AuditLogEntry.fromJson(row)).toList(),
         );
   }
 }

@@ -12,8 +12,7 @@ part of 'submission_model.dart';
 T _$identity<T>(T value) => value;
 
 final _privateConstructorUsedError = UnsupportedError(
-  'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models',
-);
+    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
 
 Submission _$SubmissionFromJson(Map<String, dynamic> json) {
   return _Submission.fromJson(json);
@@ -65,30 +64,28 @@ mixin _$Submission {
 /// @nodoc
 abstract class $SubmissionCopyWith<$Res> {
   factory $SubmissionCopyWith(
-    Submission value,
-    $Res Function(Submission) then,
-  ) = _$SubmissionCopyWithImpl<$Res, Submission>;
+          Submission value, $Res Function(Submission) then) =
+      _$SubmissionCopyWithImpl<$Res, Submission>;
   @useResult
-  $Res call({
-    String id,
-    @JsonKey(name: 'user_id') String userId,
-    String username,
-    @JsonKey(name: 'image_url') String imageUrl,
-    @JsonKey(name: 'storage_path') String storagePath,
-    @JsonKey(name: 'image_hash') String? imageHash,
-    String? category,
-    String? subcategory,
-    double? confidence,
-    @JsonKey(name: 'primary_approach') String primaryApproach,
-    SubmissionState state,
-    @JsonKey(name: 'points_awarded') int pointsAwarded,
-    @JsonKey(name: 'idempotency_key') String idempotencyKey,
-    @JsonKey(name: 'flagged_reason') String? flaggedReason,
-    @JsonKey(name: 'duplicate_of') String? duplicateOf,
-    @JsonKey(name: 'classified_at') DateTime? classifiedAt,
-    @JsonKey(name: 'created_at') DateTime createdAt,
-    @JsonKey(name: 'updated_at') DateTime updatedAt,
-  });
+  $Res call(
+      {String id,
+      @JsonKey(name: 'user_id') String userId,
+      String username,
+      @JsonKey(name: 'image_url') String imageUrl,
+      @JsonKey(name: 'storage_path') String storagePath,
+      @JsonKey(name: 'image_hash') String? imageHash,
+      String? category,
+      String? subcategory,
+      double? confidence,
+      @JsonKey(name: 'primary_approach') String primaryApproach,
+      SubmissionState state,
+      @JsonKey(name: 'points_awarded') int pointsAwarded,
+      @JsonKey(name: 'idempotency_key') String idempotencyKey,
+      @JsonKey(name: 'flagged_reason') String? flaggedReason,
+      @JsonKey(name: 'duplicate_of') String? duplicateOf,
+      @JsonKey(name: 'classified_at') DateTime? classifiedAt,
+      @JsonKey(name: 'created_at') DateTime createdAt,
+      @JsonKey(name: 'updated_at') DateTime updatedAt});
 }
 
 /// @nodoc
@@ -125,83 +122,80 @@ class _$SubmissionCopyWithImpl<$Res, $Val extends Submission>
     Object? createdAt = null,
     Object? updatedAt = null,
   }) {
-    return _then(
-      _value.copyWith(
-            id: null == id
-                ? _value.id
-                : id // ignore: cast_nullable_to_non_nullable
-                      as String,
-            userId: null == userId
-                ? _value.userId
-                : userId // ignore: cast_nullable_to_non_nullable
-                      as String,
-            username: null == username
-                ? _value.username
-                : username // ignore: cast_nullable_to_non_nullable
-                      as String,
-            imageUrl: null == imageUrl
-                ? _value.imageUrl
-                : imageUrl // ignore: cast_nullable_to_non_nullable
-                      as String,
-            storagePath: null == storagePath
-                ? _value.storagePath
-                : storagePath // ignore: cast_nullable_to_non_nullable
-                      as String,
-            imageHash: freezed == imageHash
-                ? _value.imageHash
-                : imageHash // ignore: cast_nullable_to_non_nullable
-                      as String?,
-            category: freezed == category
-                ? _value.category
-                : category // ignore: cast_nullable_to_non_nullable
-                      as String?,
-            subcategory: freezed == subcategory
-                ? _value.subcategory
-                : subcategory // ignore: cast_nullable_to_non_nullable
-                      as String?,
-            confidence: freezed == confidence
-                ? _value.confidence
-                : confidence // ignore: cast_nullable_to_non_nullable
-                      as double?,
-            primaryApproach: null == primaryApproach
-                ? _value.primaryApproach
-                : primaryApproach // ignore: cast_nullable_to_non_nullable
-                      as String,
-            state: null == state
-                ? _value.state
-                : state // ignore: cast_nullable_to_non_nullable
-                      as SubmissionState,
-            pointsAwarded: null == pointsAwarded
-                ? _value.pointsAwarded
-                : pointsAwarded // ignore: cast_nullable_to_non_nullable
-                      as int,
-            idempotencyKey: null == idempotencyKey
-                ? _value.idempotencyKey
-                : idempotencyKey // ignore: cast_nullable_to_non_nullable
-                      as String,
-            flaggedReason: freezed == flaggedReason
-                ? _value.flaggedReason
-                : flaggedReason // ignore: cast_nullable_to_non_nullable
-                      as String?,
-            duplicateOf: freezed == duplicateOf
-                ? _value.duplicateOf
-                : duplicateOf // ignore: cast_nullable_to_non_nullable
-                      as String?,
-            classifiedAt: freezed == classifiedAt
-                ? _value.classifiedAt
-                : classifiedAt // ignore: cast_nullable_to_non_nullable
-                      as DateTime?,
-            createdAt: null == createdAt
-                ? _value.createdAt
-                : createdAt // ignore: cast_nullable_to_non_nullable
-                      as DateTime,
-            updatedAt: null == updatedAt
-                ? _value.updatedAt
-                : updatedAt // ignore: cast_nullable_to_non_nullable
-                      as DateTime,
-          )
-          as $Val,
-    );
+    return _then(_value.copyWith(
+      id: null == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as String,
+      userId: null == userId
+          ? _value.userId
+          : userId // ignore: cast_nullable_to_non_nullable
+              as String,
+      username: null == username
+          ? _value.username
+          : username // ignore: cast_nullable_to_non_nullable
+              as String,
+      imageUrl: null == imageUrl
+          ? _value.imageUrl
+          : imageUrl // ignore: cast_nullable_to_non_nullable
+              as String,
+      storagePath: null == storagePath
+          ? _value.storagePath
+          : storagePath // ignore: cast_nullable_to_non_nullable
+              as String,
+      imageHash: freezed == imageHash
+          ? _value.imageHash
+          : imageHash // ignore: cast_nullable_to_non_nullable
+              as String?,
+      category: freezed == category
+          ? _value.category
+          : category // ignore: cast_nullable_to_non_nullable
+              as String?,
+      subcategory: freezed == subcategory
+          ? _value.subcategory
+          : subcategory // ignore: cast_nullable_to_non_nullable
+              as String?,
+      confidence: freezed == confidence
+          ? _value.confidence
+          : confidence // ignore: cast_nullable_to_non_nullable
+              as double?,
+      primaryApproach: null == primaryApproach
+          ? _value.primaryApproach
+          : primaryApproach // ignore: cast_nullable_to_non_nullable
+              as String,
+      state: null == state
+          ? _value.state
+          : state // ignore: cast_nullable_to_non_nullable
+              as SubmissionState,
+      pointsAwarded: null == pointsAwarded
+          ? _value.pointsAwarded
+          : pointsAwarded // ignore: cast_nullable_to_non_nullable
+              as int,
+      idempotencyKey: null == idempotencyKey
+          ? _value.idempotencyKey
+          : idempotencyKey // ignore: cast_nullable_to_non_nullable
+              as String,
+      flaggedReason: freezed == flaggedReason
+          ? _value.flaggedReason
+          : flaggedReason // ignore: cast_nullable_to_non_nullable
+              as String?,
+      duplicateOf: freezed == duplicateOf
+          ? _value.duplicateOf
+          : duplicateOf // ignore: cast_nullable_to_non_nullable
+              as String?,
+      classifiedAt: freezed == classifiedAt
+          ? _value.classifiedAt
+          : classifiedAt // ignore: cast_nullable_to_non_nullable
+              as DateTime?,
+      createdAt: null == createdAt
+          ? _value.createdAt
+          : createdAt // ignore: cast_nullable_to_non_nullable
+              as DateTime,
+      updatedAt: null == updatedAt
+          ? _value.updatedAt
+          : updatedAt // ignore: cast_nullable_to_non_nullable
+              as DateTime,
+    ) as $Val);
   }
 }
 
@@ -209,31 +203,29 @@ class _$SubmissionCopyWithImpl<$Res, $Val extends Submission>
 abstract class _$$SubmissionImplCopyWith<$Res>
     implements $SubmissionCopyWith<$Res> {
   factory _$$SubmissionImplCopyWith(
-    _$SubmissionImpl value,
-    $Res Function(_$SubmissionImpl) then,
-  ) = __$$SubmissionImplCopyWithImpl<$Res>;
+          _$SubmissionImpl value, $Res Function(_$SubmissionImpl) then) =
+      __$$SubmissionImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({
-    String id,
-    @JsonKey(name: 'user_id') String userId,
-    String username,
-    @JsonKey(name: 'image_url') String imageUrl,
-    @JsonKey(name: 'storage_path') String storagePath,
-    @JsonKey(name: 'image_hash') String? imageHash,
-    String? category,
-    String? subcategory,
-    double? confidence,
-    @JsonKey(name: 'primary_approach') String primaryApproach,
-    SubmissionState state,
-    @JsonKey(name: 'points_awarded') int pointsAwarded,
-    @JsonKey(name: 'idempotency_key') String idempotencyKey,
-    @JsonKey(name: 'flagged_reason') String? flaggedReason,
-    @JsonKey(name: 'duplicate_of') String? duplicateOf,
-    @JsonKey(name: 'classified_at') DateTime? classifiedAt,
-    @JsonKey(name: 'created_at') DateTime createdAt,
-    @JsonKey(name: 'updated_at') DateTime updatedAt,
-  });
+  $Res call(
+      {String id,
+      @JsonKey(name: 'user_id') String userId,
+      String username,
+      @JsonKey(name: 'image_url') String imageUrl,
+      @JsonKey(name: 'storage_path') String storagePath,
+      @JsonKey(name: 'image_hash') String? imageHash,
+      String? category,
+      String? subcategory,
+      double? confidence,
+      @JsonKey(name: 'primary_approach') String primaryApproach,
+      SubmissionState state,
+      @JsonKey(name: 'points_awarded') int pointsAwarded,
+      @JsonKey(name: 'idempotency_key') String idempotencyKey,
+      @JsonKey(name: 'flagged_reason') String? flaggedReason,
+      @JsonKey(name: 'duplicate_of') String? duplicateOf,
+      @JsonKey(name: 'classified_at') DateTime? classifiedAt,
+      @JsonKey(name: 'created_at') DateTime createdAt,
+      @JsonKey(name: 'updated_at') DateTime updatedAt});
 }
 
 /// @nodoc
@@ -241,9 +233,8 @@ class __$$SubmissionImplCopyWithImpl<$Res>
     extends _$SubmissionCopyWithImpl<$Res, _$SubmissionImpl>
     implements _$$SubmissionImplCopyWith<$Res> {
   __$$SubmissionImplCopyWithImpl(
-    _$SubmissionImpl _value,
-    $Res Function(_$SubmissionImpl) _then,
-  ) : super(_value, _then);
+      _$SubmissionImpl _value, $Res Function(_$SubmissionImpl) _then)
+      : super(_value, _then);
 
   /// Create a copy of Submission
   /// with the given fields replaced by the non-null parameter values.
@@ -269,108 +260,105 @@ class __$$SubmissionImplCopyWithImpl<$Res>
     Object? createdAt = null,
     Object? updatedAt = null,
   }) {
-    return _then(
-      _$SubmissionImpl(
-        id: null == id
-            ? _value.id
-            : id // ignore: cast_nullable_to_non_nullable
-                  as String,
-        userId: null == userId
-            ? _value.userId
-            : userId // ignore: cast_nullable_to_non_nullable
-                  as String,
-        username: null == username
-            ? _value.username
-            : username // ignore: cast_nullable_to_non_nullable
-                  as String,
-        imageUrl: null == imageUrl
-            ? _value.imageUrl
-            : imageUrl // ignore: cast_nullable_to_non_nullable
-                  as String,
-        storagePath: null == storagePath
-            ? _value.storagePath
-            : storagePath // ignore: cast_nullable_to_non_nullable
-                  as String,
-        imageHash: freezed == imageHash
-            ? _value.imageHash
-            : imageHash // ignore: cast_nullable_to_non_nullable
-                  as String?,
-        category: freezed == category
-            ? _value.category
-            : category // ignore: cast_nullable_to_non_nullable
-                  as String?,
-        subcategory: freezed == subcategory
-            ? _value.subcategory
-            : subcategory // ignore: cast_nullable_to_non_nullable
-                  as String?,
-        confidence: freezed == confidence
-            ? _value.confidence
-            : confidence // ignore: cast_nullable_to_non_nullable
-                  as double?,
-        primaryApproach: null == primaryApproach
-            ? _value.primaryApproach
-            : primaryApproach // ignore: cast_nullable_to_non_nullable
-                  as String,
-        state: null == state
-            ? _value.state
-            : state // ignore: cast_nullable_to_non_nullable
-                  as SubmissionState,
-        pointsAwarded: null == pointsAwarded
-            ? _value.pointsAwarded
-            : pointsAwarded // ignore: cast_nullable_to_non_nullable
-                  as int,
-        idempotencyKey: null == idempotencyKey
-            ? _value.idempotencyKey
-            : idempotencyKey // ignore: cast_nullable_to_non_nullable
-                  as String,
-        flaggedReason: freezed == flaggedReason
-            ? _value.flaggedReason
-            : flaggedReason // ignore: cast_nullable_to_non_nullable
-                  as String?,
-        duplicateOf: freezed == duplicateOf
-            ? _value.duplicateOf
-            : duplicateOf // ignore: cast_nullable_to_non_nullable
-                  as String?,
-        classifiedAt: freezed == classifiedAt
-            ? _value.classifiedAt
-            : classifiedAt // ignore: cast_nullable_to_non_nullable
-                  as DateTime?,
-        createdAt: null == createdAt
-            ? _value.createdAt
-            : createdAt // ignore: cast_nullable_to_non_nullable
-                  as DateTime,
-        updatedAt: null == updatedAt
-            ? _value.updatedAt
-            : updatedAt // ignore: cast_nullable_to_non_nullable
-                  as DateTime,
-      ),
-    );
+    return _then(_$SubmissionImpl(
+      id: null == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as String,
+      userId: null == userId
+          ? _value.userId
+          : userId // ignore: cast_nullable_to_non_nullable
+              as String,
+      username: null == username
+          ? _value.username
+          : username // ignore: cast_nullable_to_non_nullable
+              as String,
+      imageUrl: null == imageUrl
+          ? _value.imageUrl
+          : imageUrl // ignore: cast_nullable_to_non_nullable
+              as String,
+      storagePath: null == storagePath
+          ? _value.storagePath
+          : storagePath // ignore: cast_nullable_to_non_nullable
+              as String,
+      imageHash: freezed == imageHash
+          ? _value.imageHash
+          : imageHash // ignore: cast_nullable_to_non_nullable
+              as String?,
+      category: freezed == category
+          ? _value.category
+          : category // ignore: cast_nullable_to_non_nullable
+              as String?,
+      subcategory: freezed == subcategory
+          ? _value.subcategory
+          : subcategory // ignore: cast_nullable_to_non_nullable
+              as String?,
+      confidence: freezed == confidence
+          ? _value.confidence
+          : confidence // ignore: cast_nullable_to_non_nullable
+              as double?,
+      primaryApproach: null == primaryApproach
+          ? _value.primaryApproach
+          : primaryApproach // ignore: cast_nullable_to_non_nullable
+              as String,
+      state: null == state
+          ? _value.state
+          : state // ignore: cast_nullable_to_non_nullable
+              as SubmissionState,
+      pointsAwarded: null == pointsAwarded
+          ? _value.pointsAwarded
+          : pointsAwarded // ignore: cast_nullable_to_non_nullable
+              as int,
+      idempotencyKey: null == idempotencyKey
+          ? _value.idempotencyKey
+          : idempotencyKey // ignore: cast_nullable_to_non_nullable
+              as String,
+      flaggedReason: freezed == flaggedReason
+          ? _value.flaggedReason
+          : flaggedReason // ignore: cast_nullable_to_non_nullable
+              as String?,
+      duplicateOf: freezed == duplicateOf
+          ? _value.duplicateOf
+          : duplicateOf // ignore: cast_nullable_to_non_nullable
+              as String?,
+      classifiedAt: freezed == classifiedAt
+          ? _value.classifiedAt
+          : classifiedAt // ignore: cast_nullable_to_non_nullable
+              as DateTime?,
+      createdAt: null == createdAt
+          ? _value.createdAt
+          : createdAt // ignore: cast_nullable_to_non_nullable
+              as DateTime,
+      updatedAt: null == updatedAt
+          ? _value.updatedAt
+          : updatedAt // ignore: cast_nullable_to_non_nullable
+              as DateTime,
+    ));
   }
 }
 
 /// @nodoc
 @JsonSerializable()
 class _$SubmissionImpl implements _Submission {
-  const _$SubmissionImpl({
-    required this.id,
-    @JsonKey(name: 'user_id') required this.userId,
-    required this.username,
-    @JsonKey(name: 'image_url') required this.imageUrl,
-    @JsonKey(name: 'storage_path') required this.storagePath,
-    @JsonKey(name: 'image_hash') this.imageHash,
-    this.category,
-    this.subcategory,
-    this.confidence,
-    @JsonKey(name: 'primary_approach') this.primaryApproach = 'gemini',
-    required this.state,
-    @JsonKey(name: 'points_awarded') this.pointsAwarded = 0,
-    @JsonKey(name: 'idempotency_key') required this.idempotencyKey,
-    @JsonKey(name: 'flagged_reason') this.flaggedReason,
-    @JsonKey(name: 'duplicate_of') this.duplicateOf,
-    @JsonKey(name: 'classified_at') this.classifiedAt,
-    @JsonKey(name: 'created_at') required this.createdAt,
-    @JsonKey(name: 'updated_at') required this.updatedAt,
-  });
+  const _$SubmissionImpl(
+      {required this.id,
+      @JsonKey(name: 'user_id') required this.userId,
+      this.username = '',
+      @JsonKey(name: 'image_url') required this.imageUrl,
+      @JsonKey(name: 'storage_path') required this.storagePath,
+      @JsonKey(name: 'image_hash') this.imageHash,
+      this.category,
+      this.subcategory,
+      this.confidence,
+      @JsonKey(name: 'primary_approach') this.primaryApproach = 'gemini',
+      required this.state,
+      @JsonKey(name: 'points_awarded') this.pointsAwarded = 0,
+      @JsonKey(name: 'idempotency_key') required this.idempotencyKey,
+      @JsonKey(name: 'flagged_reason') this.flaggedReason,
+      @JsonKey(name: 'duplicate_of') this.duplicateOf,
+      @JsonKey(name: 'classified_at') this.classifiedAt,
+      @JsonKey(name: 'created_at') required this.createdAt,
+      @JsonKey(name: 'updated_at') required this.updatedAt});
 
   factory _$SubmissionImpl.fromJson(Map<String, dynamic> json) =>
       _$$SubmissionImplFromJson(json);
@@ -381,6 +369,7 @@ class _$SubmissionImpl implements _Submission {
   @JsonKey(name: 'user_id')
   final String userId;
   @override
+  @JsonKey()
   final String username;
   @override
   @JsonKey(name: 'image_url')
@@ -472,26 +461,25 @@ class _$SubmissionImpl implements _Submission {
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(
-    runtimeType,
-    id,
-    userId,
-    username,
-    imageUrl,
-    storagePath,
-    imageHash,
-    category,
-    subcategory,
-    confidence,
-    primaryApproach,
-    state,
-    pointsAwarded,
-    idempotencyKey,
-    flaggedReason,
-    duplicateOf,
-    classifiedAt,
-    createdAt,
-    updatedAt,
-  );
+      runtimeType,
+      id,
+      userId,
+      username,
+      imageUrl,
+      storagePath,
+      imageHash,
+      category,
+      subcategory,
+      confidence,
+      primaryApproach,
+      state,
+      pointsAwarded,
+      idempotencyKey,
+      flaggedReason,
+      duplicateOf,
+      classifiedAt,
+      createdAt,
+      updatedAt);
 
   /// Create a copy of Submission
   /// with the given fields replaced by the non-null parameter values.
@@ -503,31 +491,33 @@ class _$SubmissionImpl implements _Submission {
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$SubmissionImplToJson(this);
+    return _$$SubmissionImplToJson(
+      this,
+    );
   }
 }
 
 abstract class _Submission implements Submission {
-  const factory _Submission({
-    required final String id,
-    @JsonKey(name: 'user_id') required final String userId,
-    required final String username,
-    @JsonKey(name: 'image_url') required final String imageUrl,
-    @JsonKey(name: 'storage_path') required final String storagePath,
-    @JsonKey(name: 'image_hash') final String? imageHash,
-    final String? category,
-    final String? subcategory,
-    final double? confidence,
-    @JsonKey(name: 'primary_approach') final String primaryApproach,
-    required final SubmissionState state,
-    @JsonKey(name: 'points_awarded') final int pointsAwarded,
-    @JsonKey(name: 'idempotency_key') required final String idempotencyKey,
-    @JsonKey(name: 'flagged_reason') final String? flaggedReason,
-    @JsonKey(name: 'duplicate_of') final String? duplicateOf,
-    @JsonKey(name: 'classified_at') final DateTime? classifiedAt,
-    @JsonKey(name: 'created_at') required final DateTime createdAt,
-    @JsonKey(name: 'updated_at') required final DateTime updatedAt,
-  }) = _$SubmissionImpl;
+  const factory _Submission(
+      {required final String id,
+      @JsonKey(name: 'user_id') required final String userId,
+      final String username,
+      @JsonKey(name: 'image_url') required final String imageUrl,
+      @JsonKey(name: 'storage_path') required final String storagePath,
+      @JsonKey(name: 'image_hash') final String? imageHash,
+      final String? category,
+      final String? subcategory,
+      final double? confidence,
+      @JsonKey(name: 'primary_approach') final String primaryApproach,
+      required final SubmissionState state,
+      @JsonKey(name: 'points_awarded') final int pointsAwarded,
+      @JsonKey(name: 'idempotency_key') required final String idempotencyKey,
+      @JsonKey(name: 'flagged_reason') final String? flaggedReason,
+      @JsonKey(name: 'duplicate_of') final String? duplicateOf,
+      @JsonKey(name: 'classified_at') final DateTime? classifiedAt,
+      @JsonKey(name: 'created_at') required final DateTime createdAt,
+      @JsonKey(name: 'updated_at')
+      required final DateTime updatedAt}) = _$SubmissionImpl;
 
   factory _Submission.fromJson(Map<String, dynamic> json) =
       _$SubmissionImpl.fromJson;

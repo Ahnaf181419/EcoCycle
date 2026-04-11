@@ -54,7 +54,8 @@ class _PointsDisplayState extends State<PointsDisplay>
     if (widget.animate) {
       _controller.forward();
     } else {
-      _scaleAnimation = AlwaysStoppedAnimation(1.0);
+      _controller.value = 1.0;
+      _scaleAnimation = _controller.view;
     }
   }
 

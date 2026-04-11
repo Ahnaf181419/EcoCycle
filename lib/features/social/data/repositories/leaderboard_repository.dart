@@ -16,11 +16,11 @@ class LeaderboardRepository {
         .from(SupabaseTables.profiles)
         .stream(primaryKey: ['uid'])
         .eq('is_private', false)
-        .order('points')
+        .order('points', ascending: false)
         .limit(limit)
         .map(
           (rows) =>
-              rows.reversed.map((row) => UserProfile.fromJson(row)).toList(),
+              rows.map((row) => UserProfile.fromJson(row)).toList(),
         );
   }
 
@@ -39,7 +39,7 @@ class LeaderboardRepository {
 
           final countResponse = await _client
               .from(SupabaseTables.profiles)
-              .select()
+              .select('uid')
               .eq('is_private', false)
               .gt('points', userPoints);
 

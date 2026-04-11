@@ -54,12 +54,14 @@ class UserRepository {
     if (displayName != null) updates['display_name'] = displayName;
     if (photoUrl != null) updates['photo_url'] = photoUrl;
 
-    if (updates.isNotEmpty) {
-      await _client
-          .from(SupabaseTables.profiles)
-          .update(updates)
-          .eq('uid', uid);
+    if (updates.isEmpty) {
+      throw ArgumentError('At least one field must be provided for update');
     }
+
+    await _client
+        .from(SupabaseTables.profiles)
+        .update(updates)
+        .eq('uid', uid);
   }
 
   Future<void> updatePrivacy(bool isPrivate) async {
@@ -72,11 +74,24 @@ class UserRepository {
         .eq('uid', uid);
   }
 
+  // TODO: This should ideally be an atomic server-side operation to avoid
+  // inconsistent state if one step fails.
   Future<void> deleteAccount() async {
     final uid = _client.auth.currentUser?.id;
     if (uid == null) return;
 
-    await _client.from(SupabaseTables.profiles).delete().eq('uid', uid);
-    await _client.auth.signOut();
+    try {
+      await _client.auth.signOut();
+    } catch (e) {
+      // Re-throw since we can't safely proceed if sign-out fails
+      rethrow;
+    }
+
+    try {
+      await _client.from(SupabaseTables.profiles).delete().eq('uid', uid);
+    } catch (e) {
+      // Profile deletion failed after sign-out; state may be inconsistent
+      rethrow;
+    }
   }
 }

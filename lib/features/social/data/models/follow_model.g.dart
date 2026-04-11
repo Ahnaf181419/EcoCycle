@@ -7,10 +7,10 @@ part of 'follow_model.dart';
 // **************************************************************************
 
 _$FollowImpl _$$FollowImplFromJson(Map<String, dynamic> json) => _$FollowImpl(
-  followerId: json['follower_id'] as String,
-  followeeId: json['followee_id'] as String,
-  createdAt: DateTime.parse(json['created_at'] as String),
-);
+      followerId: json['follower_id'] as String,
+      followeeId: json['followee_id'] as String,
+      createdAt: DateTime.parse(json['created_at'] as String),
+    );
 
 Map<String, dynamic> _$$FollowImplToJson(_$FollowImpl instance) =>
     <String, dynamic>{

@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:uuid/uuid.dart';
 import 'package:image_picker/image_picker.dart';
@@ -7,16 +8,16 @@ import '../data/services/tflite_service.dart';
 import '../data/services/supabase_function_service.dart';
 import '../data/repositories/submission_repository.dart';
 import '../data/models/submission_model.dart';
-import '../../auth/logic/auth_state.dart';
 import '../../auth/logic/auth_provider.dart';
-import '../../../core/utils/image_utils.dart';
 
 final storageServiceProvider = Provider<StorageService>((ref) {
   return StorageService();
 });
 
 final tfLiteServiceProvider = Provider<TFLiteService>((ref) {
-  return TFLiteService();
+  final service = TFLiteService();
+  ref.onDispose(service.dispose);
+  return service;
 });
 
 final supabaseFunctionServiceProvider = Provider<SupabaseFunctionService>((
@@ -32,10 +33,10 @@ final submissionRepositoryProvider = Provider<SubmissionRepository>((ref) {
 final classificationProvider =
     StateNotifierProvider<ClassificationNotifier, ClassificationState>((ref) {
       return ClassificationNotifier(
+        ref: ref,
         storageService: ref.watch(storageServiceProvider),
         tfLiteService: ref.watch(tfLiteServiceProvider),
         supabaseFunctionService: ref.watch(supabaseFunctionServiceProvider),
-        authState: ref.watch(authProvider),
       );
     });
 
@@ -58,6 +59,8 @@ final recentSubmissionsProvider = StreamProvider<List<Submission>>((ref) {
 });
 
 class ClassificationState {
+  static const _sentinel = Object();
+
   final bool isCapturing;
   final bool isUploading;
   final bool isClassifying;
@@ -92,31 +95,41 @@ class ClassificationState {
     bool? isCapturing,
     bool? isUploading,
     bool? isClassifying,
-    String? imagePath,
-    String? imageUrl,
-    String? storagePath,
-    String? submissionId,
-    SubmissionState? submissionState,
-    String? category,
-    double? confidence,
-    int? pointsAwarded,
-    String? error,
-    Map<String, dynamic>? tfliteResult,
+    Object? imagePath = _sentinel,
+    Object? imageUrl = _sentinel,
+    Object? storagePath = _sentinel,
+    Object? submissionId = _sentinel,
+    Object? submissionState = _sentinel,
+    Object? category = _sentinel,
+    Object? confidence = _sentinel,
+    Object? pointsAwarded = _sentinel,
+    Object? error = _sentinel,
+    Object? tfliteResult = _sentinel,
   }) {
     return ClassificationState(
       isCapturing: isCapturing ?? this.isCapturing,
       isUploading: isUploading ?? this.isUploading,
       isClassifying: isClassifying ?? this.isClassifying,
-      imagePath: imagePath ?? this.imagePath,
-      imageUrl: imageUrl ?? this.imageUrl,
-      storagePath: storagePath ?? this.storagePath,
-      submissionId: submissionId ?? this.submissionId,
-      submissionState: submissionState ?? this.submissionState,
-      category: category ?? this.category,
-      confidence: confidence ?? this.confidence,
-      pointsAwarded: pointsAwarded ?? this.pointsAwarded,
-      error: error ?? this.error,
-      tfliteResult: tfliteResult ?? this.tfliteResult,
+      imagePath: imagePath == _sentinel ? this.imagePath : imagePath as String?,
+      imageUrl: imageUrl == _sentinel ? this.imageUrl : imageUrl as String?,
+      storagePath:
+          storagePath == _sentinel ? this.storagePath : storagePath as String?,
+      submissionId: submissionId == _sentinel
+          ? this.submissionId
+          : submissionId as String?,
+      submissionState: submissionState == _sentinel
+          ? this.submissionState
+          : submissionState as SubmissionState?,
+      category: category == _sentinel ? this.category : category as String?,
+      confidence:
+          confidence == _sentinel ? this.confidence : confidence as double?,
+      pointsAwarded: pointsAwarded == _sentinel
+          ? this.pointsAwarded
+          : pointsAwarded as int?,
+      error: error == _sentinel ? this.error : error as String?,
+      tfliteResult: tfliteResult == _sentinel
+          ? this.tfliteResult
+          : tfliteResult as Map<String, dynamic>?,
     );
   }
 
@@ -124,27 +137,31 @@ class ClassificationState {
 }
 
 class ClassificationNotifier extends StateNotifier<ClassificationState> {
+  final Ref _ref;
   final StorageService _storageService;
   final TFLiteService _tfLiteService;
   final SupabaseFunctionService _supabaseFunctionService;
-  final AuthState _authState;
   final _uuid = const Uuid();
 
   ClassificationNotifier({
+    required Ref ref,
     required StorageService storageService,
     required TFLiteService tfLiteService,
     required SupabaseFunctionService supabaseFunctionService,
-    required AuthState authState,
-  }) : _storageService = storageService,
+  }) : _ref = ref,
+       _storageService = storageService,
        _tfLiteService = tfLiteService,
        _supabaseFunctionService = supabaseFunctionService,
-       _authState = authState,
        super(const ClassificationState()) {
     _initTFLite();
   }
 
   Future<void> _initTFLite() async {
-    await _tfLiteService.loadModel();
+    try {
+      await _tfLiteService.loadModel();
+    } catch (e) {
+      debugPrint('Failed to load TFLite model: $e');
+    }
   }
 
   Future<void> captureImage(ImageSource source) async {
@@ -171,7 +188,8 @@ class ClassificationNotifier extends StateNotifier<ClassificationState> {
 
   Future<void> classifyImage() async {
     if (state.imagePath == null) return;
-    final user = _authState.user;
+    final authState = _ref.read(authProvider);
+    final user = authState.user;
     if (user == null) return;
 
     state = state.copyWith(isUploading: true, error: null);
@@ -180,13 +198,11 @@ class ClassificationNotifier extends StateNotifier<ClassificationState> {
       final idempotencyKey = _uuid.v4();
       final fileName = 'waste_${DateTime.now().millisecondsSinceEpoch}.jpg';
 
-      final imageUrl = await _storageService.uploadImage(
+      final (:imageUrl, :storagePath) = await _storageService.uploadImage(
         userId: user.uid,
         filePath: state.imagePath!,
         fileName: fileName,
       );
-
-      final storagePath = ImageUtils.generateStoragePath(user.uid, fileName);
 
       Map<String, dynamic>? tfliteResult;
       if (_tfLiteService.isAvailable && state.imagePath != null) {

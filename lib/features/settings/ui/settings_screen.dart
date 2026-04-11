@@ -207,7 +207,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           ),
         ],
       ),
-    );
+    ).then((_) => controller.dispose());
   }
 
   void _showSignOutDialog(BuildContext context) {
@@ -223,10 +223,12 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           ),
           FilledButton(
             style: FilledButton.styleFrom(backgroundColor: AppColors.error),
-            onPressed: () {
+            onPressed: () async {
               Navigator.pop(context);
-              ref.read(authProvider.notifier).signOut();
-              context.go(RouteConstants.login);
+              await ref.read(authProvider.notifier).signOut();
+              if (context.mounted) {
+                context.go(RouteConstants.login);
+              }
             },
             child: const Text('Sign Out'),
           ),

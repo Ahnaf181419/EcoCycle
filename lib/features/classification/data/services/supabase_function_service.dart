@@ -106,7 +106,19 @@ class SupabaseFunctionService {
   }
 
   Map<String, dynamic> _parseResponse(FunctionResponse response) {
+    if (response.status >= 400) {
+      final data = response.data;
+      final message = data is Map<String, dynamic>
+          ? data['error'] ?? data['message'] ?? 'Unknown error'
+          : data;
+      throw Exception(
+        'Edge function error (${response.status}): $message',
+      );
+    }
     final data = response.data;
+    if (data == null) {
+      throw Exception('Edge function returned null data');
+    }
     if (data is Map<String, dynamic>) return data;
     if (data is String) {
       throw Exception('Edge function error: $data');

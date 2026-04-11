@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../data/repositories/follow_repository.dart';
 import '../../classification/data/services/supabase_function_service.dart';
+import '../../classification/logic/classification_provider.dart';
 import '../../auth/logic/auth_provider.dart';
 
 final followRepositoryProvider = Provider<FollowRepository>((ref) {
@@ -21,12 +22,13 @@ final followingIdsProvider = StreamProvider<List<String>>((ref) {
   return repo.getFollowingIds();
 });
 
-final followActionProvider =
-    StateNotifierProvider<FollowActionNotifier, FollowActionState>((ref) {
-      return FollowActionNotifier(
-        supabaseFunctionService: SupabaseFunctionService(),
-      );
-    });
+final followActionProvider = StateNotifierProvider.family<FollowActionNotifier,
+    FollowActionState, String>((ref, targetUid) {
+  return FollowActionNotifier(
+    supabaseFunctionService: ref.watch(supabaseFunctionServiceProvider),
+    targetUid: targetUid,
+  );
+});
 
 class FollowActionState {
   final bool isLoading;
@@ -44,16 +46,18 @@ class FollowActionState {
 
 class FollowActionNotifier extends StateNotifier<FollowActionState> {
   final SupabaseFunctionService _supabaseFunctionService;
+  final String targetUid;
 
   FollowActionNotifier({
     required SupabaseFunctionService supabaseFunctionService,
-  }) : _supabaseFunctionService = supabaseFunctionService,
-       super(const FollowActionState());
+    required this.targetUid,
+  })  : _supabaseFunctionService = supabaseFunctionService,
+        super(const FollowActionState());
 
-  Future<bool> follow(String targetUserId) async {
+  Future<bool> follow() async {
     state = state.copyWith(isLoading: true, error: null);
     try {
-      await _supabaseFunctionService.followUser(targetUserId: targetUserId);
+      await _supabaseFunctionService.followUser(targetUserId: targetUid);
       state = state.copyWith(isLoading: false);
       return true;
     } catch (e) {
@@ -62,10 +66,10 @@ class FollowActionNotifier extends StateNotifier<FollowActionState> {
     }
   }
 
-  Future<bool> unfollow(String targetUserId) async {
+  Future<bool> unfollow() async {
     state = state.copyWith(isLoading: true, error: null);
     try {
-      await _supabaseFunctionService.unfollowUser(targetUserId: targetUserId);
+      await _supabaseFunctionService.unfollowUser(targetUserId: targetUid);
       state = state.copyWith(isLoading: false);
       return true;
     } catch (e) {

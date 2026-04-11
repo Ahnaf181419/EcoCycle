@@ -28,44 +28,54 @@ class UserProfileScreen extends ConsumerWidget {
 
     final userAsync = ref.watch(userProfileProvider(uid));
     final followAsync = ref.watch(isFollowingProvider(uid));
-    final followState = ref.watch(followActionProvider);
+    final followState = ref.watch(followActionProvider(uid));
 
-    return Scaffold(
-      backgroundColor: AppColors.background,
-      body: userAsync.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, _) => ErrorView(
+    return userAsync.when(
+      loading: () => const Scaffold(
+        backgroundColor: AppColors.background,
+        body: Center(child: CircularProgressIndicator()),
+      ),
+      error: (e, _) => Scaffold(
+        backgroundColor: AppColors.background,
+        body: ErrorView(
           message: 'Could not load profile',
           onRetry: () => ref.invalidate(userProfileProvider(uid)),
         ),
-        data: (user) {
-          if (user == null) {
-            return ErrorView(
+      ),
+      data: (user) {
+        if (user == null) {
+          return Scaffold(
+            backgroundColor: AppColors.background,
+            body: ErrorView(
               message: 'User not found',
               icon: Icons.person_off_outlined,
-            );
-          }
-
-          if (user.isPrivate) {
-            return _PrivateProfile(user: user);
-          }
-
-          return _PublicProfile(
-            user: user,
-            isFollowing: followAsync.valueOrNull ?? false,
-            isFollowLoading: followState.isLoading,
-            onFollowToggle: () async {
-              final notifier = ref.read(followActionProvider.notifier);
-              if (followAsync.valueOrNull ?? false) {
-                await notifier.unfollow(uid);
-              } else {
-                await notifier.follow(uid);
-              }
-              ref.invalidate(isFollowingProvider(uid));
-            },
+            ),
           );
-        },
-      ),
+        }
+
+        if (user.isPrivate) {
+          return _PrivateProfile(user: user);
+        }
+
+        return _PublicProfile(
+          user: user,
+          isFollowing: followAsync.valueOrNull ?? false,
+          isFollowLoading: followState.isLoading,
+          onFollowToggle: () async {
+            if (ref.read(followActionProvider(uid)).isLoading) return;
+            final notifier = ref.read(followActionProvider(uid).notifier);
+            bool success;
+            if (followAsync.valueOrNull ?? false) {
+              success = await notifier.unfollow();
+            } else {
+              success = await notifier.follow();
+            }
+            if (success) {
+              ref.invalidate(isFollowingProvider(uid));
+            }
+          },
+        );
+      },
     );
   }
 }
@@ -145,7 +155,9 @@ class _PublicProfile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CustomScrollView(
+    return Scaffold(
+      backgroundColor: AppColors.background,
+      body: CustomScrollView(
       slivers: [
         SliverAppBar(
           expandedHeight: 280,
@@ -258,6 +270,7 @@ class _PublicProfile extends StatelessWidget {
           ),
         ),
       ],
+      ),
     );
   }
 }

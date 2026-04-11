@@ -38,7 +38,7 @@ final rewardBalanceProvider = Provider<RewardBalance?>((ref) {
   return RewardBalance(
     totalEarned: earnedValue,
     totalRedeemed: redeemedValue,
-    available: earnedValue - redeemedValue,
+    available: (earnedValue - redeemedValue).clamp(0, earnedValue),
   );
 });
 
@@ -64,6 +64,8 @@ final redeemProvider = StateNotifierProvider<RedeemNotifier, RedeemState>((
 });
 
 class RedeemState {
+  static const _sentinel = Object();
+
   final bool isRedeeming;
   final int? redeemedPoints;
   final int? newBalance;
@@ -78,15 +80,16 @@ class RedeemState {
 
   RedeemState copyWith({
     bool? isRedeeming,
-    int? redeemedPoints,
-    int? newBalance,
-    String? error,
+    Object? redeemedPoints = _sentinel,
+    Object? newBalance = _sentinel,
+    Object? error = _sentinel,
   }) {
     return RedeemState(
       isRedeeming: isRedeeming ?? this.isRedeeming,
-      redeemedPoints: redeemedPoints ?? this.redeemedPoints,
-      newBalance: newBalance ?? this.newBalance,
-      error: error ?? this.error,
+      redeemedPoints:
+          redeemedPoints == _sentinel ? this.redeemedPoints : redeemedPoints as int?,
+      newBalance: newBalance == _sentinel ? this.newBalance : newBalance as int?,
+      error: error == _sentinel ? this.error : error as String?,
     );
   }
 }
@@ -104,7 +107,12 @@ class RedeemNotifier extends StateNotifier<RedeemState> {
   Future<bool> redeemPoints(int points) async {
     if (points <= 0) return false;
 
-    state = state.copyWith(isRedeeming: true, error: null);
+    state = state.copyWith(
+      isRedeeming: true,
+      error: null,
+      redeemedPoints: null,
+      newBalance: null,
+    );
 
     try {
       final idempotencyKey = _uuid.v4();

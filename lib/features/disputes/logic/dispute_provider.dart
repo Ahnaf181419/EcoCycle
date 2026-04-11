@@ -2,6 +2,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../data/models/dispute_model.dart';
 import '../data/repositories/dispute_repository.dart';
 import '../../classification/data/services/supabase_function_service.dart';
+import '../../classification/logic/classification_provider.dart';
+import '../../auth/logic/auth_provider.dart';
 
 final disputeRepositoryProvider = Provider<DisputeRepository>((ref) {
   return DisputeRepository();
@@ -35,12 +37,14 @@ final pendingDisputeCountProvider = StreamProvider<int>((ref) {
 
 final disputeResolutionProvider =
     StateNotifierProvider<DisputeResolutionNotifier, DisputeResolutionState>((
-      ref,
-    ) {
-      return DisputeResolutionNotifier(
-        supabaseFunctionService: SupabaseFunctionService(),
-      );
-    });
+  ref,
+) {
+  final authState = ref.watch(authProvider);
+  return DisputeResolutionNotifier(
+    supabaseFunctionService: ref.watch(supabaseFunctionServiceProvider),
+    userRole: authState.user?.role,
+  );
+});
 
 class DisputeResolutionState {
   final bool isLoading;
@@ -68,11 +72,14 @@ class DisputeResolutionState {
 
 class DisputeResolutionNotifier extends StateNotifier<DisputeResolutionState> {
   final SupabaseFunctionService _supabaseFunctionService;
+  final String? _userRole;
 
   DisputeResolutionNotifier({
     required SupabaseFunctionService supabaseFunctionService,
-  }) : _supabaseFunctionService = supabaseFunctionService,
-       super(const DisputeResolutionState());
+    String? userRole,
+  })  : _supabaseFunctionService = supabaseFunctionService,
+        _userRole = userRole,
+        super(const DisputeResolutionState());
 
   Future<bool> resolve({
     required String disputeId,
@@ -80,6 +87,15 @@ class DisputeResolutionNotifier extends StateNotifier<DisputeResolutionState> {
     String? category,
     String? note,
   }) async {
+    if (_userRole != 'moderator' && _userRole != 'admin') {
+      state = state.copyWith(
+        isLoading: false,
+        error: 'Only moderators or admins can resolve disputes',
+        success: false,
+      );
+      return false;
+    }
+
     state = state.copyWith(isLoading: true, error: null, success: false);
     try {
       await _supabaseFunctionService.resolveDispute(

@@ -7,7 +7,7 @@ class SubmissionRepository {
   final SupabaseClient _client;
 
   SubmissionRepository({SupabaseClient? client})
-    : _client = client ?? SupabaseConstants.client;
+      : _client = client ?? SupabaseConstants.client;
 
   Stream<List<Submission>> getSubmissionHistory({int limit = 20}) {
     final uid = _client.auth.currentUser?.id;
@@ -17,11 +17,10 @@ class SubmissionRepository {
         .from(SupabaseTables.submissions)
         .stream(primaryKey: ['id'])
         .eq('user_id', uid)
-        .order('created_at')
+        .order('created_at', ascending: false)
         .limit(limit)
         .map(
-          (rows) =>
-              rows.reversed.map((row) => Submission.fromJson(row)).toList(),
+          (rows) => rows.map((row) => Submission.fromJson(row)).toList(),
         );
   }
 
@@ -58,14 +57,17 @@ class SubmissionRepository {
   }
 
   Stream<List<Submission>> getRecentSubmissions({int limit = 10}) {
+    final uid = _client.auth.currentUser?.id;
+    if (uid == null) return Stream.value([]);
+
     return _client
         .from(SupabaseTables.submissions)
         .stream(primaryKey: ['id'])
-        .order('created_at')
+        .eq('user_id', uid)
+        .order('created_at', ascending: false)
         .limit(limit)
         .map(
-          (rows) =>
-              rows.reversed.map((row) => Submission.fromJson(row)).toList(),
+          (rows) => rows.map((row) => Submission.fromJson(row)).toList(),
         );
   }
 }

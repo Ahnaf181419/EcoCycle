@@ -1,7 +1,8 @@
 extension DateTimeExtensions on DateTime {
   String get timeAgo {
-    final now = DateTime.now();
-    final diff = now.difference(this);
+    final now = DateTime.now().toUtc();
+    final utcThis = isUtc ? this : toUtc();
+    final diff = now.difference(utcThis);
 
     if (diff.inSeconds < 60) {
       return 'just now';

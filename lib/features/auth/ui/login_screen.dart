@@ -55,12 +55,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   Widget build(BuildContext context) {
     final authState = ref.watch(authProvider);
 
-    return LoadingOverlay(
-      isLoading: authState.isLoading,
-      message: 'Signing in...',
-      child: Scaffold(
-        backgroundColor: AppColors.background,
-        body: SafeArea(
+    return Scaffold(
+      backgroundColor: AppColors.background,
+      body: LoadingOverlay(
+        isLoading: authState.isLoading,
+        message: 'Signing in...',
+        child: SafeArea(
           child: Center(
             child: SingleChildScrollView(
               padding: const EdgeInsets.all(AppSpacing.spaceXL),
@@ -121,7 +121,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     ),
                     const SizedBox(height: AppSpacing.space2XL),
                     FilledButton(
-                      onPressed: _submit,
+                      onPressed: authState.isLoading ? null : _submit,
                       child: const Text('Sign In'),
                     ),
                     const SizedBox(height: AppSpacing.spaceLG),

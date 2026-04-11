@@ -61,12 +61,12 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   Widget build(BuildContext context) {
     final authState = ref.watch(authProvider);
 
-    return LoadingOverlay(
-      isLoading: authState.isLoading,
-      message: 'Creating account...',
-      child: Scaffold(
-        backgroundColor: AppColors.background,
-        body: SafeArea(
+    return Scaffold(
+      backgroundColor: AppColors.background,
+      body: LoadingOverlay(
+        isLoading: authState.isLoading,
+        message: 'Creating account...',
+        child: SafeArea(
           child: Center(
             child: SingleChildScrollView(
               padding: const EdgeInsets.all(AppSpacing.spaceXL),
@@ -145,7 +145,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                     ),
                     const SizedBox(height: AppSpacing.space2XL),
                     FilledButton(
-                      onPressed: _submit,
+                      onPressed: authState.isLoading ? null : _submit,
                       child: const Text('Create Account'),
                     ),
                     const SizedBox(height: AppSpacing.spaceLG),

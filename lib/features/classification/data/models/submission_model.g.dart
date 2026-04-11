@@ -10,7 +10,7 @@ _$SubmissionImpl _$$SubmissionImplFromJson(Map<String, dynamic> json) =>
     _$SubmissionImpl(
       id: json['id'] as String,
       userId: json['user_id'] as String,
-      username: json['username'] as String,
+      username: json['username'] as String? ?? '',
       imageUrl: json['image_url'] as String,
       storagePath: json['storage_path'] as String,
       imageHash: json['image_hash'] as String?,

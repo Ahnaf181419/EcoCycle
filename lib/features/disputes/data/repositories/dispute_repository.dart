@@ -13,10 +13,10 @@ class DisputeRepository {
         .from(SupabaseTables.disputes)
         .stream(primaryKey: ['id'])
         .eq('status', 'PENDING')
-        .order('created_at')
+        .order('created_at', ascending: false)
         .limit(limit)
         .map(
-          (rows) => rows.reversed.map((row) {
+          (rows) => rows.map((row) {
             return Dispute.fromJson(row);
           }).toList(),
         );
@@ -45,6 +45,8 @@ class DisputeRepository {
     return response['image_url'] as String?;
   }
 
+  // TODO: Replace with a server-side function for true count query.
+  // Supabase stream doesn't support count; selecting only 'id' to reduce data transfer.
   Stream<int> getPendingDisputeCount() {
     return _client
         .from(SupabaseTables.disputes)

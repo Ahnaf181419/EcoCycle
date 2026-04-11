@@ -12,8 +12,7 @@ part of 'user_profile_model.dart';
 T _$identity<T>(T value) => value;
 
 final _privateConstructorUsedError = UnsupportedError(
-  'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models',
-);
+    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
 
 UserProfile _$UserProfileFromJson(Map<String, dynamic> json) {
   return _UserProfile.fromJson(json);
@@ -60,27 +59,25 @@ mixin _$UserProfile {
 /// @nodoc
 abstract class $UserProfileCopyWith<$Res> {
   factory $UserProfileCopyWith(
-    UserProfile value,
-    $Res Function(UserProfile) then,
-  ) = _$UserProfileCopyWithImpl<$Res, UserProfile>;
+          UserProfile value, $Res Function(UserProfile) then) =
+      _$UserProfileCopyWithImpl<$Res, UserProfile>;
   @useResult
-  $Res call({
-    String uid,
-    String username,
-    String email,
-    @JsonKey(name: 'display_name') String displayName,
-    @JsonKey(name: 'photo_url') String? photoUrl,
-    String role,
-    int points,
-    @JsonKey(name: 'redeemed_points') int redeemedPoints,
-    @JsonKey(name: 'classification_count') int classificationCount,
-    @JsonKey(name: 'correct_count') int correctCount,
-    @JsonKey(name: 'is_private') bool isPrivate,
-    @JsonKey(name: 'follower_count') int followerCount,
-    @JsonKey(name: 'following_count') int followingCount,
-    @JsonKey(name: 'created_at') DateTime createdAt,
-    @JsonKey(name: 'updated_at') DateTime updatedAt,
-  });
+  $Res call(
+      {String uid,
+      String username,
+      String email,
+      @JsonKey(name: 'display_name') String displayName,
+      @JsonKey(name: 'photo_url') String? photoUrl,
+      String role,
+      int points,
+      @JsonKey(name: 'redeemed_points') int redeemedPoints,
+      @JsonKey(name: 'classification_count') int classificationCount,
+      @JsonKey(name: 'correct_count') int correctCount,
+      @JsonKey(name: 'is_private') bool isPrivate,
+      @JsonKey(name: 'follower_count') int followerCount,
+      @JsonKey(name: 'following_count') int followingCount,
+      @JsonKey(name: 'created_at') DateTime createdAt,
+      @JsonKey(name: 'updated_at') DateTime updatedAt});
 }
 
 /// @nodoc
@@ -114,71 +111,68 @@ class _$UserProfileCopyWithImpl<$Res, $Val extends UserProfile>
     Object? createdAt = null,
     Object? updatedAt = null,
   }) {
-    return _then(
-      _value.copyWith(
-            uid: null == uid
-                ? _value.uid
-                : uid // ignore: cast_nullable_to_non_nullable
-                      as String,
-            username: null == username
-                ? _value.username
-                : username // ignore: cast_nullable_to_non_nullable
-                      as String,
-            email: null == email
-                ? _value.email
-                : email // ignore: cast_nullable_to_non_nullable
-                      as String,
-            displayName: null == displayName
-                ? _value.displayName
-                : displayName // ignore: cast_nullable_to_non_nullable
-                      as String,
-            photoUrl: freezed == photoUrl
-                ? _value.photoUrl
-                : photoUrl // ignore: cast_nullable_to_non_nullable
-                      as String?,
-            role: null == role
-                ? _value.role
-                : role // ignore: cast_nullable_to_non_nullable
-                      as String,
-            points: null == points
-                ? _value.points
-                : points // ignore: cast_nullable_to_non_nullable
-                      as int,
-            redeemedPoints: null == redeemedPoints
-                ? _value.redeemedPoints
-                : redeemedPoints // ignore: cast_nullable_to_non_nullable
-                      as int,
-            classificationCount: null == classificationCount
-                ? _value.classificationCount
-                : classificationCount // ignore: cast_nullable_to_non_nullable
-                      as int,
-            correctCount: null == correctCount
-                ? _value.correctCount
-                : correctCount // ignore: cast_nullable_to_non_nullable
-                      as int,
-            isPrivate: null == isPrivate
-                ? _value.isPrivate
-                : isPrivate // ignore: cast_nullable_to_non_nullable
-                      as bool,
-            followerCount: null == followerCount
-                ? _value.followerCount
-                : followerCount // ignore: cast_nullable_to_non_nullable
-                      as int,
-            followingCount: null == followingCount
-                ? _value.followingCount
-                : followingCount // ignore: cast_nullable_to_non_nullable
-                      as int,
-            createdAt: null == createdAt
-                ? _value.createdAt
-                : createdAt // ignore: cast_nullable_to_non_nullable
-                      as DateTime,
-            updatedAt: null == updatedAt
-                ? _value.updatedAt
-                : updatedAt // ignore: cast_nullable_to_non_nullable
-                      as DateTime,
-          )
-          as $Val,
-    );
+    return _then(_value.copyWith(
+      uid: null == uid
+          ? _value.uid
+          : uid // ignore: cast_nullable_to_non_nullable
+              as String,
+      username: null == username
+          ? _value.username
+          : username // ignore: cast_nullable_to_non_nullable
+              as String,
+      email: null == email
+          ? _value.email
+          : email // ignore: cast_nullable_to_non_nullable
+              as String,
+      displayName: null == displayName
+          ? _value.displayName
+          : displayName // ignore: cast_nullable_to_non_nullable
+              as String,
+      photoUrl: freezed == photoUrl
+          ? _value.photoUrl
+          : photoUrl // ignore: cast_nullable_to_non_nullable
+              as String?,
+      role: null == role
+          ? _value.role
+          : role // ignore: cast_nullable_to_non_nullable
+              as String,
+      points: null == points
+          ? _value.points
+          : points // ignore: cast_nullable_to_non_nullable
+              as int,
+      redeemedPoints: null == redeemedPoints
+          ? _value.redeemedPoints
+          : redeemedPoints // ignore: cast_nullable_to_non_nullable
+              as int,
+      classificationCount: null == classificationCount
+          ? _value.classificationCount
+          : classificationCount // ignore: cast_nullable_to_non_nullable
+              as int,
+      correctCount: null == correctCount
+          ? _value.correctCount
+          : correctCount // ignore: cast_nullable_to_non_nullable
+              as int,
+      isPrivate: null == isPrivate
+          ? _value.isPrivate
+          : isPrivate // ignore: cast_nullable_to_non_nullable
+              as bool,
+      followerCount: null == followerCount
+          ? _value.followerCount
+          : followerCount // ignore: cast_nullable_to_non_nullable
+              as int,
+      followingCount: null == followingCount
+          ? _value.followingCount
+          : followingCount // ignore: cast_nullable_to_non_nullable
+              as int,
+      createdAt: null == createdAt
+          ? _value.createdAt
+          : createdAt // ignore: cast_nullable_to_non_nullable
+              as DateTime,
+      updatedAt: null == updatedAt
+          ? _value.updatedAt
+          : updatedAt // ignore: cast_nullable_to_non_nullable
+              as DateTime,
+    ) as $Val);
   }
 }
 
@@ -186,28 +180,26 @@ class _$UserProfileCopyWithImpl<$Res, $Val extends UserProfile>
 abstract class _$$UserProfileImplCopyWith<$Res>
     implements $UserProfileCopyWith<$Res> {
   factory _$$UserProfileImplCopyWith(
-    _$UserProfileImpl value,
-    $Res Function(_$UserProfileImpl) then,
-  ) = __$$UserProfileImplCopyWithImpl<$Res>;
+          _$UserProfileImpl value, $Res Function(_$UserProfileImpl) then) =
+      __$$UserProfileImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({
-    String uid,
-    String username,
-    String email,
-    @JsonKey(name: 'display_name') String displayName,
-    @JsonKey(name: 'photo_url') String? photoUrl,
-    String role,
-    int points,
-    @JsonKey(name: 'redeemed_points') int redeemedPoints,
-    @JsonKey(name: 'classification_count') int classificationCount,
-    @JsonKey(name: 'correct_count') int correctCount,
-    @JsonKey(name: 'is_private') bool isPrivate,
-    @JsonKey(name: 'follower_count') int followerCount,
-    @JsonKey(name: 'following_count') int followingCount,
-    @JsonKey(name: 'created_at') DateTime createdAt,
-    @JsonKey(name: 'updated_at') DateTime updatedAt,
-  });
+  $Res call(
+      {String uid,
+      String username,
+      String email,
+      @JsonKey(name: 'display_name') String displayName,
+      @JsonKey(name: 'photo_url') String? photoUrl,
+      String role,
+      int points,
+      @JsonKey(name: 'redeemed_points') int redeemedPoints,
+      @JsonKey(name: 'classification_count') int classificationCount,
+      @JsonKey(name: 'correct_count') int correctCount,
+      @JsonKey(name: 'is_private') bool isPrivate,
+      @JsonKey(name: 'follower_count') int followerCount,
+      @JsonKey(name: 'following_count') int followingCount,
+      @JsonKey(name: 'created_at') DateTime createdAt,
+      @JsonKey(name: 'updated_at') DateTime updatedAt});
 }
 
 /// @nodoc
@@ -215,9 +207,8 @@ class __$$UserProfileImplCopyWithImpl<$Res>
     extends _$UserProfileCopyWithImpl<$Res, _$UserProfileImpl>
     implements _$$UserProfileImplCopyWith<$Res> {
   __$$UserProfileImplCopyWithImpl(
-    _$UserProfileImpl _value,
-    $Res Function(_$UserProfileImpl) _then,
-  ) : super(_value, _then);
+      _$UserProfileImpl _value, $Res Function(_$UserProfileImpl) _then)
+      : super(_value, _then);
 
   /// Create a copy of UserProfile
   /// with the given fields replaced by the non-null parameter values.
@@ -240,93 +231,91 @@ class __$$UserProfileImplCopyWithImpl<$Res>
     Object? createdAt = null,
     Object? updatedAt = null,
   }) {
-    return _then(
-      _$UserProfileImpl(
-        uid: null == uid
-            ? _value.uid
-            : uid // ignore: cast_nullable_to_non_nullable
-                  as String,
-        username: null == username
-            ? _value.username
-            : username // ignore: cast_nullable_to_non_nullable
-                  as String,
-        email: null == email
-            ? _value.email
-            : email // ignore: cast_nullable_to_non_nullable
-                  as String,
-        displayName: null == displayName
-            ? _value.displayName
-            : displayName // ignore: cast_nullable_to_non_nullable
-                  as String,
-        photoUrl: freezed == photoUrl
-            ? _value.photoUrl
-            : photoUrl // ignore: cast_nullable_to_non_nullable
-                  as String?,
-        role: null == role
-            ? _value.role
-            : role // ignore: cast_nullable_to_non_nullable
-                  as String,
-        points: null == points
-            ? _value.points
-            : points // ignore: cast_nullable_to_non_nullable
-                  as int,
-        redeemedPoints: null == redeemedPoints
-            ? _value.redeemedPoints
-            : redeemedPoints // ignore: cast_nullable_to_non_nullable
-                  as int,
-        classificationCount: null == classificationCount
-            ? _value.classificationCount
-            : classificationCount // ignore: cast_nullable_to_non_nullable
-                  as int,
-        correctCount: null == correctCount
-            ? _value.correctCount
-            : correctCount // ignore: cast_nullable_to_non_nullable
-                  as int,
-        isPrivate: null == isPrivate
-            ? _value.isPrivate
-            : isPrivate // ignore: cast_nullable_to_non_nullable
-                  as bool,
-        followerCount: null == followerCount
-            ? _value.followerCount
-            : followerCount // ignore: cast_nullable_to_non_nullable
-                  as int,
-        followingCount: null == followingCount
-            ? _value.followingCount
-            : followingCount // ignore: cast_nullable_to_non_nullable
-                  as int,
-        createdAt: null == createdAt
-            ? _value.createdAt
-            : createdAt // ignore: cast_nullable_to_non_nullable
-                  as DateTime,
-        updatedAt: null == updatedAt
-            ? _value.updatedAt
-            : updatedAt // ignore: cast_nullable_to_non_nullable
-                  as DateTime,
-      ),
-    );
+    return _then(_$UserProfileImpl(
+      uid: null == uid
+          ? _value.uid
+          : uid // ignore: cast_nullable_to_non_nullable
+              as String,
+      username: null == username
+          ? _value.username
+          : username // ignore: cast_nullable_to_non_nullable
+              as String,
+      email: null == email
+          ? _value.email
+          : email // ignore: cast_nullable_to_non_nullable
+              as String,
+      displayName: null == displayName
+          ? _value.displayName
+          : displayName // ignore: cast_nullable_to_non_nullable
+              as String,
+      photoUrl: freezed == photoUrl
+          ? _value.photoUrl
+          : photoUrl // ignore: cast_nullable_to_non_nullable
+              as String?,
+      role: null == role
+          ? _value.role
+          : role // ignore: cast_nullable_to_non_nullable
+              as String,
+      points: null == points
+          ? _value.points
+          : points // ignore: cast_nullable_to_non_nullable
+              as int,
+      redeemedPoints: null == redeemedPoints
+          ? _value.redeemedPoints
+          : redeemedPoints // ignore: cast_nullable_to_non_nullable
+              as int,
+      classificationCount: null == classificationCount
+          ? _value.classificationCount
+          : classificationCount // ignore: cast_nullable_to_non_nullable
+              as int,
+      correctCount: null == correctCount
+          ? _value.correctCount
+          : correctCount // ignore: cast_nullable_to_non_nullable
+              as int,
+      isPrivate: null == isPrivate
+          ? _value.isPrivate
+          : isPrivate // ignore: cast_nullable_to_non_nullable
+              as bool,
+      followerCount: null == followerCount
+          ? _value.followerCount
+          : followerCount // ignore: cast_nullable_to_non_nullable
+              as int,
+      followingCount: null == followingCount
+          ? _value.followingCount
+          : followingCount // ignore: cast_nullable_to_non_nullable
+              as int,
+      createdAt: null == createdAt
+          ? _value.createdAt
+          : createdAt // ignore: cast_nullable_to_non_nullable
+              as DateTime,
+      updatedAt: null == updatedAt
+          ? _value.updatedAt
+          : updatedAt // ignore: cast_nullable_to_non_nullable
+              as DateTime,
+    ));
   }
 }
 
 /// @nodoc
 @JsonSerializable()
 class _$UserProfileImpl extends _UserProfile {
-  const _$UserProfileImpl({
-    required this.uid,
-    required this.username,
-    required this.email,
-    @JsonKey(name: 'display_name') required this.displayName,
-    @JsonKey(name: 'photo_url') this.photoUrl,
-    this.role = 'citizen',
-    this.points = 0,
-    @JsonKey(name: 'redeemed_points') this.redeemedPoints = 0,
-    @JsonKey(name: 'classification_count') this.classificationCount = 0,
-    @JsonKey(name: 'correct_count') this.correctCount = 0,
-    @JsonKey(name: 'is_private') this.isPrivate = false,
-    @JsonKey(name: 'follower_count') this.followerCount = 0,
-    @JsonKey(name: 'following_count') this.followingCount = 0,
-    @JsonKey(name: 'created_at') required this.createdAt,
-    @JsonKey(name: 'updated_at') required this.updatedAt,
-  }) : super._();
+  const _$UserProfileImpl(
+      {required this.uid,
+      required this.username,
+      required this.email,
+      @JsonKey(name: 'display_name') required this.displayName,
+      @JsonKey(name: 'photo_url') this.photoUrl,
+      this.role = 'citizen',
+      this.points = 0,
+      @JsonKey(name: 'redeemed_points') this.redeemedPoints = 0,
+      @JsonKey(name: 'classification_count') this.classificationCount = 0,
+      @JsonKey(name: 'correct_count') this.correctCount = 0,
+      @JsonKey(name: 'is_private') this.isPrivate = false,
+      @JsonKey(name: 'follower_count') this.followerCount = 0,
+      @JsonKey(name: 'following_count') this.followingCount = 0,
+      @JsonKey(name: 'created_at') required this.createdAt,
+      @JsonKey(name: 'updated_at') required this.updatedAt})
+      : super._();
 
   factory _$UserProfileImpl.fromJson(Map<String, dynamic> json) =>
       _$$UserProfileImplFromJson(json);
@@ -415,23 +404,22 @@ class _$UserProfileImpl extends _UserProfile {
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(
-    runtimeType,
-    uid,
-    username,
-    email,
-    displayName,
-    photoUrl,
-    role,
-    points,
-    redeemedPoints,
-    classificationCount,
-    correctCount,
-    isPrivate,
-    followerCount,
-    followingCount,
-    createdAt,
-    updatedAt,
-  );
+      runtimeType,
+      uid,
+      username,
+      email,
+      displayName,
+      photoUrl,
+      role,
+      points,
+      redeemedPoints,
+      classificationCount,
+      correctCount,
+      isPrivate,
+      followerCount,
+      followingCount,
+      createdAt,
+      updatedAt);
 
   /// Create a copy of UserProfile
   /// with the given fields replaced by the non-null parameter values.
@@ -443,28 +431,30 @@ class _$UserProfileImpl extends _UserProfile {
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$UserProfileImplToJson(this);
+    return _$$UserProfileImplToJson(
+      this,
+    );
   }
 }
 
 abstract class _UserProfile extends UserProfile {
-  const factory _UserProfile({
-    required final String uid,
-    required final String username,
-    required final String email,
-    @JsonKey(name: 'display_name') required final String displayName,
-    @JsonKey(name: 'photo_url') final String? photoUrl,
-    final String role,
-    final int points,
-    @JsonKey(name: 'redeemed_points') final int redeemedPoints,
-    @JsonKey(name: 'classification_count') final int classificationCount,
-    @JsonKey(name: 'correct_count') final int correctCount,
-    @JsonKey(name: 'is_private') final bool isPrivate,
-    @JsonKey(name: 'follower_count') final int followerCount,
-    @JsonKey(name: 'following_count') final int followingCount,
-    @JsonKey(name: 'created_at') required final DateTime createdAt,
-    @JsonKey(name: 'updated_at') required final DateTime updatedAt,
-  }) = _$UserProfileImpl;
+  const factory _UserProfile(
+          {required final String uid,
+          required final String username,
+          required final String email,
+          @JsonKey(name: 'display_name') required final String displayName,
+          @JsonKey(name: 'photo_url') final String? photoUrl,
+          final String role,
+          final int points,
+          @JsonKey(name: 'redeemed_points') final int redeemedPoints,
+          @JsonKey(name: 'classification_count') final int classificationCount,
+          @JsonKey(name: 'correct_count') final int correctCount,
+          @JsonKey(name: 'is_private') final bool isPrivate,
+          @JsonKey(name: 'follower_count') final int followerCount,
+          @JsonKey(name: 'following_count') final int followingCount,
+          @JsonKey(name: 'created_at') required final DateTime createdAt,
+          @JsonKey(name: 'updated_at') required final DateTime updatedAt}) =
+      _$UserProfileImpl;
   const _UserProfile._() : super._();
 
   factory _UserProfile.fromJson(Map<String, dynamic> json) =

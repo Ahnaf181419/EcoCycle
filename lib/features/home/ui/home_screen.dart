@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hugeicons/hugeicons.dart';
 import '../../auth/logic/auth_provider.dart';
+import '../../social/data/models/user_profile_model.dart';
 import '../../classification/logic/classification_provider.dart';
 import '../../classification/data/models/submission_model.dart';
 import '../../rewards/logic/reward_provider.dart';
@@ -50,7 +51,7 @@ class HomeScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildSliverAppBar(BuildContext context, user) {
+  Widget _buildSliverAppBar(BuildContext context, UserProfile? user) {
     return SliverAppBar(
       expandedHeight: 160,
       pinned: true,

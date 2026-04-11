@@ -2,7 +2,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../data/models/user_profile_model.dart';
 import '../data/repositories/user_repository.dart';
 import '../../auth/logic/auth_provider.dart';
-import '../../auth/logic/auth_state.dart';
 
 final userRepositoryProvider = Provider<UserRepository>((ref) {
   return UserRepository();
@@ -23,11 +22,11 @@ final userProfileProvider = StreamProvider.family<UserProfile?, String>((
 
 final profileEditProvider =
     StateNotifierProvider<ProfileEditNotifier, ProfileEditState>((ref) {
-      return ProfileEditNotifier(
-        userRepository: ref.watch(userRepositoryProvider),
-        authState: ref.watch(authProvider),
-      );
-    });
+  return ProfileEditNotifier(
+    userRepository: ref.watch(userRepositoryProvider),
+    ref: ref,
+  );
+});
 
 class ProfileEditState {
   final bool isLoading;
@@ -51,18 +50,25 @@ class ProfileEditState {
 
 class ProfileEditNotifier extends StateNotifier<ProfileEditState> {
   final UserRepository _userRepository;
-  final AuthState authState;
+  final Ref _ref;
 
   ProfileEditNotifier({
     required UserRepository userRepository,
-    required this.authState,
-  }) : _userRepository = userRepository,
-       super(const ProfileEditState());
+    required Ref ref,
+  })  : _userRepository = userRepository,
+        _ref = ref,
+        super(const ProfileEditState());
 
   Future<void> updateDisplayName(String displayName) async {
     state = state.copyWith(isLoading: true, error: null, success: false);
     try {
       await _userRepository.updateProfile(displayName: displayName);
+      final updatedProfile = await _userRepository.getUserProfile(
+        _ref.read(authProvider).user!.uid,
+      );
+      if (updatedProfile != null) {
+        _ref.read(authProvider.notifier).updateUserProfile(updatedProfile);
+      }
       state = state.copyWith(isLoading: false, success: true);
     } catch (e) {
       state = state.copyWith(isLoading: false, error: e.toString());
@@ -73,6 +79,12 @@ class ProfileEditNotifier extends StateNotifier<ProfileEditState> {
     state = state.copyWith(isLoading: true, error: null, success: false);
     try {
       await _userRepository.updateProfile(photoUrl: photoUrl);
+      final updatedProfile = await _userRepository.getUserProfile(
+        _ref.read(authProvider).user!.uid,
+      );
+      if (updatedProfile != null) {
+        _ref.read(authProvider.notifier).updateUserProfile(updatedProfile);
+      }
       state = state.copyWith(isLoading: false, success: true);
     } catch (e) {
       state = state.copyWith(isLoading: false, error: e.toString());

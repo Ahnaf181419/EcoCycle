@@ -57,14 +57,20 @@ class AuthService {
     final user = currentUser;
     if (user == null) return null;
 
-    final response = await _client
-        .from(SupabaseTables.profiles)
-        .select()
-        .eq('uid', user.id)
-        .maybeSingle();
+    try {
+      final response = await _client
+          .from(SupabaseTables.profiles)
+          .select()
+          .eq('uid', user.id)
+          .maybeSingle();
 
-    if (response == null) return null;
+      if (response == null) return null;
 
-    return UserProfile.fromJson(response);
+      return UserProfile.fromJson(response);
+    } on PostgrestException catch (e) {
+      throw Exception('Failed to fetch user profile: ${e.message}');
+    } catch (e) {
+      throw Exception('Unexpected error fetching user profile: $e');
+    }
   }
 }

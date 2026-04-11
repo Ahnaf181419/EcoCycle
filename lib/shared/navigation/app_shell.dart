@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/constants/route_constants.dart';
 import 'bottom_nav.dart';
+import 'nav_tabs.dart';
 
 class AppShell extends StatelessWidget {
   final StatefulNavigationShell navigationShell;
@@ -15,65 +16,47 @@ class AppShell extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final String location = GoRouterState.of(context).matchedLocation;
+    final bool isResultRoute = location.startsWith(RouteConstants.result);
+    final tabs = buildNavTabs(userRole);
+
     return Scaffold(
       body: navigationShell,
-      bottomNavigationBar: BottomNav(
-        currentIndex: _calculateSelectedIndex(context),
-        onTap: (index) => _onItemTapped(index, context),
-        userRole: userRole,
-      ),
+      bottomNavigationBar: isResultRoute
+          ? null
+          : BottomNav(
+              currentIndex: _calculateSelectedIndex(context, tabs),
+              onTap: (index) => _onItemTapped(index, context, tabs),
+              tabs: tabs,
+            ),
     );
   }
 
-  int _calculateSelectedIndex(BuildContext context) {
+  int _calculateSelectedIndex(BuildContext context, List<NavTab> tabs) {
     final String location = GoRouterState.of(context).matchedLocation;
-    bool hasDisputes = userRole == 'moderator' || userRole == 'admin';
-    bool hasAdmin = userRole == 'admin';
 
-    if (location.startsWith(RouteConstants.home)) return 0;
-    if (location.startsWith(RouteConstants.classify)) return 1;
-    if (location.startsWith(RouteConstants.leaderboard)) return 2;
-
-    if (location.startsWith(RouteConstants.disputes) && hasDisputes) {
-      return 3;
-    }
-    if (location.startsWith(RouteConstants.admin) && hasAdmin) {
-      return hasDisputes ? 4 : 3;
+    for (int i = 0; i < tabs.length; i++) {
+      if (location.startsWith(tabs[i].route)) return i;
     }
 
-    if (location.startsWith(RouteConstants.profile) ||
-        location.startsWith(RouteConstants.settings) ||
-        location.startsWith(RouteConstants.history) ||
-        location.startsWith(RouteConstants.rewards) ||
-        location.startsWith(RouteConstants.feed)) {
-      if (hasAdmin) return 5;
-      if (hasDisputes) return 4;
-      return 3;
+    // Fallback: routes that map to Profile tab (settings, history, rewards, feed)
+    final profileIndex = tabs.indexWhere(
+      (t) => t.route == RouteConstants.profile,
+    );
+    if (profileIndex != -1 &&
+        (location.startsWith(RouteConstants.settings) ||
+            location.startsWith(RouteConstants.history) ||
+            location.startsWith(RouteConstants.rewards) ||
+            location.startsWith(RouteConstants.feed))) {
+      return profileIndex;
     }
+
     return 0;
   }
 
-  void _onItemTapped(int index, BuildContext context) {
-    bool hasDisputes = userRole == 'moderator' || userRole == 'admin';
-    bool hasAdmin = userRole == 'admin';
-
-    int disputesIndex = hasDisputes ? 3 : -1;
-    int adminIndex = hasAdmin ? (hasDisputes ? 4 : 3) : -1;
-    String route;
-    if (index == 0) {
-      route = RouteConstants.home;
-    } else if (index == 1) {
-      route = RouteConstants.classify;
-    } else if (index == 2) {
-      route = RouteConstants.leaderboard;
-    } else if (index == disputesIndex && hasDisputes) {
-      route = RouteConstants.disputes;
-    } else if (index == adminIndex && hasAdmin) {
-      route = RouteConstants.admin;
-    } else {
-      route = RouteConstants.profile;
+  void _onItemTapped(int index, BuildContext context, List<NavTab> tabs) {
+    if (index >= 0 && index < tabs.length) {
+      context.go(tabs[index].route);
     }
-
-    context.go(route);
   }
 }

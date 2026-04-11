@@ -7,14 +7,14 @@ part of 'reward_model.dart';
 // **************************************************************************
 
 _$RewardImpl _$$RewardImplFromJson(Map<String, dynamic> json) => _$RewardImpl(
-  id: json['id'] as String,
-  userId: json['user_id'] as String,
-  submissionId: json['submission_id'] as String?,
-  points: (json['points'] as num).toInt(),
-  type: json['type'] as String,
-  idempotencyKey: json['idempotency_key'] as String,
-  createdAt: DateTime.parse(json['created_at'] as String),
-);
+      id: json['id'] as String,
+      userId: json['user_id'] as String,
+      submissionId: json['submission_id'] as String?,
+      points: (json['points'] as num).toInt(),
+      type: json['type'] as String,
+      idempotencyKey: json['idempotency_key'] as String,
+      createdAt: DateTime.parse(json['created_at'] as String),
+    );
 
 Map<String, dynamic> _$$RewardImplToJson(_$RewardImpl instance) =>
     <String, dynamic>{

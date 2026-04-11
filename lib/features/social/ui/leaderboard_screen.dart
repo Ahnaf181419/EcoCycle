@@ -154,7 +154,7 @@ class LeaderboardScreen extends ConsumerWidget {
               }
 
               final topThree = users.take(3).toList();
-              final rest = users.skip(3).toList();
+              final rest = users.skip(topThree.length).toList();
 
               return SliverToBoxAdapter(
                 child: Column(
@@ -167,7 +167,7 @@ class LeaderboardScreen extends ConsumerWidget {
                     if (rest.isNotEmpty)
                       _LeaderboardList(
                         users: rest,
-                        startIndex: 4,
+                        startIndex: topThree.length + 1,
                         currentUid: currentUid,
                       ),
                     const SizedBox(height: AppSpacing.space3XL),
@@ -394,82 +394,87 @@ class _LeaderboardTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: AppSpacing.spaceSM),
-      padding: const EdgeInsets.symmetric(
-        horizontal: AppSpacing.spaceLG,
-        vertical: AppSpacing.spaceMD,
-      ),
-      decoration: BoxDecoration(
+    return Padding(
+      padding: const EdgeInsets.only(bottom: AppSpacing.spaceSM),
+      child: Material(
         color: isCurrentUser
             ? AppColors.primaryLight.withValues(alpha: 0.08)
             : AppColors.surface,
         borderRadius: BorderRadius.circular(16),
-        border: isCurrentUser
-            ? Border.all(
-                color: AppColors.primary.withValues(alpha: 0.3),
-                width: 1.5,
-              )
-            : null,
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.textPrimary.withValues(alpha: 0.03),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: InkWell(
-        onTap: () => context.go('/profile/${user.uid}'),
-        borderRadius: BorderRadius.circular(16),
-        child: Row(
-          children: [
-            RankBadge(rank: rank, isCurrentUser: isCurrentUser),
-            const SizedBox(width: AppSpacing.spaceLG),
-            UserAvatar(
-              photoUrl: user.photoUrl,
-              username: user.username,
-              radius: 20,
+        child: InkWell(
+          onTap: () => context.go('/profile/${user.uid}'),
+          borderRadius: BorderRadius.circular(16),
+          child: Container(
+            padding: const EdgeInsets.symmetric(
+              horizontal: AppSpacing.spaceLG,
+              vertical: AppSpacing.spaceMD,
             ),
-            const SizedBox(width: AppSpacing.spaceMD),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    user.displayName,
-                    style: AppTypography.labelLarge.copyWith(
-                      color: AppColors.textPrimary,
-                    ),
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  Text(
-                    '@${user.username}',
-                    style: AppTypography.bodySmall.copyWith(
-                      color: AppColors.textTertiary,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: AppSpacing.spaceMD,
-                vertical: AppSpacing.spaceXS,
-              ),
-              decoration: BoxDecoration(
-                color: AppColors.accent.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Text(
-                '${user.points}',
-                style: AppTypography.statSmall.copyWith(
-                  color: AppColors.accent,
-                  fontWeight: FontWeight.w700,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(16),
+              border: isCurrentUser
+                  ? Border.all(
+                      color: AppColors.primary.withValues(alpha: 0.3),
+                      width: 1.5,
+                    )
+                  : null,
+              boxShadow: [
+                BoxShadow(
+                  color: AppColors.textPrimary.withValues(alpha: 0.03),
+                  blurRadius: 8,
+                  offset: const Offset(0, 2),
                 ),
-              ),
+              ],
             ),
-          ],
+            child: Row(
+              children: [
+                RankBadge(rank: rank, isCurrentUser: isCurrentUser),
+                const SizedBox(width: AppSpacing.spaceLG),
+                UserAvatar(
+                  photoUrl: user.photoUrl,
+                  username: user.username,
+                  radius: 20,
+                ),
+                const SizedBox(width: AppSpacing.spaceMD),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        user.displayName,
+                        style: AppTypography.labelLarge.copyWith(
+                          color: AppColors.textPrimary,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      Text(
+                        '@${user.username}',
+                        style: AppTypography.bodySmall.copyWith(
+                          color: AppColors.textTertiary,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.spaceMD,
+                    vertical: AppSpacing.spaceXS,
+                  ),
+                  decoration: BoxDecoration(
+                    color: AppColors.accent.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Text(
+                    '${user.points}',
+                    style: AppTypography.statSmall.copyWith(
+                      color: AppColors.accent,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
         ),
       ),
     );

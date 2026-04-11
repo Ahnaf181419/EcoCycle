@@ -12,8 +12,7 @@ part of 'follow_model.dart';
 T _$identity<T>(T value) => value;
 
 final _privateConstructorUsedError = UnsupportedError(
-  'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models',
-);
+    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
 
 Follow _$FollowFromJson(Map<String, dynamic> json) {
   return _Follow.fromJson(json);
@@ -42,11 +41,10 @@ abstract class $FollowCopyWith<$Res> {
   factory $FollowCopyWith(Follow value, $Res Function(Follow) then) =
       _$FollowCopyWithImpl<$Res, Follow>;
   @useResult
-  $Res call({
-    @JsonKey(name: 'follower_id') String followerId,
-    @JsonKey(name: 'followee_id') String followeeId,
-    @JsonKey(name: 'created_at') DateTime createdAt,
-  });
+  $Res call(
+      {@JsonKey(name: 'follower_id') String followerId,
+      @JsonKey(name: 'followee_id') String followeeId,
+      @JsonKey(name: 'created_at') DateTime createdAt});
 }
 
 /// @nodoc
@@ -68,39 +66,34 @@ class _$FollowCopyWithImpl<$Res, $Val extends Follow>
     Object? followeeId = null,
     Object? createdAt = null,
   }) {
-    return _then(
-      _value.copyWith(
-            followerId: null == followerId
-                ? _value.followerId
-                : followerId // ignore: cast_nullable_to_non_nullable
-                      as String,
-            followeeId: null == followeeId
-                ? _value.followeeId
-                : followeeId // ignore: cast_nullable_to_non_nullable
-                      as String,
-            createdAt: null == createdAt
-                ? _value.createdAt
-                : createdAt // ignore: cast_nullable_to_non_nullable
-                      as DateTime,
-          )
-          as $Val,
-    );
+    return _then(_value.copyWith(
+      followerId: null == followerId
+          ? _value.followerId
+          : followerId // ignore: cast_nullable_to_non_nullable
+              as String,
+      followeeId: null == followeeId
+          ? _value.followeeId
+          : followeeId // ignore: cast_nullable_to_non_nullable
+              as String,
+      createdAt: null == createdAt
+          ? _value.createdAt
+          : createdAt // ignore: cast_nullable_to_non_nullable
+              as DateTime,
+    ) as $Val);
   }
 }
 
 /// @nodoc
 abstract class _$$FollowImplCopyWith<$Res> implements $FollowCopyWith<$Res> {
   factory _$$FollowImplCopyWith(
-    _$FollowImpl value,
-    $Res Function(_$FollowImpl) then,
-  ) = __$$FollowImplCopyWithImpl<$Res>;
+          _$FollowImpl value, $Res Function(_$FollowImpl) then) =
+      __$$FollowImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({
-    @JsonKey(name: 'follower_id') String followerId,
-    @JsonKey(name: 'followee_id') String followeeId,
-    @JsonKey(name: 'created_at') DateTime createdAt,
-  });
+  $Res call(
+      {@JsonKey(name: 'follower_id') String followerId,
+      @JsonKey(name: 'followee_id') String followeeId,
+      @JsonKey(name: 'created_at') DateTime createdAt});
 }
 
 /// @nodoc
@@ -108,9 +101,8 @@ class __$$FollowImplCopyWithImpl<$Res>
     extends _$FollowCopyWithImpl<$Res, _$FollowImpl>
     implements _$$FollowImplCopyWith<$Res> {
   __$$FollowImplCopyWithImpl(
-    _$FollowImpl _value,
-    $Res Function(_$FollowImpl) _then,
-  ) : super(_value, _then);
+      _$FollowImpl _value, $Res Function(_$FollowImpl) _then)
+      : super(_value, _then);
 
   /// Create a copy of Follow
   /// with the given fields replaced by the non-null parameter values.
@@ -121,33 +113,30 @@ class __$$FollowImplCopyWithImpl<$Res>
     Object? followeeId = null,
     Object? createdAt = null,
   }) {
-    return _then(
-      _$FollowImpl(
-        followerId: null == followerId
-            ? _value.followerId
-            : followerId // ignore: cast_nullable_to_non_nullable
-                  as String,
-        followeeId: null == followeeId
-            ? _value.followeeId
-            : followeeId // ignore: cast_nullable_to_non_nullable
-                  as String,
-        createdAt: null == createdAt
-            ? _value.createdAt
-            : createdAt // ignore: cast_nullable_to_non_nullable
-                  as DateTime,
-      ),
-    );
+    return _then(_$FollowImpl(
+      followerId: null == followerId
+          ? _value.followerId
+          : followerId // ignore: cast_nullable_to_non_nullable
+              as String,
+      followeeId: null == followeeId
+          ? _value.followeeId
+          : followeeId // ignore: cast_nullable_to_non_nullable
+              as String,
+      createdAt: null == createdAt
+          ? _value.createdAt
+          : createdAt // ignore: cast_nullable_to_non_nullable
+              as DateTime,
+    ));
   }
 }
 
 /// @nodoc
 @JsonSerializable()
 class _$FollowImpl implements _Follow {
-  const _$FollowImpl({
-    @JsonKey(name: 'follower_id') required this.followerId,
-    @JsonKey(name: 'followee_id') required this.followeeId,
-    @JsonKey(name: 'created_at') required this.createdAt,
-  });
+  const _$FollowImpl(
+      {@JsonKey(name: 'follower_id') required this.followerId,
+      @JsonKey(name: 'followee_id') required this.followeeId,
+      @JsonKey(name: 'created_at') required this.createdAt});
 
   factory _$FollowImpl.fromJson(Map<String, dynamic> json) =>
       _$$FollowImplFromJson(json);
@@ -195,16 +184,18 @@ class _$FollowImpl implements _Follow {
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$FollowImplToJson(this);
+    return _$$FollowImplToJson(
+      this,
+    );
   }
 }
 
 abstract class _Follow implements Follow {
-  const factory _Follow({
-    @JsonKey(name: 'follower_id') required final String followerId,
-    @JsonKey(name: 'followee_id') required final String followeeId,
-    @JsonKey(name: 'created_at') required final DateTime createdAt,
-  }) = _$FollowImpl;
+  const factory _Follow(
+          {@JsonKey(name: 'follower_id') required final String followerId,
+          @JsonKey(name: 'followee_id') required final String followeeId,
+          @JsonKey(name: 'created_at') required final DateTime createdAt}) =
+      _$FollowImpl;
 
   factory _Follow.fromJson(Map<String, dynamic> json) = _$FollowImpl.fromJson;
 

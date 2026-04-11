@@ -12,8 +12,7 @@ part of 'reward_model.dart';
 T _$identity<T>(T value) => value;
 
 final _privateConstructorUsedError = UnsupportedError(
-  'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models',
-);
+    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
 
 Reward _$RewardFromJson(Map<String, dynamic> json) {
   return _Reward.fromJson(json);
@@ -47,15 +46,14 @@ abstract class $RewardCopyWith<$Res> {
   factory $RewardCopyWith(Reward value, $Res Function(Reward) then) =
       _$RewardCopyWithImpl<$Res, Reward>;
   @useResult
-  $Res call({
-    String id,
-    @JsonKey(name: 'user_id') String userId,
-    @JsonKey(name: 'submission_id') String? submissionId,
-    int points,
-    String type,
-    @JsonKey(name: 'idempotency_key') String idempotencyKey,
-    @JsonKey(name: 'created_at') DateTime createdAt,
-  });
+  $Res call(
+      {String id,
+      @JsonKey(name: 'user_id') String userId,
+      @JsonKey(name: 'submission_id') String? submissionId,
+      int points,
+      String type,
+      @JsonKey(name: 'idempotency_key') String idempotencyKey,
+      @JsonKey(name: 'created_at') DateTime createdAt});
 }
 
 /// @nodoc
@@ -81,59 +79,54 @@ class _$RewardCopyWithImpl<$Res, $Val extends Reward>
     Object? idempotencyKey = null,
     Object? createdAt = null,
   }) {
-    return _then(
-      _value.copyWith(
-            id: null == id
-                ? _value.id
-                : id // ignore: cast_nullable_to_non_nullable
-                      as String,
-            userId: null == userId
-                ? _value.userId
-                : userId // ignore: cast_nullable_to_non_nullable
-                      as String,
-            submissionId: freezed == submissionId
-                ? _value.submissionId
-                : submissionId // ignore: cast_nullable_to_non_nullable
-                      as String?,
-            points: null == points
-                ? _value.points
-                : points // ignore: cast_nullable_to_non_nullable
-                      as int,
-            type: null == type
-                ? _value.type
-                : type // ignore: cast_nullable_to_non_nullable
-                      as String,
-            idempotencyKey: null == idempotencyKey
-                ? _value.idempotencyKey
-                : idempotencyKey // ignore: cast_nullable_to_non_nullable
-                      as String,
-            createdAt: null == createdAt
-                ? _value.createdAt
-                : createdAt // ignore: cast_nullable_to_non_nullable
-                      as DateTime,
-          )
-          as $Val,
-    );
+    return _then(_value.copyWith(
+      id: null == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as String,
+      userId: null == userId
+          ? _value.userId
+          : userId // ignore: cast_nullable_to_non_nullable
+              as String,
+      submissionId: freezed == submissionId
+          ? _value.submissionId
+          : submissionId // ignore: cast_nullable_to_non_nullable
+              as String?,
+      points: null == points
+          ? _value.points
+          : points // ignore: cast_nullable_to_non_nullable
+              as int,
+      type: null == type
+          ? _value.type
+          : type // ignore: cast_nullable_to_non_nullable
+              as String,
+      idempotencyKey: null == idempotencyKey
+          ? _value.idempotencyKey
+          : idempotencyKey // ignore: cast_nullable_to_non_nullable
+              as String,
+      createdAt: null == createdAt
+          ? _value.createdAt
+          : createdAt // ignore: cast_nullable_to_non_nullable
+              as DateTime,
+    ) as $Val);
   }
 }
 
 /// @nodoc
 abstract class _$$RewardImplCopyWith<$Res> implements $RewardCopyWith<$Res> {
   factory _$$RewardImplCopyWith(
-    _$RewardImpl value,
-    $Res Function(_$RewardImpl) then,
-  ) = __$$RewardImplCopyWithImpl<$Res>;
+          _$RewardImpl value, $Res Function(_$RewardImpl) then) =
+      __$$RewardImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({
-    String id,
-    @JsonKey(name: 'user_id') String userId,
-    @JsonKey(name: 'submission_id') String? submissionId,
-    int points,
-    String type,
-    @JsonKey(name: 'idempotency_key') String idempotencyKey,
-    @JsonKey(name: 'created_at') DateTime createdAt,
-  });
+  $Res call(
+      {String id,
+      @JsonKey(name: 'user_id') String userId,
+      @JsonKey(name: 'submission_id') String? submissionId,
+      int points,
+      String type,
+      @JsonKey(name: 'idempotency_key') String idempotencyKey,
+      @JsonKey(name: 'created_at') DateTime createdAt});
 }
 
 /// @nodoc
@@ -141,9 +134,8 @@ class __$$RewardImplCopyWithImpl<$Res>
     extends _$RewardCopyWithImpl<$Res, _$RewardImpl>
     implements _$$RewardImplCopyWith<$Res> {
   __$$RewardImplCopyWithImpl(
-    _$RewardImpl _value,
-    $Res Function(_$RewardImpl) _then,
-  ) : super(_value, _then);
+      _$RewardImpl _value, $Res Function(_$RewardImpl) _then)
+      : super(_value, _then);
 
   /// Create a copy of Reward
   /// with the given fields replaced by the non-null parameter values.
@@ -158,53 +150,50 @@ class __$$RewardImplCopyWithImpl<$Res>
     Object? idempotencyKey = null,
     Object? createdAt = null,
   }) {
-    return _then(
-      _$RewardImpl(
-        id: null == id
-            ? _value.id
-            : id // ignore: cast_nullable_to_non_nullable
-                  as String,
-        userId: null == userId
-            ? _value.userId
-            : userId // ignore: cast_nullable_to_non_nullable
-                  as String,
-        submissionId: freezed == submissionId
-            ? _value.submissionId
-            : submissionId // ignore: cast_nullable_to_non_nullable
-                  as String?,
-        points: null == points
-            ? _value.points
-            : points // ignore: cast_nullable_to_non_nullable
-                  as int,
-        type: null == type
-            ? _value.type
-            : type // ignore: cast_nullable_to_non_nullable
-                  as String,
-        idempotencyKey: null == idempotencyKey
-            ? _value.idempotencyKey
-            : idempotencyKey // ignore: cast_nullable_to_non_nullable
-                  as String,
-        createdAt: null == createdAt
-            ? _value.createdAt
-            : createdAt // ignore: cast_nullable_to_non_nullable
-                  as DateTime,
-      ),
-    );
+    return _then(_$RewardImpl(
+      id: null == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as String,
+      userId: null == userId
+          ? _value.userId
+          : userId // ignore: cast_nullable_to_non_nullable
+              as String,
+      submissionId: freezed == submissionId
+          ? _value.submissionId
+          : submissionId // ignore: cast_nullable_to_non_nullable
+              as String?,
+      points: null == points
+          ? _value.points
+          : points // ignore: cast_nullable_to_non_nullable
+              as int,
+      type: null == type
+          ? _value.type
+          : type // ignore: cast_nullable_to_non_nullable
+              as String,
+      idempotencyKey: null == idempotencyKey
+          ? _value.idempotencyKey
+          : idempotencyKey // ignore: cast_nullable_to_non_nullable
+              as String,
+      createdAt: null == createdAt
+          ? _value.createdAt
+          : createdAt // ignore: cast_nullable_to_non_nullable
+              as DateTime,
+    ));
   }
 }
 
 /// @nodoc
 @JsonSerializable()
 class _$RewardImpl implements _Reward {
-  const _$RewardImpl({
-    required this.id,
-    @JsonKey(name: 'user_id') required this.userId,
-    @JsonKey(name: 'submission_id') this.submissionId,
-    required this.points,
-    required this.type,
-    @JsonKey(name: 'idempotency_key') required this.idempotencyKey,
-    @JsonKey(name: 'created_at') required this.createdAt,
-  });
+  const _$RewardImpl(
+      {required this.id,
+      @JsonKey(name: 'user_id') required this.userId,
+      @JsonKey(name: 'submission_id') this.submissionId,
+      required this.points,
+      required this.type,
+      @JsonKey(name: 'idempotency_key') required this.idempotencyKey,
+      @JsonKey(name: 'created_at') required this.createdAt});
 
   factory _$RewardImpl.fromJson(Map<String, dynamic> json) =>
       _$$RewardImplFromJson(json);
@@ -252,16 +241,8 @@ class _$RewardImpl implements _Reward {
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(
-    runtimeType,
-    id,
-    userId,
-    submissionId,
-    points,
-    type,
-    idempotencyKey,
-    createdAt,
-  );
+  int get hashCode => Object.hash(runtimeType, id, userId, submissionId, points,
+      type, idempotencyKey, createdAt);
 
   /// Create a copy of Reward
   /// with the given fields replaced by the non-null parameter values.
@@ -273,20 +254,22 @@ class _$RewardImpl implements _Reward {
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$RewardImplToJson(this);
+    return _$$RewardImplToJson(
+      this,
+    );
   }
 }
 
 abstract class _Reward implements Reward {
-  const factory _Reward({
-    required final String id,
-    @JsonKey(name: 'user_id') required final String userId,
-    @JsonKey(name: 'submission_id') final String? submissionId,
-    required final int points,
-    required final String type,
-    @JsonKey(name: 'idempotency_key') required final String idempotencyKey,
-    @JsonKey(name: 'created_at') required final DateTime createdAt,
-  }) = _$RewardImpl;
+  const factory _Reward(
+      {required final String id,
+      @JsonKey(name: 'user_id') required final String userId,
+      @JsonKey(name: 'submission_id') final String? submissionId,
+      required final int points,
+      required final String type,
+      @JsonKey(name: 'idempotency_key') required final String idempotencyKey,
+      @JsonKey(name: 'created_at')
+      required final DateTime createdAt}) = _$RewardImpl;
 
   factory _Reward.fromJson(Map<String, dynamic> json) = _$RewardImpl.fromJson;
 

@@ -12,8 +12,7 @@ part of 'dispute_model.dart';
 T _$identity<T>(T value) => value;
 
 final _privateConstructorUsedError = UnsupportedError(
-  'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models',
-);
+    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
 
 Dispute _$DisputeFromJson(Map<String, dynamic> json) {
   return _Dispute.fromJson(json);
@@ -61,22 +60,21 @@ abstract class $DisputeCopyWith<$Res> {
   factory $DisputeCopyWith(Dispute value, $Res Function(Dispute) then) =
       _$DisputeCopyWithImpl<$Res, Dispute>;
   @useResult
-  $Res call({
-    String id,
-    @JsonKey(name: 'submission_id') String submissionId,
-    @JsonKey(name: 'submitter_id') String submitterId,
-    @JsonKey(name: 'original_category') String originalCategory,
-    @JsonKey(name: 'original_confidence') double originalConfidence,
-    @JsonKey(name: 'secondary_category') String? secondaryCategory,
-    @JsonKey(name: 'secondary_confidence') double? secondaryConfidence,
-    @JsonKey(name: 'resolved_category') String? resolvedCategory,
-    @JsonKey(name: 'resolved_by') String? resolvedBy,
-    String? resolution,
-    @JsonKey(name: 'resolution_note') String? resolutionNote,
-    String status,
-    @JsonKey(name: 'created_at') DateTime createdAt,
-    @JsonKey(name: 'resolved_at') DateTime? resolvedAt,
-  });
+  $Res call(
+      {String id,
+      @JsonKey(name: 'submission_id') String submissionId,
+      @JsonKey(name: 'submitter_id') String submitterId,
+      @JsonKey(name: 'original_category') String originalCategory,
+      @JsonKey(name: 'original_confidence') double originalConfidence,
+      @JsonKey(name: 'secondary_category') String? secondaryCategory,
+      @JsonKey(name: 'secondary_confidence') double? secondaryConfidence,
+      @JsonKey(name: 'resolved_category') String? resolvedCategory,
+      @JsonKey(name: 'resolved_by') String? resolvedBy,
+      String? resolution,
+      @JsonKey(name: 'resolution_note') String? resolutionNote,
+      String status,
+      @JsonKey(name: 'created_at') DateTime createdAt,
+      @JsonKey(name: 'resolved_at') DateTime? resolvedAt});
 }
 
 /// @nodoc
@@ -109,94 +107,89 @@ class _$DisputeCopyWithImpl<$Res, $Val extends Dispute>
     Object? createdAt = null,
     Object? resolvedAt = freezed,
   }) {
-    return _then(
-      _value.copyWith(
-            id: null == id
-                ? _value.id
-                : id // ignore: cast_nullable_to_non_nullable
-                      as String,
-            submissionId: null == submissionId
-                ? _value.submissionId
-                : submissionId // ignore: cast_nullable_to_non_nullable
-                      as String,
-            submitterId: null == submitterId
-                ? _value.submitterId
-                : submitterId // ignore: cast_nullable_to_non_nullable
-                      as String,
-            originalCategory: null == originalCategory
-                ? _value.originalCategory
-                : originalCategory // ignore: cast_nullable_to_non_nullable
-                      as String,
-            originalConfidence: null == originalConfidence
-                ? _value.originalConfidence
-                : originalConfidence // ignore: cast_nullable_to_non_nullable
-                      as double,
-            secondaryCategory: freezed == secondaryCategory
-                ? _value.secondaryCategory
-                : secondaryCategory // ignore: cast_nullable_to_non_nullable
-                      as String?,
-            secondaryConfidence: freezed == secondaryConfidence
-                ? _value.secondaryConfidence
-                : secondaryConfidence // ignore: cast_nullable_to_non_nullable
-                      as double?,
-            resolvedCategory: freezed == resolvedCategory
-                ? _value.resolvedCategory
-                : resolvedCategory // ignore: cast_nullable_to_non_nullable
-                      as String?,
-            resolvedBy: freezed == resolvedBy
-                ? _value.resolvedBy
-                : resolvedBy // ignore: cast_nullable_to_non_nullable
-                      as String?,
-            resolution: freezed == resolution
-                ? _value.resolution
-                : resolution // ignore: cast_nullable_to_non_nullable
-                      as String?,
-            resolutionNote: freezed == resolutionNote
-                ? _value.resolutionNote
-                : resolutionNote // ignore: cast_nullable_to_non_nullable
-                      as String?,
-            status: null == status
-                ? _value.status
-                : status // ignore: cast_nullable_to_non_nullable
-                      as String,
-            createdAt: null == createdAt
-                ? _value.createdAt
-                : createdAt // ignore: cast_nullable_to_non_nullable
-                      as DateTime,
-            resolvedAt: freezed == resolvedAt
-                ? _value.resolvedAt
-                : resolvedAt // ignore: cast_nullable_to_non_nullable
-                      as DateTime?,
-          )
-          as $Val,
-    );
+    return _then(_value.copyWith(
+      id: null == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as String,
+      submissionId: null == submissionId
+          ? _value.submissionId
+          : submissionId // ignore: cast_nullable_to_non_nullable
+              as String,
+      submitterId: null == submitterId
+          ? _value.submitterId
+          : submitterId // ignore: cast_nullable_to_non_nullable
+              as String,
+      originalCategory: null == originalCategory
+          ? _value.originalCategory
+          : originalCategory // ignore: cast_nullable_to_non_nullable
+              as String,
+      originalConfidence: null == originalConfidence
+          ? _value.originalConfidence
+          : originalConfidence // ignore: cast_nullable_to_non_nullable
+              as double,
+      secondaryCategory: freezed == secondaryCategory
+          ? _value.secondaryCategory
+          : secondaryCategory // ignore: cast_nullable_to_non_nullable
+              as String?,
+      secondaryConfidence: freezed == secondaryConfidence
+          ? _value.secondaryConfidence
+          : secondaryConfidence // ignore: cast_nullable_to_non_nullable
+              as double?,
+      resolvedCategory: freezed == resolvedCategory
+          ? _value.resolvedCategory
+          : resolvedCategory // ignore: cast_nullable_to_non_nullable
+              as String?,
+      resolvedBy: freezed == resolvedBy
+          ? _value.resolvedBy
+          : resolvedBy // ignore: cast_nullable_to_non_nullable
+              as String?,
+      resolution: freezed == resolution
+          ? _value.resolution
+          : resolution // ignore: cast_nullable_to_non_nullable
+              as String?,
+      resolutionNote: freezed == resolutionNote
+          ? _value.resolutionNote
+          : resolutionNote // ignore: cast_nullable_to_non_nullable
+              as String?,
+      status: null == status
+          ? _value.status
+          : status // ignore: cast_nullable_to_non_nullable
+              as String,
+      createdAt: null == createdAt
+          ? _value.createdAt
+          : createdAt // ignore: cast_nullable_to_non_nullable
+              as DateTime,
+      resolvedAt: freezed == resolvedAt
+          ? _value.resolvedAt
+          : resolvedAt // ignore: cast_nullable_to_non_nullable
+              as DateTime?,
+    ) as $Val);
   }
 }
 
 /// @nodoc
 abstract class _$$DisputeImplCopyWith<$Res> implements $DisputeCopyWith<$Res> {
   factory _$$DisputeImplCopyWith(
-    _$DisputeImpl value,
-    $Res Function(_$DisputeImpl) then,
-  ) = __$$DisputeImplCopyWithImpl<$Res>;
+          _$DisputeImpl value, $Res Function(_$DisputeImpl) then) =
+      __$$DisputeImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({
-    String id,
-    @JsonKey(name: 'submission_id') String submissionId,
-    @JsonKey(name: 'submitter_id') String submitterId,
-    @JsonKey(name: 'original_category') String originalCategory,
-    @JsonKey(name: 'original_confidence') double originalConfidence,
-    @JsonKey(name: 'secondary_category') String? secondaryCategory,
-    @JsonKey(name: 'secondary_confidence') double? secondaryConfidence,
-    @JsonKey(name: 'resolved_category') String? resolvedCategory,
-    @JsonKey(name: 'resolved_by') String? resolvedBy,
-    String? resolution,
-    @JsonKey(name: 'resolution_note') String? resolutionNote,
-    String status,
-    @JsonKey(name: 'created_at') DateTime createdAt,
-    @JsonKey(name: 'resolved_at') DateTime? resolvedAt,
-  });
+  $Res call(
+      {String id,
+      @JsonKey(name: 'submission_id') String submissionId,
+      @JsonKey(name: 'submitter_id') String submitterId,
+      @JsonKey(name: 'original_category') String originalCategory,
+      @JsonKey(name: 'original_confidence') double originalConfidence,
+      @JsonKey(name: 'secondary_category') String? secondaryCategory,
+      @JsonKey(name: 'secondary_confidence') double? secondaryConfidence,
+      @JsonKey(name: 'resolved_category') String? resolvedCategory,
+      @JsonKey(name: 'resolved_by') String? resolvedBy,
+      String? resolution,
+      @JsonKey(name: 'resolution_note') String? resolutionNote,
+      String status,
+      @JsonKey(name: 'created_at') DateTime createdAt,
+      @JsonKey(name: 'resolved_at') DateTime? resolvedAt});
 }
 
 /// @nodoc
@@ -204,9 +197,8 @@ class __$$DisputeImplCopyWithImpl<$Res>
     extends _$DisputeCopyWithImpl<$Res, _$DisputeImpl>
     implements _$$DisputeImplCopyWith<$Res> {
   __$$DisputeImplCopyWithImpl(
-    _$DisputeImpl _value,
-    $Res Function(_$DisputeImpl) _then,
-  ) : super(_value, _then);
+      _$DisputeImpl _value, $Res Function(_$DisputeImpl) _then)
+      : super(_value, _then);
 
   /// Create a copy of Dispute
   /// with the given fields replaced by the non-null parameter values.
@@ -228,88 +220,85 @@ class __$$DisputeImplCopyWithImpl<$Res>
     Object? createdAt = null,
     Object? resolvedAt = freezed,
   }) {
-    return _then(
-      _$DisputeImpl(
-        id: null == id
-            ? _value.id
-            : id // ignore: cast_nullable_to_non_nullable
-                  as String,
-        submissionId: null == submissionId
-            ? _value.submissionId
-            : submissionId // ignore: cast_nullable_to_non_nullable
-                  as String,
-        submitterId: null == submitterId
-            ? _value.submitterId
-            : submitterId // ignore: cast_nullable_to_non_nullable
-                  as String,
-        originalCategory: null == originalCategory
-            ? _value.originalCategory
-            : originalCategory // ignore: cast_nullable_to_non_nullable
-                  as String,
-        originalConfidence: null == originalConfidence
-            ? _value.originalConfidence
-            : originalConfidence // ignore: cast_nullable_to_non_nullable
-                  as double,
-        secondaryCategory: freezed == secondaryCategory
-            ? _value.secondaryCategory
-            : secondaryCategory // ignore: cast_nullable_to_non_nullable
-                  as String?,
-        secondaryConfidence: freezed == secondaryConfidence
-            ? _value.secondaryConfidence
-            : secondaryConfidence // ignore: cast_nullable_to_non_nullable
-                  as double?,
-        resolvedCategory: freezed == resolvedCategory
-            ? _value.resolvedCategory
-            : resolvedCategory // ignore: cast_nullable_to_non_nullable
-                  as String?,
-        resolvedBy: freezed == resolvedBy
-            ? _value.resolvedBy
-            : resolvedBy // ignore: cast_nullable_to_non_nullable
-                  as String?,
-        resolution: freezed == resolution
-            ? _value.resolution
-            : resolution // ignore: cast_nullable_to_non_nullable
-                  as String?,
-        resolutionNote: freezed == resolutionNote
-            ? _value.resolutionNote
-            : resolutionNote // ignore: cast_nullable_to_non_nullable
-                  as String?,
-        status: null == status
-            ? _value.status
-            : status // ignore: cast_nullable_to_non_nullable
-                  as String,
-        createdAt: null == createdAt
-            ? _value.createdAt
-            : createdAt // ignore: cast_nullable_to_non_nullable
-                  as DateTime,
-        resolvedAt: freezed == resolvedAt
-            ? _value.resolvedAt
-            : resolvedAt // ignore: cast_nullable_to_non_nullable
-                  as DateTime?,
-      ),
-    );
+    return _then(_$DisputeImpl(
+      id: null == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as String,
+      submissionId: null == submissionId
+          ? _value.submissionId
+          : submissionId // ignore: cast_nullable_to_non_nullable
+              as String,
+      submitterId: null == submitterId
+          ? _value.submitterId
+          : submitterId // ignore: cast_nullable_to_non_nullable
+              as String,
+      originalCategory: null == originalCategory
+          ? _value.originalCategory
+          : originalCategory // ignore: cast_nullable_to_non_nullable
+              as String,
+      originalConfidence: null == originalConfidence
+          ? _value.originalConfidence
+          : originalConfidence // ignore: cast_nullable_to_non_nullable
+              as double,
+      secondaryCategory: freezed == secondaryCategory
+          ? _value.secondaryCategory
+          : secondaryCategory // ignore: cast_nullable_to_non_nullable
+              as String?,
+      secondaryConfidence: freezed == secondaryConfidence
+          ? _value.secondaryConfidence
+          : secondaryConfidence // ignore: cast_nullable_to_non_nullable
+              as double?,
+      resolvedCategory: freezed == resolvedCategory
+          ? _value.resolvedCategory
+          : resolvedCategory // ignore: cast_nullable_to_non_nullable
+              as String?,
+      resolvedBy: freezed == resolvedBy
+          ? _value.resolvedBy
+          : resolvedBy // ignore: cast_nullable_to_non_nullable
+              as String?,
+      resolution: freezed == resolution
+          ? _value.resolution
+          : resolution // ignore: cast_nullable_to_non_nullable
+              as String?,
+      resolutionNote: freezed == resolutionNote
+          ? _value.resolutionNote
+          : resolutionNote // ignore: cast_nullable_to_non_nullable
+              as String?,
+      status: null == status
+          ? _value.status
+          : status // ignore: cast_nullable_to_non_nullable
+              as String,
+      createdAt: null == createdAt
+          ? _value.createdAt
+          : createdAt // ignore: cast_nullable_to_non_nullable
+              as DateTime,
+      resolvedAt: freezed == resolvedAt
+          ? _value.resolvedAt
+          : resolvedAt // ignore: cast_nullable_to_non_nullable
+              as DateTime?,
+    ));
   }
 }
 
 /// @nodoc
 @JsonSerializable()
 class _$DisputeImpl implements _Dispute {
-  const _$DisputeImpl({
-    required this.id,
-    @JsonKey(name: 'submission_id') required this.submissionId,
-    @JsonKey(name: 'submitter_id') required this.submitterId,
-    @JsonKey(name: 'original_category') required this.originalCategory,
-    @JsonKey(name: 'original_confidence') required this.originalConfidence,
-    @JsonKey(name: 'secondary_category') this.secondaryCategory,
-    @JsonKey(name: 'secondary_confidence') this.secondaryConfidence,
-    @JsonKey(name: 'resolved_category') this.resolvedCategory,
-    @JsonKey(name: 'resolved_by') this.resolvedBy,
-    this.resolution,
-    @JsonKey(name: 'resolution_note') this.resolutionNote,
-    required this.status,
-    @JsonKey(name: 'created_at') required this.createdAt,
-    @JsonKey(name: 'resolved_at') this.resolvedAt,
-  });
+  const _$DisputeImpl(
+      {required this.id,
+      @JsonKey(name: 'submission_id') required this.submissionId,
+      @JsonKey(name: 'submitter_id') required this.submitterId,
+      @JsonKey(name: 'original_category') required this.originalCategory,
+      @JsonKey(name: 'original_confidence') required this.originalConfidence,
+      @JsonKey(name: 'secondary_category') this.secondaryCategory,
+      @JsonKey(name: 'secondary_confidence') this.secondaryConfidence,
+      @JsonKey(name: 'resolved_category') this.resolvedCategory,
+      @JsonKey(name: 'resolved_by') this.resolvedBy,
+      this.resolution,
+      @JsonKey(name: 'resolution_note') this.resolutionNote,
+      required this.status,
+      @JsonKey(name: 'created_at') required this.createdAt,
+      @JsonKey(name: 'resolved_at') this.resolvedAt});
 
   factory _$DisputeImpl.fromJson(Map<String, dynamic> json) =>
       _$$DisputeImplFromJson(json);
@@ -395,22 +384,21 @@ class _$DisputeImpl implements _Dispute {
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(
-    runtimeType,
-    id,
-    submissionId,
-    submitterId,
-    originalCategory,
-    originalConfidence,
-    secondaryCategory,
-    secondaryConfidence,
-    resolvedCategory,
-    resolvedBy,
-    resolution,
-    resolutionNote,
-    status,
-    createdAt,
-    resolvedAt,
-  );
+      runtimeType,
+      id,
+      submissionId,
+      submitterId,
+      originalCategory,
+      originalConfidence,
+      secondaryCategory,
+      secondaryConfidence,
+      resolvedCategory,
+      resolvedBy,
+      resolution,
+      resolutionNote,
+      status,
+      createdAt,
+      resolvedAt);
 
   /// Create a copy of Dispute
   /// with the given fields replaced by the non-null parameter values.
@@ -422,28 +410,31 @@ class _$DisputeImpl implements _Dispute {
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$DisputeImplToJson(this);
+    return _$$DisputeImplToJson(
+      this,
+    );
   }
 }
 
 abstract class _Dispute implements Dispute {
-  const factory _Dispute({
-    required final String id,
-    @JsonKey(name: 'submission_id') required final String submissionId,
-    @JsonKey(name: 'submitter_id') required final String submitterId,
-    @JsonKey(name: 'original_category') required final String originalCategory,
-    @JsonKey(name: 'original_confidence')
-    required final double originalConfidence,
-    @JsonKey(name: 'secondary_category') final String? secondaryCategory,
-    @JsonKey(name: 'secondary_confidence') final double? secondaryConfidence,
-    @JsonKey(name: 'resolved_category') final String? resolvedCategory,
-    @JsonKey(name: 'resolved_by') final String? resolvedBy,
-    final String? resolution,
-    @JsonKey(name: 'resolution_note') final String? resolutionNote,
-    required final String status,
-    @JsonKey(name: 'created_at') required final DateTime createdAt,
-    @JsonKey(name: 'resolved_at') final DateTime? resolvedAt,
-  }) = _$DisputeImpl;
+  const factory _Dispute(
+      {required final String id,
+      @JsonKey(name: 'submission_id') required final String submissionId,
+      @JsonKey(name: 'submitter_id') required final String submitterId,
+      @JsonKey(name: 'original_category')
+      required final String originalCategory,
+      @JsonKey(name: 'original_confidence')
+      required final double originalConfidence,
+      @JsonKey(name: 'secondary_category') final String? secondaryCategory,
+      @JsonKey(name: 'secondary_confidence') final double? secondaryConfidence,
+      @JsonKey(name: 'resolved_category') final String? resolvedCategory,
+      @JsonKey(name: 'resolved_by') final String? resolvedBy,
+      final String? resolution,
+      @JsonKey(name: 'resolution_note') final String? resolutionNote,
+      required final String status,
+      @JsonKey(name: 'created_at') required final DateTime createdAt,
+      @JsonKey(name: 'resolved_at')
+      final DateTime? resolvedAt}) = _$DisputeImpl;
 
   factory _Dispute.fromJson(Map<String, dynamic> json) = _$DisputeImpl.fromJson;
 

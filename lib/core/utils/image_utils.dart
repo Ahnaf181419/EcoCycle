@@ -1,5 +1,29 @@
-import 'dart:typed_data';
+import 'dart:math' as math;
+import 'package:flutter/foundation.dart';
 import 'package:image/image.dart' as img;
+
+class _CompressParams {
+  final Uint8List imageBytes;
+  final int maxWidth;
+  final int maxHeight;
+  final int quality;
+
+  _CompressParams({
+    required this.imageBytes,
+    required this.maxWidth,
+    required this.maxHeight,
+    required this.quality,
+  });
+}
+
+Uint8List _compressForUploadIsolate(_CompressParams params) {
+  return ImageUtils.compressForUpload(
+    params.imageBytes,
+    maxWidth: params.maxWidth,
+    maxHeight: params.maxHeight,
+    quality: params.quality,
+  );
+}
 
 class ImageUtils {
   ImageUtils._();
@@ -15,16 +39,34 @@ class ImageUtils {
 
     img.Image resized = image;
     if (image.width > maxWidth || image.height > maxHeight) {
+      final scale = math.min(maxWidth / image.width, maxHeight / image.height);
       resized = img.copyResize(
         image,
-        width: maxWidth,
-        height: maxHeight,
+        width: (image.width * scale).round(),
+        height: (image.height * scale).round(),
         interpolation: img.Interpolation.linear,
       );
     }
 
     final jpg = img.encodeJpg(resized, quality: quality);
     return Uint8List.fromList(jpg);
+  }
+
+  static Future<Uint8List> compressForUploadAsync(
+    Uint8List imageBytes, {
+    int maxWidth = 1024,
+    int maxHeight = 1024,
+    int quality = 80,
+  }) {
+    return compute(
+      _compressForUploadIsolate,
+      _CompressParams(
+        imageBytes: imageBytes,
+        maxWidth: maxWidth,
+        maxHeight: maxHeight,
+        quality: quality,
+      ),
+    );
   }
 
   static Uint8List preprocessForTFLite(
