@@ -124,10 +124,10 @@ final routerProvider = Provider<GoRouter>((ref) {
       ),
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) {
+          final role = ref.watch(authProvider.select((s) => s.user?.role));
           return AppShell(
             navigationShell: navigationShell,
-            userRole:
-                UserRole.fromString(ref.read(authProvider).user?.role).value,
+            userRole: UserRole.fromString(role).value,
           );
         },
         branches: [

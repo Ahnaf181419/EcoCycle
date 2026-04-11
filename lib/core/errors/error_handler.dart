@@ -1,3 +1,5 @@
+import 'dart:async';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import '../errors/app_error.dart';
 
@@ -7,6 +9,13 @@ class ErrorHandler {
   static String getUserMessage(dynamic error) {
     if (error is AppError) {
       return error.message;
+    }
+
+    if (error is SocketException) {
+      return 'Network error. Please check your connection.';
+    }
+    if (error is TimeoutException || error is HttpException) {
+      return 'Request timed out. Please try again.';
     }
 
     if (error is Exception) {

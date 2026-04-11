@@ -15,6 +15,7 @@ import '../../../core/extensions/datetime_extensions.dart';
 import '../../../shared/widgets/user_avatar.dart';
 import '../../../shared/widgets/category_badge.dart';
 import '../../../shared/widgets/error_view.dart';
+import '../../../core/constants/route_constants.dart';
 
 class FeedScreen extends ConsumerWidget {
   const FeedScreen({super.key});
@@ -92,7 +93,7 @@ class FeedScreen extends ConsumerWidget {
                 return SliverFillRemaining(
                   child: _EmptyFeed(
                     onExplore: () {
-                      context.go('/leaderboard');
+                      context.go(RouteConstants.leaderboard);
                     },
                   ),
                 );
@@ -203,7 +204,7 @@ class _FeedCard extends StatelessWidget {
         color: Colors.transparent,
         borderRadius: BorderRadius.circular(20),
         child: InkWell(
-          onTap: () => context.go('/profile/${item.user.uid}'),
+          onTap: () => context.go('${RouteConstants.profile}/${item.user.uid}'),
           borderRadius: BorderRadius.circular(20),
           child: Padding(
             padding: const EdgeInsets.all(AppSpacing.spaceLG),

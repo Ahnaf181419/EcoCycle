@@ -12,6 +12,7 @@ import '../../../core/theme/app_typography.dart';
 import '../../../core/extensions/datetime_extensions.dart';
 import '../../../shared/widgets/error_view.dart';
 import '../../../shared/widgets/category_badge.dart';
+import '../../../core/constants/route_constants.dart';
 
 class DisputeQueueScreen extends ConsumerWidget {
   const DisputeQueueScreen({super.key});
@@ -178,7 +179,7 @@ class _DisputeCard extends StatelessWidget {
         color: Colors.transparent,
         borderRadius: BorderRadius.circular(20),
         child: InkWell(
-          onTap: () => context.go('/disputes/${dispute.id}'),
+          onTap: () => context.go('${RouteConstants.disputes}/${dispute.id}'),
           borderRadius: BorderRadius.circular(20),
           child: Padding(
             padding: const EdgeInsets.all(AppSpacing.spaceLG),

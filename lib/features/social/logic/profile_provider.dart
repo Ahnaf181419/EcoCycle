@@ -23,7 +23,8 @@ final userProfileProvider =
 });
 
 final profileEditProvider =
-    StateNotifierProvider<ProfileEditNotifier, ProfileEditState>((ref) {
+    StateNotifierProvider.autoDispose<ProfileEditNotifier, ProfileEditState>(
+        (ref) {
   return ProfileEditNotifier(
     userRepository: ref.watch(userRepositoryProvider),
     ref: ref,
@@ -31,6 +32,8 @@ final profileEditProvider =
 });
 
 class ProfileEditState {
+  static const _sentinel = Object();
+
   final bool isLoading;
   final String? error;
   final bool success;
@@ -41,10 +44,14 @@ class ProfileEditState {
     this.success = false,
   });
 
-  ProfileEditState copyWith({bool? isLoading, String? error, bool? success}) {
+  ProfileEditState copyWith({
+    bool? isLoading,
+    Object? error = _sentinel,
+    bool? success,
+  }) {
     return ProfileEditState(
       isLoading: isLoading ?? this.isLoading,
-      error: error,
+      error: error == _sentinel ? this.error : error as String?,
       success: success ?? this.success,
     );
   }

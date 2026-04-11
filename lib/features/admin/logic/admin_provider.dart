@@ -24,17 +24,19 @@ final allUsersProvider = StreamProvider.autoDispose<List<UserProfile>>((ref) {
   return repo.getAllUsers();
 });
 
-final totalUsersCountProvider = FutureProvider<int>((ref) async {
+final totalUsersCountProvider = FutureProvider.autoDispose<int>((ref) async {
   final repo = ref.watch(adminRepositoryProvider);
   return repo.getTotalUsers();
 });
 
-final totalSubmissionsCountProvider = FutureProvider<int>((ref) async {
+final totalSubmissionsCountProvider =
+    FutureProvider.autoDispose<int>((ref) async {
   final repo = ref.watch(adminRepositoryProvider);
   return repo.getTotalSubmissions();
 });
 
-final adminPendingDisputesCountProvider = FutureProvider<int>((ref) async {
+final adminPendingDisputesCountProvider =
+    FutureProvider.autoDispose<int>((ref) async {
   final repo = ref.watch(adminRepositoryProvider);
   return repo.getPendingDisputesCount();
 });
@@ -53,6 +55,8 @@ final roleUpdateProvider =
 });
 
 class RoleUpdateState {
+  static const _sentinel = Object();
+
   final bool isLoading;
   final String? error;
   final bool success;
@@ -63,10 +67,14 @@ class RoleUpdateState {
     this.success = false,
   });
 
-  RoleUpdateState copyWith({bool? isLoading, String? error, bool? success}) {
+  RoleUpdateState copyWith({
+    bool? isLoading,
+    Object? error = _sentinel,
+    bool? success,
+  }) {
     return RoleUpdateState(
       isLoading: isLoading ?? this.isLoading,
-      error: error,
+      error: error == _sentinel ? this.error : error as String?,
       success: success ?? this.success,
     );
   }
@@ -80,6 +88,15 @@ class RoleUpdateNotifier extends StateNotifier<RoleUpdateState> {
         super(const RoleUpdateState());
 
   Future<bool> updateRole(String targetUserId, String newRole) async {
+    if (!UserRole.values.any((r) => r.value == newRole)) {
+      state = state.copyWith(
+        isLoading: false,
+        error: 'Invalid role: $newRole',
+        success: false,
+      );
+      return false;
+    }
+
     state = state.copyWith(isLoading: true, error: null, success: false);
     try {
       await _supabaseFunctionService.updateRole(

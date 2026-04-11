@@ -32,6 +32,9 @@ class HomeScreen extends ConsumerWidget {
       body: CustomScrollView(
         slivers: [
           _buildSliverAppBar(context, user),
+          const SliverToBoxAdapter(
+            child: SizedBox(height: AppSpacing.spaceLG),
+          ),
           SliverToBoxAdapter(
             child: Column(
               children: [

@@ -25,15 +25,15 @@ class AdminRepository {
     }
   }
 
-  /// Returns all users. Should ONLY be called after verifying user is admin.
-  /// The calling provider (allUsersProvider) handles the admin check.
-  Stream<List<UserProfile>> getAllUsers({int limit = 50}) {
+  Stream<List<UserProfile>> getAllUsers({int limit = 50}) async* {
+    await _verifyAdminRole();
     final user = _client.auth.currentUser;
     if (user == null) {
-      return Stream.error(StateError('Unauthorized: User not authenticated'));
+      yield* Stream.error(StateError('Unauthorized: User not authenticated'));
+      return;
     }
 
-    return _client
+    yield* _client
         .from(SupabaseTables.profiles)
         .stream(primaryKey: ['uid'])
         .order('created_at', ascending: false)
@@ -59,23 +59,24 @@ class AdminRepository {
   Future<int> getTotalUsers() async {
     await _verifyAdminRole();
     final response = await _client.rpc('count_users').select();
-    return response.first['count'] as int? ?? 0;
+    return response.firstOrNull?['count'] as int? ?? 0;
   }
 
   Future<int> getTotalSubmissions() async {
     await _verifyAdminRole();
     final response = await _client.rpc('count_submissions').select();
-    return response.first['count'] as int? ?? 0;
+    return response.firstOrNull?['count'] as int? ?? 0;
   }
 
   Future<int> getPendingDisputesCount() async {
     await _verifyAdminRole();
     final response = await _client.rpc('count_pending_disputes').select();
-    return response.first['count'] as int? ?? 0;
+    return response.firstOrNull?['count'] as int? ?? 0;
   }
 
-  Stream<List<AuditLogEntry>> getRecentAuditLog({int limit = 20}) {
-    return _client
+  Stream<List<AuditLogEntry>> getRecentAuditLog({int limit = 20}) async* {
+    await _verifyAdminRole();
+    yield* _client
         .from(SupabaseTables.auditLog)
         .stream(primaryKey: ['id'])
         .order('timestamp', ascending: false)

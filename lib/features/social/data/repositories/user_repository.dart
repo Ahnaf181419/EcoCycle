@@ -6,7 +6,7 @@ class UserRepository {
   final SupabaseClient _client;
 
   UserRepository({SupabaseClient? client})
-    : _client = client ?? SupabaseConstants.client;
+      : _client = client ?? SupabaseConstants.client;
 
   Stream<UserProfile?> get currentUserProfile {
     final uid = _client.auth.currentUser?.id;
@@ -48,7 +48,7 @@ class UserRepository {
 
   Future<void> updateProfile({String? displayName, String? photoUrl}) async {
     final uid = _client.auth.currentUser?.id;
-    if (uid == null) return;
+    if (uid == null) throw StateError('Not authenticated');
 
     final updates = <String, dynamic>{};
     if (displayName != null) updates['display_name'] = displayName;
@@ -58,20 +58,16 @@ class UserRepository {
       throw ArgumentError('At least one field must be provided for update');
     }
 
-    await _client
-        .from(SupabaseTables.profiles)
-        .update(updates)
-        .eq('uid', uid);
+    await _client.from(SupabaseTables.profiles).update(updates).eq('uid', uid);
   }
 
   Future<void> updatePrivacy(bool isPrivate) async {
     final uid = _client.auth.currentUser?.id;
-    if (uid == null) return;
+    if (uid == null) throw StateError('Not authenticated');
 
     await _client
         .from(SupabaseTables.profiles)
-        .update({'is_private': isPrivate})
-        .eq('uid', uid);
+        .update({'is_private': isPrivate}).eq('uid', uid);
   }
 
   /// Deletes the current user's account atomically via the `admin` edge
@@ -83,7 +79,7 @@ class UserRepository {
   /// profile row is stranded forever.
   Future<void> deleteAccount() async {
     final uid = _client.auth.currentUser?.id;
-    if (uid == null) return;
+    if (uid == null) throw StateError('Not authenticated');
 
     await _client.functions.invoke(
       EdgeFunctionNames.admin,

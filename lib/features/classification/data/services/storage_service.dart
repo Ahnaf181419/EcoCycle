@@ -120,6 +120,9 @@ class StorageService {
     if (pathParts.length < 3 || pathParts[0] != 'submissions') {
       throw Exception('Invalid storage path format');
     }
+    if (pathParts.any((p) => p == '..' || p == '.')) {
+      throw Exception('Invalid storage path');
+    }
 
     final ownerId = pathParts[1];
     final userRoleResponse = await _client

@@ -17,6 +17,7 @@ import '../../../core/extensions/string_extensions.dart';
 import '../../../core/extensions/datetime_extensions.dart';
 import '../../../core/extensions/context_extensions.dart';
 import '../../../shared/widgets/category_badge.dart';
+import '../../../shared/widgets/error_view.dart';
 
 class OwnProfileScreen extends ConsumerWidget {
   const OwnProfileScreen({super.key});
@@ -32,7 +33,7 @@ class OwnProfileScreen extends ConsumerWidget {
       body: CustomScrollView(
         slivers: [
           SliverAppBar(
-            expandedHeight: context.responsiveHeight(180, small: 200),
+            expandedHeight: context.responsiveHeight(220, small: 240),
             pinned: true,
             backgroundColor: AppColors.primary,
             foregroundColor: Colors.white,
@@ -159,8 +160,12 @@ class OwnProfileScreen extends ConsumerWidget {
                 child: Center(child: CircularProgressIndicator()),
               ),
             ),
-            error: (_, __) =>
-                const SliverToBoxAdapter(child: SizedBox.shrink()),
+            error: (_, __) => SliverFillRemaining(
+              child: ErrorView(
+                message: 'Could not load recent submissions',
+                onRetry: () => ref.invalidate(recentSubmissionsProvider),
+              ),
+            ),
             data: (submissions) {
               if (submissions.isEmpty) {
                 return SliverToBoxAdapter(

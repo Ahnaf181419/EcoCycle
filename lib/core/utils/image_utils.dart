@@ -37,13 +37,27 @@ class ImageUtils {
     final image = img.decodeImage(imageBytes);
     if (image == null) return imageBytes;
 
-    img.Image resized = image;
-    if (image.width > maxWidth || image.height > maxHeight) {
-      final scale = math.min(maxWidth / image.width, maxHeight / image.height);
+    img.Image cleaned = img.Image(
+      width: image.width,
+      height: image.height,
+      numChannels: image.numChannels,
+    );
+    for (int y = 0; y < image.height; y++) {
+      for (int x = 0; x < image.width; x++) {
+        final p = image.getPixel(x, y);
+        cleaned.setPixelRgba(
+            x, y, p.r.toInt(), p.g.toInt(), p.b.toInt(), p.a.toInt());
+      }
+    }
+
+    img.Image resized = cleaned;
+    if (cleaned.width > maxWidth || cleaned.height > maxHeight) {
+      final scale =
+          math.min(maxWidth / cleaned.width, maxHeight / cleaned.height);
       resized = img.copyResize(
-        image,
-        width: (image.width * scale).round(),
-        height: (image.height * scale).round(),
+        cleaned,
+        width: (cleaned.width * scale).round(),
+        height: (cleaned.height * scale).round(),
         interpolation: img.Interpolation.linear,
       );
     }

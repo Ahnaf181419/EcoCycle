@@ -30,8 +30,8 @@ final submissionRepositoryProvider = Provider<SubmissionRepository>((ref) {
   return SubmissionRepository();
 });
 
-final classificationProvider =
-    StateNotifierProvider<ClassificationNotifier, ClassificationState>((ref) {
+final classificationProvider = StateNotifierProvider.autoDispose<
+    ClassificationNotifier, ClassificationState>((ref) {
   return ClassificationNotifier(
     ref: ref,
     storageService: ref.watch(storageServiceProvider),
@@ -255,7 +255,7 @@ class ClassificationNotifier extends StateNotifier<ClassificationState> {
         storagePath: storagePath,
         idempotencyKey: idempotencyKey,
         userId: user.uid,
-        username: user.username ?? 'anonymous',
+        username: user.username,
         tfliteResult: tfliteResult,
       );
       if (!mounted) return;

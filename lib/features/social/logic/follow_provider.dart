@@ -31,15 +31,17 @@ final followActionProvider = StateNotifierProvider.autoDispose
 });
 
 class FollowActionState {
+  static const _sentinel = Object();
+
   final bool isLoading;
   final String? error;
 
   const FollowActionState({this.isLoading = false, this.error});
 
-  FollowActionState copyWith({bool? isLoading, String? error}) {
+  FollowActionState copyWith({bool? isLoading, Object? error = _sentinel}) {
     return FollowActionState(
       isLoading: isLoading ?? this.isLoading,
-      error: error,
+      error: error == _sentinel ? this.error : error as String?,
     );
   }
 }

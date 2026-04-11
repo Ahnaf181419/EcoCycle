@@ -56,7 +56,10 @@ class AppShell extends StatelessWidget {
 
   void _onItemTapped(int index, BuildContext context, List<NavTab> tabs) {
     if (index >= 0 && index < tabs.length) {
-      context.go(tabs[index].route);
+      navigationShell.goBranch(
+        index,
+        initialLocation: index == navigationShell.currentIndex,
+      );
     }
   }
 }

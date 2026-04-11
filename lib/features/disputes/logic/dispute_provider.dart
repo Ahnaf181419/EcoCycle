@@ -24,7 +24,8 @@ final disputeProvider = StreamProvider.autoDispose.family<Dispute?, String>((
   return repo.getDispute(disputeId);
 });
 
-final submissionImageUrlProvider = FutureProvider.family<String?, String>((
+final submissionImageUrlProvider =
+    FutureProvider.autoDispose.family<String?, String>((
   ref,
   submissionId,
 ) {
@@ -32,7 +33,8 @@ final submissionImageUrlProvider = FutureProvider.family<String?, String>((
   return repo.getSubmissionImageUrl(submissionId);
 });
 
-final pendingDisputeCountProvider = FutureProvider<int>((ref) async {
+final pendingDisputeCountProvider =
+    FutureProvider.autoDispose<int>((ref) async {
   final repo = ref.watch(disputeRepositoryProvider);
   return repo.getPendingDisputeCount();
 });
@@ -49,6 +51,8 @@ final disputeResolutionProvider =
 });
 
 class DisputeResolutionState {
+  static const _sentinel = Object();
+
   final bool isLoading;
   final String? error;
   final bool success;
@@ -61,12 +65,12 @@ class DisputeResolutionState {
 
   DisputeResolutionState copyWith({
     bool? isLoading,
-    String? error,
+    Object? error = _sentinel,
     bool? success,
   }) {
     return DisputeResolutionState(
       isLoading: isLoading ?? this.isLoading,
-      error: error,
+      error: error == _sentinel ? this.error : error as String?,
       success: success ?? this.success,
     );
   }

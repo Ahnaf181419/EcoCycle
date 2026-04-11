@@ -37,10 +37,14 @@ class SubmissionRepository {
   }
 
   Future<Submission?> getSubmission(String submissionId) async {
+    final uid = _client.auth.currentUser?.id;
+    if (uid == null) return null;
+
     final response = await _client
         .from(SupabaseTables.submissions)
         .select()
         .eq('id', submissionId)
+        .eq('user_id', uid)
         .maybeSingle();
 
     if (response == null) return null;

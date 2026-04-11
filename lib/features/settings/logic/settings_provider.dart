@@ -1,13 +1,14 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../auth/logic/auth_provider.dart';
 import '../../social/data/repositories/user_repository.dart';
+import '../../social/logic/profile_provider.dart';
 
 final settingsRepositoryProvider = Provider<UserRepository>((ref) {
-  return UserRepository();
+  return ref.watch(userRepositoryProvider);
 });
 
-final privacyToggleProvider =
-    StateNotifierProvider<PrivacyToggleNotifier, PrivacyToggleState>((ref) {
+final privacyToggleProvider = StateNotifierProvider.autoDispose<
+    PrivacyToggleNotifier, PrivacyToggleState>((ref) {
   return PrivacyToggleNotifier(
     userRepository: ref.watch(settingsRepositoryProvider),
     ref: ref,
@@ -15,6 +16,8 @@ final privacyToggleProvider =
 });
 
 class PrivacyToggleState {
+  static const _sentinel = Object();
+
   final bool isLoading;
   final String? error;
   final bool success;
@@ -25,11 +28,15 @@ class PrivacyToggleState {
     this.success = false,
   });
 
-  PrivacyToggleState copyWith({bool? isLoading, String? error, bool? success}) {
+  PrivacyToggleState copyWith({
+    bool? isLoading,
+    Object? error = _sentinel,
+    bool? success,
+  }) {
     return PrivacyToggleState(
       isLoading: isLoading ?? this.isLoading,
-      error: error,
-      success: success ?? false,
+      error: error == _sentinel ? this.error : error as String?,
+      success: success ?? this.success,
     );
   }
 }
@@ -61,14 +68,16 @@ class PrivacyToggleNotifier extends StateNotifier<PrivacyToggleState> {
   }
 }
 
-final deleteAccountProvider =
-    StateNotifierProvider<DeleteAccountNotifier, DeleteAccountState>((ref) {
+final deleteAccountProvider = StateNotifierProvider.autoDispose<
+    DeleteAccountNotifier, DeleteAccountState>((ref) {
   return DeleteAccountNotifier(
     userRepository: ref.watch(settingsRepositoryProvider),
   );
 });
 
 class DeleteAccountState {
+  static const _sentinel = Object();
+
   final bool isLoading;
   final String? error;
   final bool success;
@@ -79,11 +88,15 @@ class DeleteAccountState {
     this.success = false,
   });
 
-  DeleteAccountState copyWith({bool? isLoading, String? error, bool? success}) {
+  DeleteAccountState copyWith({
+    bool? isLoading,
+    Object? error = _sentinel,
+    bool? success,
+  }) {
     return DeleteAccountState(
       isLoading: isLoading ?? this.isLoading,
-      error: error,
-      success: success ?? false,
+      error: error == _sentinel ? this.error : error as String?,
+      success: success ?? this.success,
     );
   }
 }

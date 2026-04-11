@@ -168,34 +168,35 @@ class _UserManagementScreenState extends ConsumerState<UserManagementScreen> {
   }
 
   void _showRoleConfirmDialog(
-    BuildContext context,
+    BuildContext parentContext,
     UserProfile user,
     String newRole,
   ) {
+    final messenger = ScaffoldMessenger.of(parentContext);
     showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
+      context: parentContext,
+      builder: (dialogContext) => AlertDialog(
         title: const Text('Change Role'),
         content: Text(
           'Change role of ${user.displayName} from "${user.role}" to "$newRole"?',
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context),
+            onPressed: () => Navigator.pop(dialogContext),
             child: const Text('Cancel'),
           ),
           FilledButton(
             onPressed: () async {
-              Navigator.pop(context);
+              Navigator.pop(dialogContext);
               final success = await ref
                   .read(roleUpdateProvider.notifier)
                   .updateRole(user.uid, newRole);
-              if (success && context.mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(
+              if (success) {
+                messenger.showSnackBar(
                   const SnackBar(content: Text('Role updated successfully')),
                 );
-              } else if (!success && context.mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(
+              } else {
+                messenger.showSnackBar(
                   const SnackBar(content: Text('Failed to update role')),
                 );
               }

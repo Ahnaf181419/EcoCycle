@@ -25,7 +25,7 @@ final totalRedeemedProvider = StreamProvider.autoDispose<int>((ref) {
   return repo.getTotalRedeemedPoints();
 });
 
-final rewardBalanceProvider = Provider<RewardBalance?>((ref) {
+final rewardBalanceProvider = Provider.autoDispose<RewardBalance?>((ref) {
   final earned = ref.watch(totalEarnedProvider);
   final redeemed = ref.watch(totalRedeemedProvider);
 

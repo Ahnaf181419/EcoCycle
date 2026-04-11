@@ -246,11 +246,8 @@ class RewardsScreen extends ConsumerWidget {
             ),
           );
         }
-        return SliverList(
-          delegate: SliverChildBuilderDelegate(
-            (context, index) => _RewardTile(reward: rewards[index]),
-            childCount: rewards.length,
-          ),
+        return Column(
+          children: rewards.map((r) => _RewardTile(reward: r)).toList(),
         );
       },
     );

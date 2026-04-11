@@ -13,6 +13,7 @@ import '../../../core/theme/app_typography.dart';
 import '../../../core/extensions/context_extensions.dart';
 import '../../../shared/widgets/user_avatar.dart';
 import '../../../shared/widgets/rank_badge.dart';
+import '../../../core/constants/route_constants.dart';
 
 class LeaderboardScreen extends ConsumerWidget {
   const LeaderboardScreen({super.key});
@@ -275,7 +276,7 @@ class _PodiumCard extends StatelessWidget {
     final avatarRadius = isCenter ? 32.0 : 26.0;
 
     return GestureDetector(
-      onTap: () => context.go('/profile/${user.uid}'),
+      onTap: () => context.go('${RouteConstants.profile}/${user.uid}'),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -374,10 +375,12 @@ class _LeaderboardList extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: AppSpacing.spaceLG),
-      child: Column(
-        children: users.asMap().entries.map((entry) {
-          final index = entry.key;
-          final user = entry.value;
+      child: ListView.builder(
+        shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(),
+        itemCount: users.length,
+        itemBuilder: (context, index) {
+          final user = users[index];
           final rank = startIndex + index;
           final isCurrent = user.uid == currentUid;
 
@@ -386,7 +389,7 @@ class _LeaderboardList extends StatelessWidget {
             rank: rank,
             isCurrentUser: isCurrent,
           );
-        }).toList(),
+        },
       ),
     );
   }
@@ -413,7 +416,7 @@ class _LeaderboardTile extends StatelessWidget {
             : AppColors.surface,
         borderRadius: BorderRadius.circular(16),
         child: InkWell(
-          onTap: () => context.go('/profile/${user.uid}'),
+          onTap: () => context.go('${RouteConstants.profile}/${user.uid}'),
           borderRadius: BorderRadius.circular(16),
           child: Container(
             padding: const EdgeInsets.symmetric(

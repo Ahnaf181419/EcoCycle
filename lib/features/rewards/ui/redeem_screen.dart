@@ -79,7 +79,7 @@ class _RedeemScreenState extends ConsumerState<RedeemScreen> {
             ),
           ),
           SliverToBoxAdapter(
-            child: SingleChildScrollView(
+            child: Padding(
               padding: const EdgeInsets.all(AppSpacing.spaceLG),
               child: Form(
                 key: _formKey,
@@ -312,7 +312,7 @@ class _RedeemScreenState extends ConsumerState<RedeemScreen> {
     );
   }
 
-  Widget _buildSuccess(redeemState) {
+  Widget _buildSuccess(RedeemState redeemState) {
     return Padding(
       padding: const EdgeInsets.only(top: AppSpacing.spaceLG),
       child: Container(

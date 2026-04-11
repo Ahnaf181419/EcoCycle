@@ -17,66 +17,37 @@ class SupabaseFunctionService {
     required String username,
     Map<String, dynamic>? tfliteResult,
   }) async {
+    // Delegate to the `classify` edge function, which runs Gemini for the
+    // real ML call, cross-validates against any tflite hint, applies the
+    // config-driven confidence threshold, writes submissions/classifications/
+    // disputes/rewards, and handles idempotency. Doing this on the client
+    // would require inlining all of that logic (and shipping the Gemini key).
     try {
-      final category = tfliteResult?['category'] as String? ?? 'unclassified';
-      final confidence =
-          (tfliteResult?['confidence'] as num?)?.toDouble() ?? 0.0;
-      final points = _calculatePoints(confidence);
-      final now = DateTime.now().toIso8601String();
+      final response = await _client.functions.invoke(
+        EdgeFunctionNames.classify,
+        body: {
+          'action': 'classify',
+          'imageUrl': imageUrl,
+          'storagePath': storagePath,
+          'idempotencyKey': idempotencyKey,
+          if (tfliteResult != null) 'tfliteResult': tfliteResult,
+        },
+      );
 
-      final submissionId = await _client
-          .from(SupabaseTables.submissions)
-          .insert({
-            'user_id': userId,
-            'username': username,
-            'image_url': imageUrl,
-            'storage_path': storagePath,
-            'category': category,
-            'confidence': confidence,
-            'state': 'SUBMITTED',
-            'points_awarded': points,
-            'idempotency_key': idempotencyKey,
-            'classified_at': now,
-          })
-          .select()
-          .then((rows) => rows.first['id'] as String);
-
-      if (points > 0) {
-        try {
-          final profile = await _client
-              .from(SupabaseTables.profiles)
-              .select('points')
-              .eq('uid', userId)
-              .maybeSingle();
-
-          if (profile != null) {
-            final currentPoints = (profile['points'] as int?) ?? 0;
-            await _client.from(SupabaseTables.profiles).update({
-              'points': currentPoints + points,
-            }).eq('uid', userId);
-          }
-        } catch (e) {
-          // Log but continue - points are already awarded in submission
-        }
+      final data = response.data;
+      if (data is! Map) {
+        throw Exception('Unexpected response from classify function');
       }
-
-      return {
-        'submissionId': submissionId,
-        'state': 'SUBMITTED',
-        'category': category,
-        'confidence': confidence,
-        'pointsAwarded': points,
-      };
+      final map = Map<String, dynamic>.from(data);
+      if (map['error'] != null) {
+        throw Exception(map['error'].toString());
+      }
+      return map;
+    } on Exception {
+      rethrow;
     } catch (e) {
-      throw Exception('Failed to create submission: $e');
+      throw Exception('Failed to classify submission: $e');
     }
-  }
-
-  int _calculatePoints(double confidence) {
-    if (confidence >= 0.9) return 10;
-    if (confidence >= 0.7) return 7;
-    if (confidence >= 0.5) return 5;
-    return 3;
   }
 
   Future<Map<String, dynamic>> redeemPoints({
@@ -89,39 +60,21 @@ class SupabaseFunctionService {
     }
 
     try {
-      // Direct update since RPC with params not supported in this version
-      final profile = await _client
-          .from(SupabaseTables.profiles)
-          .select()
-          .eq('uid', user.id)
-          .maybeSingle();
+      final result = await _client.rpc(
+        'atomic_redeem_points',
+        params: {'target_uid': user.id, 'redeem_amount': points},
+      );
 
-      if (profile == null) {
-        throw Exception('Profile not found');
+      final success = result['success'] as bool? ?? false;
+      if (!success) {
+        final message = result['message'] as String? ?? 'Redemption failed';
+        throw Exception(message);
       }
 
-      final currentPoints = (profile['points'] as int?) ?? 0;
-      final redeemedPoints = (profile['redeemed_points'] as int?) ?? 0;
-      final available = currentPoints - redeemedPoints;
-
-      if (available < points) {
-        throw Exception('Insufficient points. Available: $available');
-      }
-
-      await _client.from(SupabaseTables.profiles).update({
-        'redeemed_points': redeemedPoints + points,
-      }).eq('uid', user.id);
-
-      // Log reward record
-      await _client.from(SupabaseTables.rewards).insert({
-        'user_id': user.id,
-        'points': -points,
-        'type': 'REDEMPTION',
-        'idempotency_key': idempotencyKey,
-      });
-
-      final newAvailable = available - points;
+      final newAvailable = result['new_balance'] as int? ?? 0;
       return {'availableBalance': newAvailable, 'success': true};
+    } on Exception {
+      rethrow;
     } catch (e) {
       throw Exception('Failed to redeem points: $e');
     }
@@ -171,6 +124,8 @@ class SupabaseFunctionService {
         'disputeId': disputeId,
         'resolution': resolution
       };
+    } on Exception {
+      rethrow;
     } catch (e) {
       throw Exception('Failed to resolve dispute: $e');
     }
@@ -190,33 +145,35 @@ class SupabaseFunctionService {
         'followee_id': targetUserId,
       });
 
-      // Update follower count
+      // Increment following_count on follower (user.id)
       final followerProfile = await _client
           .from(SupabaseTables.profiles)
-          .select('follower_count')
+          .select('following_count')
           .eq('uid', user.id)
           .maybeSingle();
       if (followerProfile != null) {
-        final count = (followerProfile['follower_count'] as int?) ?? 0;
+        final count = (followerProfile['following_count'] as int?) ?? 0;
         await _client.from(SupabaseTables.profiles).update({
-          'follower_count': count + 1,
+          'following_count': count + 1,
         }).eq('uid', user.id);
       }
 
-      // Update following count for target
+      // Increment follower_count on followee (targetUserId)
       final targetProfile = await _client
           .from(SupabaseTables.profiles)
-          .select('following_count')
+          .select('follower_count')
           .eq('uid', targetUserId)
           .maybeSingle();
       if (targetProfile != null) {
-        final count = (targetProfile['following_count'] as int?) ?? 0;
+        final count = (targetProfile['follower_count'] as int?) ?? 0;
         await _client.from(SupabaseTables.profiles).update({
-          'following_count': count + 1,
+          'follower_count': count + 1,
         }).eq('uid', targetUserId);
       }
 
       return {'success': true, 'following': true};
+    } on Exception {
+      rethrow;
     } catch (e) {
       throw Exception('Failed to follow user: $e');
     }
@@ -237,33 +194,35 @@ class SupabaseFunctionService {
           .eq('follower_id', user.id)
           .eq('followee_id', targetUserId);
 
-      // Update follower count
+      // Decrement following_count on follower (user.id)
       final followerProfile = await _client
           .from(SupabaseTables.profiles)
-          .select('follower_count')
+          .select('following_count')
           .eq('uid', user.id)
           .maybeSingle();
       if (followerProfile != null) {
-        final count = (followerProfile['follower_count'] as int?) ?? 0;
+        final count = (followerProfile['following_count'] as int?) ?? 0;
         await _client.from(SupabaseTables.profiles).update({
-          'follower_count': (count - 1).clamp(0, count),
+          'following_count': (count - 1).clamp(0, count),
         }).eq('uid', user.id);
       }
 
-      // Update following count for target
+      // Decrement follower_count on followee (targetUserId)
       final targetProfile = await _client
           .from(SupabaseTables.profiles)
-          .select('following_count')
+          .select('follower_count')
           .eq('uid', targetUserId)
           .maybeSingle();
       if (targetProfile != null) {
-        final count = (targetProfile['following_count'] as int?) ?? 0;
+        final count = (targetProfile['follower_count'] as int?) ?? 0;
         await _client.from(SupabaseTables.profiles).update({
-          'following_count': (count - 1).clamp(0, count),
+          'follower_count': (count - 1).clamp(0, count),
         }).eq('uid', targetUserId);
       }
 
       return {'success': true, 'following': false};
+    } on Exception {
+      rethrow;
     } catch (e) {
       throw Exception('Failed to unfollow user: $e');
     }
@@ -294,10 +253,18 @@ class SupabaseFunctionService {
       }).eq('uid', targetUserId);
 
       return {'success': true, 'userId': targetUserId, 'role': newRole};
+    } on Exception {
+      rethrow;
     } catch (e) {
       throw Exception('Failed to update role: $e');
     }
   }
+
+  static const _allowedConfigKeys = {
+    'pointsPerClassification',
+    'maxDailySubmissions',
+    'duplicateThreshold',
+  };
 
   Future<Map<String, dynamic>> updateConfig(Map<String, dynamic> config) async {
     final user = _client.auth.currentUser;
@@ -323,7 +290,10 @@ class SupabaseFunctionService {
           .maybeSingle();
 
       final currentValue = (current?['value'] as Map<String, dynamic>?) ?? {};
-      final newValue = {...currentValue, ...config};
+      final filtered = Map.fromEntries(
+        config.entries.where((e) => _allowedConfigKeys.contains(e.key)),
+      );
+      final newValue = {...currentValue, ...filtered};
 
       await _client.from(SupabaseTables.config).upsert({
         'key': 'system',
@@ -331,6 +301,8 @@ class SupabaseFunctionService {
       });
 
       return {'success': true, 'config': newValue};
+    } on Exception {
+      rethrow;
     } catch (e) {
       throw Exception('Failed to update config: $e');
     }

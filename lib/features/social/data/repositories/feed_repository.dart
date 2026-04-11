@@ -48,7 +48,7 @@ class FeedRepository {
         .from(SupabaseTables.submissions)
         .stream(primaryKey: ['id'])
         .order('created_at', ascending: false)
-        .limit(limit * 4) // over-fetch; we filter client-side
+        .limit(limit * 2)
         .asyncMap<List<FeedItem>>((rows) async {
           final filtered = rows
               .where((r) => followedIds.contains(r['user_id']))

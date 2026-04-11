@@ -36,7 +36,7 @@ class CameraScreen extends ConsumerWidget {
       body: CustomScrollView(
         slivers: [
           SliverAppBar(
-            expandedHeight: context.responsiveHeight(130, small: 145),
+            expandedHeight: context.responsiveHeight(100, small: 115),
             pinned: true,
             backgroundColor: AppColors.primary,
             foregroundColor: Colors.white,
@@ -169,7 +169,8 @@ class CameraScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildPreviewState(BuildContext context, WidgetRef ref, state) {
+  Widget _buildPreviewState(
+      BuildContext context, WidgetRef ref, ClassificationState state) {
     return Column(
       children: [
         Expanded(
@@ -217,7 +218,7 @@ class CameraScreen extends ConsumerWidget {
                         .classifyImage();
                     final newState = ref.read(classificationProvider);
                     if (newState.submissionId != null && context.mounted) {
-                      context.go(
+                      context.push(
                         '${RouteConstants.result}/${newState.submissionId}',
                       );
                     } else if (newState.error != null && context.mounted) {

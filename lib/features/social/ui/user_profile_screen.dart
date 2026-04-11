@@ -64,14 +64,22 @@ class UserProfileScreen extends ConsumerWidget {
           onFollowToggle: () async {
             if (ref.read(followActionProvider(uid)).isLoading) return;
             final notifier = ref.read(followActionProvider(uid).notifier);
-            bool success;
-            if (followAsync.valueOrNull ?? false) {
-              success = await notifier.unfollow();
-            } else {
-              success = await notifier.follow();
-            }
-            if (success) {
-              ref.invalidate(isFollowingProvider(uid));
+            try {
+              bool success;
+              if (followAsync.valueOrNull ?? false) {
+                success = await notifier.unfollow();
+              } else {
+                success = await notifier.follow();
+              }
+              if (success) {
+                ref.invalidate(isFollowingProvider(uid));
+              }
+            } catch (e) {
+              if (context.mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('Failed to update follow status')),
+                );
+              }
             }
           },
         );

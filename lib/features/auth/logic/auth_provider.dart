@@ -23,56 +23,77 @@ void _log(String message) {
   if (kDebugMode) debugPrint('[Auth] $message');
 }
 
+String _maskId(String? id) {
+  if (id == null || id.length < 8) return '***';
+  return '${id.substring(0, 4)}...${id.substring(id.length - 4)}';
+}
+
 class AuthNotifier extends StateNotifier<AuthState> {
   final AuthRepository _repository;
   StreamSubscription<dynamic>? _authSubscription;
   bool _handlingExplicitAuth = false;
+  Future<void>? _pendingOperation;
 
   AuthNotifier(this._repository) : super(const AuthState(isLoading: true)) {
     _init();
   }
 
+  Future<void> _enqueue(Future<void> Function() task) async {
+    if (_pendingOperation != null) {
+      await _pendingOperation;
+    }
+    final completer = task();
+    _pendingOperation = completer;
+    try {
+      await completer;
+    } finally {
+      if (_pendingOperation == completer) {
+        _pendingOperation = null;
+      }
+    }
+  }
+
   void _init() {
     _authSubscription = _repository.authStateChanges.listen(
       (event) async {
-        _log('onAuthStateChange event: ${event.event}');
-        final session = event.session;
-        final wasHandlingExplicitAuth = _handlingExplicitAuth;
+        _enqueue(() async {
+          _log('onAuthStateChange event: ${event.event}');
+          final session = event.session;
+          final wasHandlingExplicitAuth = _handlingExplicitAuth;
 
-        // Fallback: if stream says no session, check if currentSession exists
-        // This handles race condition where stream fires before session is restored
-        if (session == null) {
-          final currentSession = _repository.currentSession;
-          if (currentSession != null) {
-            _log('Using currentSession from repository (stream delay)');
+          if (session == null) {
+            final currentSession = _repository.currentSession;
+            if (currentSession != null) {
+              _log('Using currentSession from repository (stream delay)');
+              if (wasHandlingExplicitAuth) {
+                _handlingExplicitAuth = false;
+                return;
+              }
+              await _fetchProfileAndSetAuthenticated();
+              return;
+            }
+          }
+
+          if (session != null) {
+            _log('Session found');
             if (wasHandlingExplicitAuth) {
               _handlingExplicitAuth = false;
               return;
             }
             await _fetchProfileAndSetAuthenticated();
-            return;
-          }
-        }
-
-        if (session != null) {
-          _log('Session found');
-          if (wasHandlingExplicitAuth) {
+          } else {
+            _log('No session — unauthenticated');
             _handlingExplicitAuth = false;
-            return;
+            if (mounted) {
+              state = state.copyWith(
+                isAuthenticated: false,
+                user: null,
+                isLoading: false,
+                error: null,
+              );
+            }
           }
-          await _fetchProfileAndSetAuthenticated();
-        } else {
-          _log('No session — unauthenticated');
-          _handlingExplicitAuth = false;
-          if (mounted) {
-            state = state.copyWith(
-              isAuthenticated: false,
-              user: null,
-              isLoading: false,
-              error: null,
-            );
-          }
-        }
+        });
       },
       onError: (error) {
         _log('Stream error: $error');
