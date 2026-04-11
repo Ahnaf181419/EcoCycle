@@ -1,29 +1,39 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../data/repositories/admin_repository.dart';
+import '../../auth/logic/auth_provider.dart';
 import '../../classification/data/services/supabase_function_service.dart';
 import '../../classification/logic/classification_provider.dart';
 import '../../social/data/models/user_profile_model.dart';
+import '../../../core/constants/user_role.dart';
 
 final adminRepositoryProvider = Provider<AdminRepository>((ref) {
   return AdminRepository();
 });
 
-final allUsersProvider = StreamProvider<List<UserProfile>>((ref) {
+/// Admin-only user list. `autoDispose` ensures the Supabase realtime channel
+/// closes as soon as the admin dashboard leaves the navigation stack.
+/// Non-admin callers get a stream error instead of silently relying on RLS.
+final allUsersProvider =
+    StreamProvider.autoDispose<List<UserProfile>>((ref) {
+  final role = UserRole.fromString(ref.watch(authProvider).user?.role);
+  if (!role.isAdmin) {
+    return Stream.error(StateError('Not authorized'));
+  }
   final repo = ref.watch(adminRepositoryProvider);
   return repo.getAllUsers();
 });
 
-final totalUsersCountProvider = StreamProvider<int>((ref) {
+final totalUsersCountProvider = FutureProvider<int>((ref) async {
   final repo = ref.watch(adminRepositoryProvider);
   return repo.getTotalUsers();
 });
 
-final totalSubmissionsCountProvider = StreamProvider<int>((ref) {
+final totalSubmissionsCountProvider = FutureProvider<int>((ref) async {
   final repo = ref.watch(adminRepositoryProvider);
   return repo.getTotalSubmissions();
 });
 
-final adminPendingDisputesCountProvider = StreamProvider<int>((ref) {
+final adminPendingDisputesCountProvider = FutureProvider<int>((ref) async {
   final repo = ref.watch(adminRepositoryProvider);
   return repo.getPendingDisputesCount();
 });

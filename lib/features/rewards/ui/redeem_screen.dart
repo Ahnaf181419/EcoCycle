@@ -325,7 +325,7 @@ class _RedeemScreenState extends ConsumerState<RedeemScreen> {
     );
   }
 
-  void _onRedeem() {
+  Future<void> _onRedeem() async {
     if (!_formKey.currentState!.validate()) return;
 
     final amount = int.tryParse(_amountController.text);
@@ -334,8 +334,11 @@ class _RedeemScreenState extends ConsumerState<RedeemScreen> {
     final balance = ref.read(rewardBalanceProvider);
     if (balance == null) return;
 
+    // Capture messenger BEFORE the async gap.
+    final messenger = ScaffoldMessenger.of(context);
+
     if (amount > balance.available) {
-      ScaffoldMessenger.of(context).showSnackBar(
+      messenger.showSnackBar(
         const SnackBar(
           content: Text('Insufficient points'),
           backgroundColor: AppColors.error,
@@ -344,6 +347,18 @@ class _RedeemScreenState extends ConsumerState<RedeemScreen> {
       return;
     }
 
-    ref.read(redeemProvider.notifier).redeemPoints(amount);
+    final ok =
+        await ref.read(redeemProvider.notifier).redeemPoints(amount);
+    if (!mounted) return;
+
+    if (!ok) {
+      final err = ref.read(redeemProvider).error ?? 'Redeem failed';
+      messenger.showSnackBar(
+        SnackBar(
+          content: Text(err),
+          backgroundColor: AppColors.error,
+        ),
+      );
+    }
   }
 }

@@ -18,55 +18,58 @@ final authProvider = StateNotifierProvider<AuthNotifier, AuthState>((ref) {
   return AuthNotifier(ref.watch(authRepositoryProvider));
 });
 
+/// Gated debug logger — stays silent in release builds.
+void _log(String message) {
+  if (kDebugMode) debugPrint('[Auth] $message');
+}
+
 class AuthNotifier extends StateNotifier<AuthState> {
   final AuthRepository _repository;
   StreamSubscription<dynamic>? _authSubscription;
   bool _handlingExplicitAuth = false;
 
-  AuthNotifier(this._repository) : super(const AuthState()) {
+  AuthNotifier(this._repository) : super(const AuthState(isLoading: true)) {
     _init();
   }
 
   void _init() {
-    _authSubscription = _repository.authStateChanges.listen((event) async {
-      debugPrint('[Auth] onAuthStateChange event: ${event.event}');
-      final session = event.session;
-      if (session != null) {
-        debugPrint('[Auth] Session found');
-        if (_handlingExplicitAuth) {
-          _handlingExplicitAuth = false;
-          return;
+    _authSubscription = _repository.authStateChanges.listen(
+      (event) async {
+        _log('onAuthStateChange event: ${event.event}');
+        final session = event.session;
+        if (session != null) {
+          _log('Session found');
+          if (_handlingExplicitAuth) {
+            _handlingExplicitAuth = false;
+            return;
+          }
+          await _fetchProfileAndSetAuthenticated();
+        } else {
+          _log('No session — unauthenticated');
+          if (_handlingExplicitAuth) {
+            _handlingExplicitAuth = false;
+          }
+          if (mounted) {
+            state = state.copyWith(
+              isAuthenticated: false,
+              user: null,
+              isLoading: false,
+              error: null,
+            );
+          }
         }
-        UserProfile? profile;
-        try {
-          profile = await _repository.getCurrentUserProfile();
-          debugPrint('[Auth] Profile fetched successfully');
-        } catch (e) {
-          debugPrint('[Auth] Profile fetch error: $e');
-        }
+      },
+      onError: (error) {
+        _log('Stream error: $error');
         if (mounted) {
           state = state.copyWith(
-            isAuthenticated: true,
-            user: profile,
             isLoading: false,
-            error: null,
-          );
-        }
-      } else {
-        debugPrint('[Auth] No session — unauthenticated');
-        if (_handlingExplicitAuth) {
-          _handlingExplicitAuth = false;
-        }
-        if (mounted) {
-          state = state.copyWith(
             isAuthenticated: false,
-            user: null,
-            isLoading: false,
-            error: null,
+            error: error.toString(),
           );
         }
-      }
-    });
+      },
+    );
   }
 
   @override
@@ -80,10 +83,10 @@ class AuthNotifier extends StateNotifier<AuthState> {
     _handlingExplicitAuth = true;
     try {
       await _repository.signIn(email: email, password: password);
-      debugPrint('[Auth] signIn completed — fetching profile directly');
+      _log('signIn completed — fetching profile directly');
       await _fetchProfileAndSetAuthenticated();
     } catch (e) {
-      debugPrint('[Auth] signIn error: $e');
+      _log('signIn error: $e');
       _handlingExplicitAuth = false;
       if (mounted) {
         state = state.copyWith(isLoading: false, error: e.toString());
@@ -107,10 +110,10 @@ class AuthNotifier extends StateNotifier<AuthState> {
         username: username,
         displayName: displayName,
       );
-      debugPrint('[Auth] register completed — fetching profile directly');
+      _log('register completed — fetching profile directly');
       await _fetchProfileAndSetAuthenticated();
     } catch (e) {
-      debugPrint('[Auth] register error: $e');
+      _log('register error: $e');
       _handlingExplicitAuth = false;
       if (mounted) {
         state = state.copyWith(isLoading: false, error: e.toString());
@@ -119,14 +122,42 @@ class AuthNotifier extends StateNotifier<AuthState> {
     }
   }
 
+  /// Fetches the current user's profile and transitions to authenticated.
+  ///
+  /// IMPORTANT: if the profile fetch fails we do NOT mark the user as
+  /// authenticated. Downstream code relies on `isAuthenticated == true` implying
+  /// `user != null`; violating that invariant silently demotes admins to
+  /// citizens and causes `user!.uid` crashes.
   Future<void> _fetchProfileAndSetAuthenticated() async {
     UserProfile? profile;
     try {
       profile = await _repository.getCurrentUserProfile();
-      debugPrint('[Auth] Profile fetched successfully');
-    } catch (e) {
-      debugPrint('[Auth] Profile fetch error: $e');
+      _log('Profile fetched successfully');
+    } catch (e, st) {
+      _log('Profile fetch error: $e\n$st');
+      if (mounted) {
+        state = state.copyWith(
+          isLoading: false,
+          isAuthenticated: false,
+          user: null,
+          error: 'Could not load your profile. Please sign in again.',
+        );
+      }
+      return;
     }
+
+    if (profile == null) {
+      if (mounted) {
+        state = state.copyWith(
+          isLoading: false,
+          isAuthenticated: false,
+          user: null,
+          error: 'Profile not found. Please sign in again.',
+        );
+      }
+      return;
+    }
+
     if (mounted) {
       state = state.copyWith(
         isAuthenticated: true,
@@ -150,7 +181,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
         );
       }
     } catch (e) {
-      debugPrint('[Auth] signOut error: $e');
+      _log('signOut error: $e');
       if (mounted) {
         state = state.copyWith(isLoading: false, error: e.toString());
       }
@@ -159,5 +190,19 @@ class AuthNotifier extends StateNotifier<AuthState> {
 
   void updateUserProfile(UserProfile profile) {
     state = state.copyWith(user: profile);
+  }
+
+  /// Re-fetches the current user's profile and pushes it into auth state.
+  /// Use after mutations (privacy toggle, display name change, etc.) so
+  /// downstream consumers see the new values immediately.
+  Future<void> refreshProfile() async {
+    try {
+      final profile = await _repository.getCurrentUserProfile();
+      if (profile != null && mounted) {
+        state = state.copyWith(user: profile);
+      }
+    } catch (e) {
+      _log('refreshProfile error: $e');
+    }
   }
 }

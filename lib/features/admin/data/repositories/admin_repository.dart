@@ -6,48 +6,52 @@ class AdminRepository {
   final SupabaseClient _client;
 
   AdminRepository({SupabaseClient? client})
-    : _client = client ?? SupabaseConstants.client;
+      : _client = client ?? SupabaseConstants.client;
 
-  // TODO: Supabase stream does not support pagination offset. Consider a
-  // server-side paginated query for large user bases. The limit parameter caps
-  // the number of rows returned; callers should be aware of this ceiling.
-  Stream<List<UserProfile>> getAllUsers({int limit = 100}) {
+  /// Streams the most recent users for the admin dashboard.
+  ///
+  /// Supabase realtime streams don't support server-side pagination offset,
+  /// so the [limit] caps what's watched live. For deeper pages use
+  /// [getUsersPage] which reads via a one-shot query and does not leak a
+  /// realtime channel.
+  Stream<List<UserProfile>> getAllUsers({int limit = 50}) {
     return _client
         .from(SupabaseTables.profiles)
         .stream(primaryKey: ['uid'])
         .order('created_at', ascending: false)
         .limit(limit)
         .map(
-          (rows) =>
-              rows.map((row) => UserProfile.fromJson(row)).toList(),
+          (rows) => rows.map((row) => UserProfile.fromJson(row)).toList(),
         );
   }
 
-  // TODO: Replace with a server-side function for true count query.
-  // Supabase stream doesn't support count; selecting only primary key to reduce data transfer.
-  Stream<int> getTotalUsers() {
-    return _client
+  /// One-shot paginated read. Safe to call from non-autoDispose scopes
+  /// because it does not open a realtime subscription.
+  Future<List<UserProfile>> getUsersPage({
+    int offset = 0,
+    int limit = 20,
+  }) async {
+    final rows = await _client
         .from(SupabaseTables.profiles)
-        .stream(primaryKey: ['uid'])
-        .map((rows) => rows.length);
+        .select()
+        .order('created_at', ascending: false)
+        .range(offset, offset + limit - 1);
+    return rows.map((row) => UserProfile.fromJson(row)).toList();
   }
 
-  // TODO: Replace with a server-side function for true count query.
-  // Supabase stream doesn't support count; selecting only primary key to reduce data transfer.
-  Stream<int> getTotalSubmissions() {
-    return _client
-        .from(SupabaseTables.submissions)
-        .stream(primaryKey: ['id'])
-        .map((rows) => rows.length);
+  Future<int> getTotalUsers() async {
+    final response = await _client.rpc('count_users').select();
+    return response.first['count'] as int? ?? 0;
   }
 
-  // TODO: Replace with a server-side function for true count query.
-  Stream<int> getPendingDisputesCount() {
-    return _client
-        .from(SupabaseTables.disputes)
-        .stream(primaryKey: ['id'])
-        .eq('status', 'PENDING')
-        .map((rows) => rows.length);
+  Future<int> getTotalSubmissions() async {
+    final response = await _client.rpc('count_submissions').select();
+    return response.first['count'] as int? ?? 0;
+  }
+
+  Future<int> getPendingDisputesCount() async {
+    final response = await _client.rpc('count_pending_disputes').select();
+    return response.first['count'] as int? ?? 0;
   }
 
   Stream<List<AuditLogEntry>> getRecentAuditLog({int limit = 20}) {
@@ -57,8 +61,7 @@ class AdminRepository {
         .order('timestamp', ascending: false)
         .limit(limit)
         .map(
-          (rows) =>
-              rows.map((row) => AuditLogEntry.fromJson(row)).toList(),
+          (rows) => rows.map((row) => AuditLogEntry.fromJson(row)).toList(),
         );
   }
 }

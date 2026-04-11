@@ -187,10 +187,27 @@ class ClassificationNotifier extends StateNotifier<ClassificationState> {
   }
 
   Future<void> classifyImage() async {
-    if (state.imagePath == null) return;
-    final authState = _ref.read(authProvider);
-    final user = authState.user;
-    if (user == null) return;
+    final imagePath = state.imagePath;
+    if (imagePath == null) return;
+
+    final user = _ref.read(authProvider).user;
+    if (user == null) {
+      state = state.copyWith(error: 'You must be signed in to classify.');
+      return;
+    }
+
+    // The OS can evict an ImagePicker temp file if the app was backgrounded
+    // between capture and classify. Fail loudly with an actionable message
+    // instead of exploding inside StorageService.
+    final file = File(imagePath);
+    if (!await file.exists()) {
+      state = state.copyWith(
+        isUploading: false,
+        isClassifying: false,
+        error: 'Captured image is no longer available. Please retake it.',
+      );
+      return;
+    }
 
     state = state.copyWith(isUploading: true, error: null);
 
@@ -200,15 +217,17 @@ class ClassificationNotifier extends StateNotifier<ClassificationState> {
 
       final (:imageUrl, :storagePath) = await _storageService.uploadImage(
         userId: user.uid,
-        filePath: state.imagePath!,
+        filePath: imagePath,
         fileName: fileName,
       );
+      if (!mounted) return;
 
       Map<String, dynamic>? tfliteResult;
-      if (_tfLiteService.isAvailable && state.imagePath != null) {
-        final file = File(state.imagePath!);
+      if (_tfLiteService.isAvailable) {
         final bytes = await file.readAsBytes();
+        if (!mounted) return;
         final result = await _tfLiteService.classify(bytes);
+        if (!mounted) return;
         if (result != null) {
           tfliteResult = {
             'category': result.category,
@@ -231,6 +250,7 @@ class ClassificationNotifier extends StateNotifier<ClassificationState> {
         idempotencyKey: idempotencyKey,
         tfliteResult: tfliteResult,
       );
+      if (!mounted) return;
 
       final submissionStateStr = result['state'] as String? ?? 'SUBMITTED';
       final submissionState = _parseSubmissionState(submissionStateStr);
@@ -244,6 +264,7 @@ class ClassificationNotifier extends StateNotifier<ClassificationState> {
         pointsAwarded: result['pointsAwarded'] as int?,
       );
     } catch (e) {
+      if (!mounted) return;
       state = state.copyWith(
         isUploading: false,
         isClassifying: false,

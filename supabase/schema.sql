@@ -403,6 +403,30 @@ CREATE POLICY "Only admins can update config"
   );
 
 -- ============================================================
+-- RPC FUNCTIONS FOR EFFICIENT COUNTS
+-- ============================================================
+CREATE OR REPLACE FUNCTION public.count_users()
+RETURNS TABLE(count BIGINT) AS $$
+BEGIN
+  RETURN QUERY SELECT COUNT(*)::BIGINT FROM public.profiles;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+CREATE OR REPLACE FUNCTION public.count_submissions()
+RETURNS TABLE(count BIGINT) AS $$
+BEGIN
+  RETURN QUERY SELECT COUNT(*)::BIGINT FROM public.submissions;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+CREATE OR REPLACE FUNCTION public.count_pending_disputes()
+RETURNS TABLE(count BIGINT) AS $$
+BEGIN
+  RETURN QUERY SELECT COUNT(*)::BIGINT FROM public.disputes WHERE status = 'PENDING';
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- ============================================================
 -- REALTIME PUBLICATIONS
 -- ============================================================
 ALTER PUBLICATION supabase_realtime ADD TABLE public.profiles;

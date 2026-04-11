@@ -74,24 +74,23 @@ class UserRepository {
         .eq('uid', uid);
   }
 
-  // TODO: This should ideally be an atomic server-side operation to avoid
-  // inconsistent state if one step fails.
+  /// Deletes the current user's account atomically via the `admin` edge
+  /// function, then signs out locally. The server must run under a service
+  /// role and perform the cascade (profile, submissions, storage, auth user).
+  ///
+  /// Order matters: sign-out MUST happen after the server confirms the delete,
+  /// otherwise the client loses its JWT before the `delete` hits RLS and the
+  /// profile row is stranded forever.
   Future<void> deleteAccount() async {
     final uid = _client.auth.currentUser?.id;
     if (uid == null) return;
 
-    try {
-      await _client.auth.signOut();
-    } catch (e) {
-      // Re-throw since we can't safely proceed if sign-out fails
-      rethrow;
-    }
+    await _client.functions.invoke(
+      EdgeFunctionNames.admin,
+      body: {'action': 'deleteAccount', 'userId': uid},
+    );
 
-    try {
-      await _client.from(SupabaseTables.profiles).delete().eq('uid', uid);
-    } catch (e) {
-      // Profile deletion failed after sign-out; state may be inconsistent
-      rethrow;
-    }
+    // Only after the server confirms the cascade do we drop the local session.
+    await _client.auth.signOut();
   }
 }

@@ -176,38 +176,16 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   }
 
   void _showEditNameDialog(BuildContext context) {
-    final controller = TextEditingController(
-      text: ref.read(authProvider).user?.displayName ?? '',
-    );
-
-    showDialog(
+    final initial = ref.read(authProvider).user?.displayName ?? '';
+    showDialog<void>(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Edit Display Name'),
-        content: TextField(
-          controller: controller,
-          decoration: const InputDecoration(
-            labelText: 'Display Name',
-            border: OutlineInputBorder(),
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
-          ),
-          FilledButton(
-            onPressed: () {
-              Navigator.pop(context);
-              ref
-                  .read(profileEditProvider.notifier)
-                  .updateDisplayName(controller.text.trim());
-            },
-            child: const Text('Save'),
-          ),
-        ],
+      builder: (dialogContext) => _EditNameDialog(
+        initial: initial,
+        onSave: (name) {
+          ref.read(profileEditProvider.notifier).updateDisplayName(name);
+        },
       ),
-    ).then((_) => controller.dispose());
+    );
   }
 
   void _showSignOutDialog(BuildContext context) {
@@ -266,6 +244,58 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           ),
         ],
       ),
+    );
+  }
+}
+
+/// Owns its own [TextEditingController] via `dispose()` rather than relying
+/// on `showDialog().then(...)`, which can drop the disposal on OS-driven
+/// process kill / Activity recreate.
+class _EditNameDialog extends StatefulWidget {
+  const _EditNameDialog({required this.initial, required this.onSave});
+
+  final String initial;
+  final ValueChanged<String> onSave;
+
+  @override
+  State<_EditNameDialog> createState() => _EditNameDialogState();
+}
+
+class _EditNameDialogState extends State<_EditNameDialog> {
+  late final TextEditingController _controller =
+      TextEditingController(text: widget.initial);
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: const Text('Edit Display Name'),
+      content: TextField(
+        controller: _controller,
+        decoration: const InputDecoration(
+          labelText: 'Display Name',
+          border: OutlineInputBorder(),
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: const Text('Cancel'),
+        ),
+        FilledButton(
+          onPressed: () {
+            final name = _controller.text.trim();
+            Navigator.pop(context);
+            if (name.isNotEmpty) widget.onSave(name);
+          },
+          child: const Text('Save'),
+        ),
+      ],
     );
   }
 }

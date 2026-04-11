@@ -96,15 +96,24 @@ class RedeemState {
 
 class RedeemNotifier extends StateNotifier<RedeemState> {
   final SupabaseFunctionService _supabaseFunctionService;
+  final String? _userId;
   final _uuid = const Uuid();
 
   RedeemNotifier({
     required SupabaseFunctionService supabaseFunctionService,
     required AuthState authState,
-  }) : _supabaseFunctionService = supabaseFunctionService,
-       super(const RedeemState());
+  })  : _supabaseFunctionService = supabaseFunctionService,
+        _userId = authState.user?.uid,
+        super(const RedeemState());
 
   Future<bool> redeemPoints(int points) async {
+    if (_userId == null) {
+      state = state.copyWith(
+        isRedeeming: false,
+        error: 'You must be signed in to redeem points.',
+      );
+      return false;
+    }
     if (points <= 0) return false;
 
     state = state.copyWith(
@@ -120,6 +129,7 @@ class RedeemNotifier extends StateNotifier<RedeemState> {
         points: points,
         idempotencyKey: idempotencyKey,
       );
+      if (!mounted) return true;
 
       state = state.copyWith(
         isRedeeming: false,
@@ -128,6 +138,7 @@ class RedeemNotifier extends StateNotifier<RedeemState> {
       );
       return true;
     } catch (e) {
+      if (!mounted) return false;
       state = state.copyWith(isRedeeming: false, error: e.toString());
       return false;
     }

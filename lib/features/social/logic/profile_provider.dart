@@ -60,33 +60,53 @@ class ProfileEditNotifier extends StateNotifier<ProfileEditState> {
         super(const ProfileEditState());
 
   Future<void> updateDisplayName(String displayName) async {
+    final uid = _ref.read(authProvider).user?.uid;
+    if (uid == null) {
+      state = state.copyWith(
+        isLoading: false,
+        error: 'You must be signed in to edit your profile.',
+        success: false,
+      );
+      return;
+    }
+
     state = state.copyWith(isLoading: true, error: null, success: false);
     try {
       await _userRepository.updateProfile(displayName: displayName);
-      final updatedProfile = await _userRepository.getUserProfile(
-        _ref.read(authProvider).user!.uid,
-      );
+      final updatedProfile = await _userRepository.getUserProfile(uid);
+      if (!mounted) return;
       if (updatedProfile != null) {
         _ref.read(authProvider.notifier).updateUserProfile(updatedProfile);
       }
       state = state.copyWith(isLoading: false, success: true);
     } catch (e) {
+      if (!mounted) return;
       state = state.copyWith(isLoading: false, error: e.toString());
     }
   }
 
   Future<void> updatePhotoUrl(String photoUrl) async {
+    final uid = _ref.read(authProvider).user?.uid;
+    if (uid == null) {
+      state = state.copyWith(
+        isLoading: false,
+        error: 'You must be signed in to edit your profile.',
+        success: false,
+      );
+      return;
+    }
+
     state = state.copyWith(isLoading: true, error: null, success: false);
     try {
       await _userRepository.updateProfile(photoUrl: photoUrl);
-      final updatedProfile = await _userRepository.getUserProfile(
-        _ref.read(authProvider).user!.uid,
-      );
+      final updatedProfile = await _userRepository.getUserProfile(uid);
+      if (!mounted) return;
       if (updatedProfile != null) {
         _ref.read(authProvider.notifier).updateUserProfile(updatedProfile);
       }
       state = state.copyWith(isLoading: false, success: true);
     } catch (e) {
+      if (!mounted) return;
       state = state.copyWith(isLoading: false, error: e.toString());
     }
   }

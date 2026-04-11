@@ -6,7 +6,7 @@ class DisputeRepository {
   final SupabaseClient _client;
 
   DisputeRepository({SupabaseClient? client})
-    : _client = client ?? SupabaseConstants.client;
+      : _client = client ?? SupabaseConstants.client;
 
   Stream<List<Dispute>> getPendingDisputes({int limit = 50}) {
     return _client
@@ -45,13 +45,8 @@ class DisputeRepository {
     return response['image_url'] as String?;
   }
 
-  // TODO: Replace with a server-side function for true count query.
-  // Supabase stream doesn't support count; selecting only 'id' to reduce data transfer.
-  Stream<int> getPendingDisputeCount() {
-    return _client
-        .from(SupabaseTables.disputes)
-        .stream(primaryKey: ['id'])
-        .eq('status', 'PENDING')
-        .map((rows) => rows.length);
+  Future<int> getPendingDisputeCount() async {
+    final response = await _client.rpc('count_pending_disputes').select();
+    return response.first['count'] as int? ?? 0;
   }
 }

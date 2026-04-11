@@ -36,6 +36,8 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
 
+    // Capture BEFORE the async gap — looking it up afterwards is unsafe.
+    final messenger = ScaffoldMessenger.of(context);
     try {
       await ref
           .read(authProvider.notifier)
@@ -46,14 +48,13 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
             displayName: _displayNameController.text.trim(),
           );
     } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(e.toString()),
-            backgroundColor: AppColors.error,
-          ),
-        );
-      }
+      if (!mounted) return;
+      messenger.showSnackBar(
+        SnackBar(
+          content: Text(e.toString()),
+          backgroundColor: AppColors.error,
+        ),
+      );
     }
   }
 

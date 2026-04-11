@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'core/constants/route_constants.dart';
+import 'core/constants/user_role.dart';
 import 'features/auth/logic/auth_provider.dart';
+import 'features/auth/logic/auth_state.dart';
+import 'shared/widgets/error_view.dart';
 import 'features/auth/ui/splash_screen.dart';
 import 'features/auth/ui/login_screen.dart';
 import 'features/auth/ui/register_screen.dart';
@@ -23,15 +26,42 @@ import 'features/admin/ui/admin_dashboard_screen.dart';
 import 'features/admin/ui/user_management_screen.dart';
 import 'shared/navigation/app_shell.dart';
 
+/// ChangeNotifier that bridges Riverpod's [authProvider] into GoRouter's
+/// `refreshListenable`. Owns a [ProviderSubscription] so it must be disposed
+/// explicitly — see `routerProvider.onDispose` below.
+class _AuthStateListener extends ChangeNotifier {
+  _AuthStateListener(this._ref) {
+    _sub = _ref.listen<AuthState>(
+      authProvider,
+      (_, __) => notifyListeners(),
+      fireImmediately: false,
+    );
+  }
+
+  final Ref _ref;
+  late final ProviderSubscription<AuthState> _sub;
+
+  AuthState get state => _ref.read(authProvider);
+
+  @override
+  void dispose() {
+    _sub.close();
+    super.dispose();
+  }
+}
+
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
 
 final routerProvider = Provider<GoRouter>((ref) {
-  final authState = ref.watch(authProvider);
+  final authListener = _AuthStateListener(ref);
 
   final router = GoRouter(
     navigatorKey: _rootNavigatorKey,
     initialLocation: RouteConstants.splash,
+    refreshListenable: authListener,
     redirect: (context, state) {
+      final authState = ref.read(authProvider);
+
       final isPublicRoute = [
         RouteConstants.splash,
         RouteConstants.login,
@@ -48,16 +78,15 @@ final routerProvider = Provider<GoRouter>((ref) {
         return RouteConstants.home;
       }
 
-      final userRole = authState.user?.role ?? 'citizen';
+      final userRole = UserRole.fromString(authState.user?.role);
 
       if (state.matchedLocation.startsWith(RouteConstants.disputes) &&
-          userRole != 'moderator' &&
-          userRole != 'admin') {
+          !userRole.canModerateDisputes) {
         return RouteConstants.home;
       }
 
       if (state.matchedLocation.startsWith(RouteConstants.admin) &&
-          userRole != 'admin') {
+          !userRole.isAdmin) {
         return RouteConstants.home;
       }
 
@@ -79,7 +108,12 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '${RouteConstants.result}/:id',
         builder: (context, state) {
-          final id = state.pathParameters['id']!;
+          final id = state.pathParameters['id'];
+          if (id == null || id.isEmpty) {
+            return const Scaffold(
+              body: ErrorView(message: 'Invalid submission link'),
+            );
+          }
           return ClassificationResultScreen(submissionId: id);
         },
       ),
@@ -88,7 +122,7 @@ final routerProvider = Provider<GoRouter>((ref) {
           final authState = ref.watch(authProvider);
           return AppShell(
             navigationShell: navigationShell,
-            userRole: authState.user?.role ?? 'citizen',
+            userRole: UserRole.fromString(authState.user?.role).value,
           );
         },
         branches: [
@@ -125,7 +159,12 @@ final routerProvider = Provider<GoRouter>((ref) {
                   GoRoute(
                     path: ':uid',
                     builder: (context, state) {
-                      final uid = state.pathParameters['uid']!;
+                      final uid = state.pathParameters['uid'];
+                      if (uid == null || uid.isEmpty) {
+                        return const Scaffold(
+                          body: ErrorView(message: 'Invalid profile link'),
+                        );
+                      }
                       return UserProfileScreen(uid: uid);
                     },
                   ),
@@ -142,7 +181,12 @@ final routerProvider = Provider<GoRouter>((ref) {
                   GoRoute(
                     path: ':id',
                     builder: (context, state) {
-                      final id = state.pathParameters['id']!;
+                      final id = state.pathParameters['id'];
+                      if (id == null || id.isEmpty) {
+                        return const Scaffold(
+                          body: ErrorView(message: 'Invalid dispute link'),
+                        );
+                      }
                       return DisputeDetailScreen(disputeId: id);
                     },
                   ),
@@ -207,6 +251,9 @@ final routerProvider = Provider<GoRouter>((ref) {
     ],
   );
 
-  ref.onDispose(router.dispose);
+  ref.onDispose(() {
+    router.dispose();
+    authListener.dispose();
+  });
   return router;
 });

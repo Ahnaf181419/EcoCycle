@@ -7,6 +7,7 @@ import 'core/constants/supabase_constants.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  SupabaseConstants.assertConfigured();
   await Supabase.initialize(
     url: SupabaseConstants.url,
     anonKey: SupabaseConstants.anonKey,

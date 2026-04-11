@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../auth/logic/auth_provider.dart';
 import '../../social/data/repositories/user_repository.dart';
 
 final settingsRepositoryProvider = Provider<UserRepository>((ref) {
@@ -9,6 +10,7 @@ final privacyToggleProvider =
     StateNotifierProvider<PrivacyToggleNotifier, PrivacyToggleState>((ref) {
       return PrivacyToggleNotifier(
         userRepository: ref.watch(settingsRepositoryProvider),
+        ref: ref,
       );
     });
 
@@ -34,17 +36,26 @@ class PrivacyToggleState {
 
 class PrivacyToggleNotifier extends StateNotifier<PrivacyToggleState> {
   final UserRepository _userRepository;
+  final Ref _ref;
 
-  PrivacyToggleNotifier({required UserRepository userRepository})
-    : _userRepository = userRepository,
-      super(const PrivacyToggleState());
+  PrivacyToggleNotifier({
+    required UserRepository userRepository,
+    required Ref ref,
+  })  : _userRepository = userRepository,
+        _ref = ref,
+        super(const PrivacyToggleState());
 
   Future<void> togglePrivacy(bool isPrivate) async {
     state = state.copyWith(isLoading: true, error: null, success: false);
     try {
       await _userRepository.updatePrivacy(isPrivate);
+      // Push the new profile into auth state so the Settings UI (which reads
+      // `user?.isPrivate`) reflects the change immediately.
+      await _ref.read(authProvider.notifier).refreshProfile();
+      if (!mounted) return;
       state = state.copyWith(isLoading: false, success: true);
     } catch (e) {
+      if (!mounted) return;
       state = state.copyWith(isLoading: false, error: e.toString());
     }
   }

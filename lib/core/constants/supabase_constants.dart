@@ -4,8 +4,18 @@ class SupabaseConstants {
   SupabaseConstants._();
 
   static const String url = String.fromEnvironment('SUPABASE_URL');
-
   static const String anonKey = String.fromEnvironment('SUPABASE_ANON_KEY');
+
+  /// Call once at app startup — fails fast if the build forgot to pass
+  /// `--dart-define=SUPABASE_URL=... --dart-define=SUPABASE_ANON_KEY=...`.
+  static void assertConfigured() {
+    if (url.isEmpty || anonKey.isEmpty) {
+      throw StateError(
+        'Supabase is not configured. Pass --dart-define=SUPABASE_URL=... '
+        'and --dart-define=SUPABASE_ANON_KEY=... at build time.',
+      );
+    }
+  }
 
   static SupabaseClient get client => Supabase.instance.client;
 }
