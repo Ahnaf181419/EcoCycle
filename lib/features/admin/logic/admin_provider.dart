@@ -13,8 +13,7 @@ final adminRepositoryProvider = Provider<AdminRepository>((ref) {
 /// Admin-only user list. `autoDispose` ensures the Supabase realtime channel
 /// closes as soon as the admin dashboard leaves the navigation stack.
 /// Non-admin callers get a stream error instead of silently relying on RLS.
-final allUsersProvider =
-    StreamProvider.autoDispose<List<UserProfile>>((ref) {
+final allUsersProvider = StreamProvider.autoDispose<List<UserProfile>>((ref) {
   final role = UserRole.fromString(ref.watch(authProvider).user?.role);
   if (!role.isAdmin) {
     return Stream.error(StateError('Not authorized'));
@@ -38,7 +37,8 @@ final adminPendingDisputesCountProvider = FutureProvider<int>((ref) async {
   return repo.getPendingDisputesCount();
 });
 
-final recentAuditLogProvider = StreamProvider<List<AuditLogEntry>>((ref) {
+final recentAuditLogProvider =
+    StreamProvider.autoDispose<List<AuditLogEntry>>((ref) {
   final repo = ref.watch(adminRepositoryProvider);
   return repo.getRecentAuditLog();
 });
@@ -84,9 +84,11 @@ class RoleUpdateNotifier extends StateNotifier<RoleUpdateState> {
         targetUserId: targetUserId,
         newRole: newRole,
       );
+      if (!mounted) return true;
       state = state.copyWith(isLoading: false, success: true);
       return true;
     } catch (e) {
+      if (!mounted) return false;
       state = state.copyWith(isLoading: false, error: e.toString());
       return false;
     }

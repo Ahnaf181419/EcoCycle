@@ -8,7 +8,7 @@ final followRepositoryProvider = Provider<FollowRepository>((ref) {
   return FollowRepository();
 });
 
-final isFollowingProvider = StreamProvider.family<bool, String>((
+final isFollowingProvider = StreamProvider.autoDispose.family<bool, String>((
   ref,
   targetUid,
 ) {
@@ -16,14 +16,14 @@ final isFollowingProvider = StreamProvider.family<bool, String>((
   return repo.isFollowing(targetUid);
 });
 
-final followingIdsProvider = StreamProvider<List<String>>((ref) {
+final followingIdsProvider = StreamProvider.autoDispose<List<String>>((ref) {
   ref.watch(authProvider);
   final repo = ref.watch(followRepositoryProvider);
   return repo.getFollowingIds();
 });
 
-final followActionProvider = StateNotifierProvider.family<FollowActionNotifier,
-    FollowActionState, String>((ref, targetUid) {
+final followActionProvider = StateNotifierProvider.autoDispose
+    .family<FollowActionNotifier, FollowActionState, String>((ref, targetUid) {
   return FollowActionNotifier(
     supabaseFunctionService: ref.watch(supabaseFunctionServiceProvider),
     targetUid: targetUid,
@@ -58,9 +58,11 @@ class FollowActionNotifier extends StateNotifier<FollowActionState> {
     state = state.copyWith(isLoading: true, error: null);
     try {
       await _supabaseFunctionService.followUser(targetUserId: targetUid);
+      if (!mounted) return true;
       state = state.copyWith(isLoading: false);
       return true;
     } catch (e) {
+      if (!mounted) return false;
       state = state.copyWith(isLoading: false, error: e.toString());
       return false;
     }
@@ -70,9 +72,11 @@ class FollowActionNotifier extends StateNotifier<FollowActionState> {
     state = state.copyWith(isLoading: true, error: null);
     try {
       await _supabaseFunctionService.unfollowUser(targetUserId: targetUid);
+      if (!mounted) return true;
       state = state.copyWith(isLoading: false);
       return true;
     } catch (e) {
+      if (!mounted) return false;
       state = state.copyWith(isLoading: false, error: e.toString());
       return false;
     }

@@ -32,20 +32,22 @@ final submissionRepositoryProvider = Provider<SubmissionRepository>((ref) {
 
 final classificationProvider =
     StateNotifierProvider<ClassificationNotifier, ClassificationState>((ref) {
-      return ClassificationNotifier(
-        ref: ref,
-        storageService: ref.watch(storageServiceProvider),
-        tfLiteService: ref.watch(tfLiteServiceProvider),
-        supabaseFunctionService: ref.watch(supabaseFunctionServiceProvider),
-      );
-    });
+  return ClassificationNotifier(
+    ref: ref,
+    storageService: ref.watch(storageServiceProvider),
+    tfLiteService: ref.watch(tfLiteServiceProvider),
+    supabaseFunctionService: ref.watch(supabaseFunctionServiceProvider),
+  );
+});
 
-final submissionHistoryProvider = StreamProvider<List<Submission>>((ref) {
+final submissionHistoryProvider =
+    StreamProvider.autoDispose<List<Submission>>((ref) {
   final repo = ref.watch(submissionRepositoryProvider);
   return repo.getSubmissionHistory();
 });
 
-final submissionDetailProvider = StreamProvider.family<Submission?, String>((
+final submissionDetailProvider =
+    StreamProvider.autoDispose.family<Submission?, String>((
   ref,
   id,
 ) {
@@ -53,7 +55,8 @@ final submissionDetailProvider = StreamProvider.family<Submission?, String>((
   return repo.watchSubmission(id);
 });
 
-final recentSubmissionsProvider = StreamProvider<List<Submission>>((ref) {
+final recentSubmissionsProvider =
+    StreamProvider.autoDispose<List<Submission>>((ref) {
   final repo = ref.watch(submissionRepositoryProvider);
   return repo.getRecentSubmissions();
 });
@@ -148,11 +151,11 @@ class ClassificationNotifier extends StateNotifier<ClassificationState> {
     required StorageService storageService,
     required TFLiteService tfLiteService,
     required SupabaseFunctionService supabaseFunctionService,
-  }) : _ref = ref,
-       _storageService = storageService,
-       _tfLiteService = tfLiteService,
-       _supabaseFunctionService = supabaseFunctionService,
-       super(const ClassificationState()) {
+  })  : _ref = ref,
+        _storageService = storageService,
+        _tfLiteService = tfLiteService,
+        _supabaseFunctionService = supabaseFunctionService,
+        super(const ClassificationState()) {
     _initTFLite();
   }
 
@@ -187,6 +190,8 @@ class ClassificationNotifier extends StateNotifier<ClassificationState> {
   }
 
   Future<void> classifyImage() async {
+    if (state.isProcessing) return;
+
     final imagePath = state.imagePath;
     if (imagePath == null) return;
 

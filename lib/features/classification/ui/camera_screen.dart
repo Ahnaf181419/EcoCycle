@@ -21,6 +21,12 @@ class CameraScreen extends ConsumerWidget {
     // preview branches. The sub-widgets pull detail state themselves.
     final isProcessing =
         ref.watch(classificationProvider.select((s) => s.isProcessing));
+    final isCapturing =
+        ref.watch(classificationProvider.select((s) => s.isCapturing));
+    final isUploading =
+        ref.watch(classificationProvider.select((s) => s.isUploading));
+    final isClassifying =
+        ref.watch(classificationProvider.select((s) => s.isClassifying));
     final hasImage = ref.watch(
       classificationProvider.select((s) => s.imagePath != null),
     );
@@ -84,7 +90,11 @@ class CameraScreen extends ConsumerWidget {
             hasScrollBody: false,
             child: isProcessing
                 ? _buildProcessingState(
-                    context, ref.watch(classificationProvider))
+                    context,
+                    isCapturing: isCapturing,
+                    isUploading: isUploading,
+                    isClassifying: isClassifying,
+                  )
                 : hasImage
                     ? _buildPreviewState(
                         context, ref, ref.watch(classificationProvider))
@@ -234,13 +244,18 @@ class CameraScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildProcessingState(BuildContext context, state) {
+  Widget _buildProcessingState(
+    BuildContext context, {
+    required bool isCapturing,
+    required bool isUploading,
+    required bool isClassifying,
+  }) {
     String message;
     double progress;
-    if (state.isCapturing) {
+    if (isCapturing) {
       message = 'Capturing image...';
       progress = 0.2;
-    } else if (state.isUploading) {
+    } else if (isUploading) {
       message = 'Uploading image...';
       progress = 0.5;
     } else {

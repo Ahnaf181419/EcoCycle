@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../../core/theme/app_colors.dart';
 import 'nav_tabs.dart';
 
 class BottomNav extends StatelessWidget {
@@ -16,14 +15,15 @@ class BottomNav extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context).bottomNavigationBarTheme;
     return BottomNavigationBar(
       currentIndex: currentIndex,
       onTap: onTap,
       items: tabs.map((t) => t.item).toList(),
-      type: BottomNavigationBarType.fixed,
-      backgroundColor: AppColors.surface,
-      selectedItemColor: AppColors.primary,
-      unselectedItemColor: AppColors.textTertiary,
+      type: theme.type ?? BottomNavigationBarType.fixed,
+      backgroundColor: theme.backgroundColor,
+      selectedItemColor: theme.selectedItemColor,
+      unselectedItemColor: theme.unselectedItemColor,
       showUnselectedLabels: true,
       selectedFontSize: 12,
       unselectedFontSize: 12,

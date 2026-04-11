@@ -246,11 +246,11 @@ class RewardsScreen extends ConsumerWidget {
             ),
           );
         }
-        return ListView.builder(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          itemCount: rewards.length,
-          itemBuilder: (context, index) => _RewardTile(reward: rewards[index]),
+        return SliverList(
+          delegate: SliverChildBuilderDelegate(
+            (context, index) => _RewardTile(reward: rewards[index]),
+            childCount: rewards.length,
+          ),
         );
       },
     );

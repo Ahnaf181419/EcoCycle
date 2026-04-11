@@ -185,11 +185,20 @@ class _UserManagementScreenState extends ConsumerState<UserManagementScreen> {
             child: const Text('Cancel'),
           ),
           FilledButton(
-            onPressed: () {
+            onPressed: () async {
               Navigator.pop(context);
-              ref
+              final success = await ref
                   .read(roleUpdateProvider.notifier)
                   .updateRole(user.uid, newRole);
+              if (success && context.mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Role updated successfully')),
+                );
+              } else if (!success && context.mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Failed to update role')),
+                );
+              }
             },
             child: const Text('Confirm'),
           ),

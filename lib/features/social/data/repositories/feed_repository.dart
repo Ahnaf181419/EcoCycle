@@ -8,7 +8,7 @@ class FeedRepository {
   final SupabaseClient _client;
 
   FeedRepository({SupabaseClient? client})
-    : _client = client ?? SupabaseConstants.client;
+      : _client = client ?? SupabaseConstants.client;
 
   /// Streams the feed of followed users' submissions.
   ///
@@ -21,7 +21,8 @@ class FeedRepository {
   ///   `inFilter('uid', ...)` call — no N+1.
   /// - Users who add/remove follows will see the change after re-subscribing
   ///   (e.g. pull-to-refresh / invalidate).
-  Stream<List<FeedItem>> getFeed({int limit = AppConstants.feedPageSize}) async* {
+  Stream<List<FeedItem>> getFeed(
+      {int limit = AppConstants.feedPageSize}) async* {
     final uid = _client.auth.currentUser?.id;
     if (uid == null) {
       yield const [];
@@ -33,9 +34,8 @@ class FeedRepository {
         .select('followee_id')
         .eq('follower_id', uid);
 
-    final followedIds = followRows
-        .map<String>((row) => row['followee_id'] as String)
-        .toSet();
+    final followedIds =
+        followRows.map<String>((row) => row['followee_id'] as String).toSet();
 
     if (followedIds.isEmpty) {
       yield const [];
@@ -94,9 +94,8 @@ class FeedRepository {
         .select('followee_id')
         .eq('follower_id', uid);
 
-    final followedIds = followsSnapshot
-        .map((row) => row['followee_id'] as String)
-        .toList();
+    final followedIds =
+        followsSnapshot.map((row) => row['followee_id'] as String).toList();
 
     if (followedIds.isEmpty) return [];
 
@@ -104,17 +103,14 @@ class FeedRepository {
         .from(SupabaseTables.submissions)
         .select()
         .inFilter('user_id', followedIds)
+        .inFilter('state', ['CLASSIFIED', 'VERIFIED', 'REWARDED'])
         .order('created_at', ascending: false)
         .range(offset, offset + limit - 1);
 
-    final submissions = snapshot
-        .map((row) => Submission.fromJson(row))
-        .toList();
+    final submissions =
+        snapshot.map((row) => Submission.fromJson(row)).toList();
 
-    final userIds = submissions
-        .map((s) => s.userId)
-        .toSet()
-        .toList();
+    final userIds = submissions.map((s) => s.userId).toSet().toList();
 
     if (userIds.isEmpty) return [];
 

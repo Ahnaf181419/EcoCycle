@@ -8,11 +8,11 @@ final settingsRepositoryProvider = Provider<UserRepository>((ref) {
 
 final privacyToggleProvider =
     StateNotifierProvider<PrivacyToggleNotifier, PrivacyToggleState>((ref) {
-      return PrivacyToggleNotifier(
-        userRepository: ref.watch(settingsRepositoryProvider),
-        ref: ref,
-      );
-    });
+  return PrivacyToggleNotifier(
+    userRepository: ref.watch(settingsRepositoryProvider),
+    ref: ref,
+  );
+});
 
 class PrivacyToggleState {
   final bool isLoading;
@@ -63,10 +63,10 @@ class PrivacyToggleNotifier extends StateNotifier<PrivacyToggleState> {
 
 final deleteAccountProvider =
     StateNotifierProvider<DeleteAccountNotifier, DeleteAccountState>((ref) {
-      return DeleteAccountNotifier(
-        userRepository: ref.watch(settingsRepositoryProvider),
-      );
-    });
+  return DeleteAccountNotifier(
+    userRepository: ref.watch(settingsRepositoryProvider),
+  );
+});
 
 class DeleteAccountState {
   final bool isLoading;
@@ -92,16 +92,18 @@ class DeleteAccountNotifier extends StateNotifier<DeleteAccountState> {
   final UserRepository _userRepository;
 
   DeleteAccountNotifier({required UserRepository userRepository})
-    : _userRepository = userRepository,
-      super(const DeleteAccountState());
+      : _userRepository = userRepository,
+        super(const DeleteAccountState());
 
   Future<bool> deleteAccount() async {
     state = state.copyWith(isLoading: true, error: null, success: false);
     try {
       await _userRepository.deleteAccount();
+      if (!mounted) return true;
       state = state.copyWith(isLoading: false, success: true);
       return true;
     } catch (e) {
+      if (!mounted) return false;
       state = state.copyWith(isLoading: false, error: e.toString());
       return false;
     }

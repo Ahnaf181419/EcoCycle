@@ -10,12 +10,13 @@ final disputeRepositoryProvider = Provider<DisputeRepository>((ref) {
   return DisputeRepository();
 });
 
-final pendingDisputesProvider = StreamProvider<List<Dispute>>((ref) {
+final pendingDisputesProvider =
+    StreamProvider.autoDispose<List<Dispute>>((ref) {
   final repo = ref.watch(disputeRepositoryProvider);
   return repo.getPendingDisputes();
 });
 
-final disputeProvider = StreamProvider.family<Dispute?, String>((
+final disputeProvider = StreamProvider.autoDispose.family<Dispute?, String>((
   ref,
   disputeId,
 ) {
@@ -40,10 +41,10 @@ final disputeResolutionProvider =
     StateNotifierProvider<DisputeResolutionNotifier, DisputeResolutionState>((
   ref,
 ) {
-  final authState = ref.watch(authProvider);
+  final userRole = ref.watch(authProvider.select((s) => s.user?.role));
   return DisputeResolutionNotifier(
     supabaseFunctionService: ref.watch(supabaseFunctionServiceProvider),
-    userRole: UserRole.fromString(authState.user?.role),
+    userRole: UserRole.fromString(userRole),
   );
 });
 

@@ -5,7 +5,7 @@ final feedRepositoryProvider = Provider<FeedRepository>((ref) {
   return FeedRepository();
 });
 
-final feedProvider = StreamProvider<List<FeedItem>>((ref) {
+final feedProvider = StreamProvider.autoDispose<List<FeedItem>>((ref) {
   final repo = ref.watch(feedRepositoryProvider);
   return repo.getFeed();
 });

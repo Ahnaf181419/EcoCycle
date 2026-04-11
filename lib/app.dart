@@ -92,6 +92,11 @@ final routerProvider = Provider<GoRouter>((ref) {
 
       return null;
     },
+    errorBuilder: (context, state) => Scaffold(
+      body: ErrorView(
+        message: state.error?.toString() ?? 'Page not found',
+      ),
+    ),
     routes: [
       GoRoute(
         path: RouteConstants.splash,
@@ -119,10 +124,10 @@ final routerProvider = Provider<GoRouter>((ref) {
       ),
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) {
-          final authState = ref.watch(authProvider);
           return AppShell(
             navigationShell: navigationShell,
-            userRole: UserRole.fromString(authState.user?.role).value,
+            userRole:
+                UserRole.fromString(ref.read(authProvider).user?.role).value,
           );
         },
         branches: [

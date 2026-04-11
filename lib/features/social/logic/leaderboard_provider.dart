@@ -7,12 +7,13 @@ final leaderboardRepositoryProvider = Provider<LeaderboardRepository>((ref) {
   return LeaderboardRepository();
 });
 
-final leaderboardProvider = StreamProvider<List<UserProfile>>((ref) {
+final leaderboardProvider =
+    StreamProvider.autoDispose<List<UserProfile>>((ref) {
   final repo = ref.watch(leaderboardRepositoryProvider);
   return repo.getLeaderboard();
 });
 
-final currentUserRankProvider = StreamProvider<int>((ref) {
+final currentUserRankProvider = StreamProvider.autoDispose<int>((ref) {
   ref.watch(authProvider);
   final repo = ref.watch(leaderboardRepositoryProvider);
   return repo.currentUserRank();

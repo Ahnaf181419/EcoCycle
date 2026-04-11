@@ -5,23 +5,22 @@ import '../data/repositories/reward_repository.dart';
 import '../../classification/data/services/supabase_function_service.dart';
 import '../../classification/logic/classification_provider.dart';
 import '../../auth/logic/auth_provider.dart';
-import '../../auth/logic/auth_state.dart';
 
 final rewardRepositoryProvider = Provider<RewardRepository>((ref) {
   return RewardRepository();
 });
 
-final rewardHistoryProvider = StreamProvider<List<Reward>>((ref) {
+final rewardHistoryProvider = StreamProvider.autoDispose<List<Reward>>((ref) {
   final repo = ref.watch(rewardRepositoryProvider);
   return repo.getRewardHistory();
 });
 
-final totalEarnedProvider = StreamProvider<int>((ref) {
+final totalEarnedProvider = StreamProvider.autoDispose<int>((ref) {
   final repo = ref.watch(rewardRepositoryProvider);
   return repo.getTotalEarnedPoints();
 });
 
-final totalRedeemedProvider = StreamProvider<int>((ref) {
+final totalRedeemedProvider = StreamProvider.autoDispose<int>((ref) {
   final repo = ref.watch(rewardRepositoryProvider);
   return repo.getTotalRedeemedPoints();
 });
@@ -59,7 +58,7 @@ final redeemProvider = StateNotifierProvider<RedeemNotifier, RedeemState>((
 ) {
   return RedeemNotifier(
     supabaseFunctionService: ref.watch(supabaseFunctionServiceProvider),
-    authState: ref.watch(authProvider),
+    userId: ref.watch(authProvider.select((s) => s.user?.uid)),
   );
 });
 
@@ -86,9 +85,11 @@ class RedeemState {
   }) {
     return RedeemState(
       isRedeeming: isRedeeming ?? this.isRedeeming,
-      redeemedPoints:
-          redeemedPoints == _sentinel ? this.redeemedPoints : redeemedPoints as int?,
-      newBalance: newBalance == _sentinel ? this.newBalance : newBalance as int?,
+      redeemedPoints: redeemedPoints == _sentinel
+          ? this.redeemedPoints
+          : redeemedPoints as int?,
+      newBalance:
+          newBalance == _sentinel ? this.newBalance : newBalance as int?,
       error: error == _sentinel ? this.error : error as String?,
     );
   }
@@ -101,9 +102,9 @@ class RedeemNotifier extends StateNotifier<RedeemState> {
 
   RedeemNotifier({
     required SupabaseFunctionService supabaseFunctionService,
-    required AuthState authState,
+    required String? userId,
   })  : _supabaseFunctionService = supabaseFunctionService,
-        _userId = authState.user?.uid,
+        _userId = userId,
         super(const RedeemState());
 
   Future<bool> redeemPoints(int points) async {

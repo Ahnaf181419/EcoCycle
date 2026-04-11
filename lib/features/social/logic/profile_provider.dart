@@ -7,12 +7,14 @@ final userRepositoryProvider = Provider<UserRepository>((ref) {
   return UserRepository();
 });
 
-final currentUserProfileProvider = StreamProvider<UserProfile?>((ref) {
+final currentUserProfileProvider =
+    StreamProvider.autoDispose<UserProfile?>((ref) {
   final repo = ref.watch(userRepositoryProvider);
   return repo.currentUserProfile;
 });
 
-final userProfileProvider = StreamProvider.family<UserProfile?, String>((
+final userProfileProvider =
+    StreamProvider.autoDispose.family<UserProfile?, String>((
   ref,
   uid,
 ) {

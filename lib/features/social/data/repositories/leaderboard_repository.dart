@@ -7,7 +7,7 @@ class LeaderboardRepository {
   final SupabaseClient _client;
 
   LeaderboardRepository({SupabaseClient? client})
-    : _client = client ?? SupabaseConstants.client;
+      : _client = client ?? SupabaseConstants.client;
 
   Stream<List<UserProfile>> getLeaderboard({
     int limit = AppConstants.leaderboardLimit,
@@ -19,8 +19,7 @@ class LeaderboardRepository {
         .order('points', ascending: false)
         .limit(limit)
         .map(
-          (rows) =>
-              rows.map((row) => UserProfile.fromJson(row)).toList(),
+          (rows) => rows.map((row) => UserProfile.fromJson(row)).toList(),
         );
   }
 
@@ -41,9 +40,9 @@ class LeaderboardRepository {
               .from(SupabaseTables.profiles)
               .select('uid')
               .eq('is_private', false)
-              .gt('points', userPoints);
+              .gte('points', userPoints);
 
-          return countResponse.length + 1;
+          return countResponse.length;
         });
   }
 }

@@ -37,7 +37,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
     final currentAuth = ref.read(authProvider);
     if (!currentAuth.isLoading && !_redirected) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        _redirect(currentAuth);
+        if (mounted) _redirect(currentAuth);
       });
     }
 
@@ -51,12 +51,16 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
             const SizedBox(height: 16),
             Text(
               'EcoCycle',
-              style: AppTypography.displayMedium,
+              style: AppTypography.displayMedium.copyWith(
+                color: Colors.white,
+              ),
             ),
             const SizedBox(height: 8),
             Text(
               'Classify. Earn. Sustain.',
-              style: AppTypography.bodyMedium,
+              style: AppTypography.bodyMedium.copyWith(
+                color: Colors.white70,
+              ),
             ),
             const SizedBox(height: 32),
             const CircularProgressIndicator(color: Colors.white),

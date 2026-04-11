@@ -88,7 +88,8 @@ class ImageUtils {
 
   static String generateStoragePath(String userId, String fileName) {
     final timestamp = DateTime.now().millisecondsSinceEpoch;
-    return 'submissions/$userId/${timestamp}_$fileName';
+    final sanitized = fileName.replaceAll(RegExp(r'[^\w.\-]'), '_');
+    return 'submissions/$userId/${timestamp}_$sanitized';
   }
 
   static double sizeInKB(Uint8List bytes) {
