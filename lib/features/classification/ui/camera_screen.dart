@@ -8,6 +8,8 @@ import '../logic/classification_provider.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/constants/route_constants.dart';
+import '../../../../core/theme/app_typography.dart';
+import '../../../core/extensions/context_extensions.dart';
 
 class CameraScreen extends ConsumerWidget {
   const CameraScreen({super.key});
@@ -25,19 +27,71 @@ class CameraScreen extends ConsumerWidget {
 
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: AppBar(
-        title: const Text('Classify Waste'),
-        centerTitle: true,
-        elevation: 0,
-        backgroundColor: AppColors.surface,
-        foregroundColor: AppColors.textPrimary,
+      body: CustomScrollView(
+        slivers: [
+          SliverAppBar(
+            expandedHeight: context.responsiveHeight(130, small: 145),
+            pinned: true,
+            backgroundColor: AppColors.primary,
+            foregroundColor: Colors.white,
+            flexibleSpace: FlexibleSpaceBar(
+              background: Container(
+                decoration: const BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [AppColors.primary, AppColors.primaryLight],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                ),
+                child: SafeArea(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(
+                      AppSpacing.spaceLG,
+                      AppSpacing.spaceLG,
+                      AppSpacing.spaceLG,
+                      AppSpacing.spaceSM,
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        Row(
+                          children: [
+                            HugeIcon(
+                              icon: HugeIcons.strokeRoundedCamera01,
+                              color: Colors.white,
+                              size: 24,
+                              strokeWidth: 1.5,
+                            ),
+                            const SizedBox(width: AppSpacing.spaceSM),
+                            Text(
+                              'Classify Waste',
+                              style: AppTypography.headlineSmall.copyWith(
+                                color: Colors.white,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+          SliverFillRemaining(
+            hasScrollBody: false,
+            child: isProcessing
+                ? _buildProcessingState(
+                    context, ref.watch(classificationProvider))
+                : hasImage
+                    ? _buildPreviewState(
+                        context, ref, ref.watch(classificationProvider))
+                    : _buildCaptureState(context, ref),
+          ),
+        ],
       ),
-      body: isProcessing
-          ? _buildProcessingState(context, ref.watch(classificationProvider))
-          : hasImage
-          ? _buildPreviewState(
-              context, ref, ref.watch(classificationProvider))
-          : _buildCaptureState(context, ref),
     );
   }
 
@@ -66,7 +120,7 @@ class CameraScreen extends ConsumerWidget {
             const SizedBox(height: AppSpacing.spaceXL),
             Text(
               'Snap or Pick',
-              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+              style: AppTypography.headlineSmall.copyWith(
                 fontWeight: FontWeight.w700,
                 color: AppColors.textPrimary,
               ),
@@ -75,9 +129,8 @@ class CameraScreen extends ConsumerWidget {
             Text(
               'Take a photo or choose from gallery\nto classify your waste item',
               textAlign: TextAlign.center,
-              style: Theme.of(
-                context,
-              ).textTheme.bodyMedium?.copyWith(color: AppColors.textSecondary),
+              style: AppTypography.bodyMedium
+                  .copyWith(color: AppColors.textSecondary),
             ),
             const SizedBox(height: AppSpacing.space3XL),
             Row(
@@ -228,7 +281,7 @@ class CameraScreen extends ConsumerWidget {
             const SizedBox(height: AppSpacing.spaceXL),
             Text(
               message,
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+              style: AppTypography.headlineMedium.copyWith(
                 fontWeight: FontWeight.w600,
                 color: AppColors.textPrimary,
               ),
@@ -236,9 +289,8 @@ class CameraScreen extends ConsumerWidget {
             const SizedBox(height: AppSpacing.spaceSM),
             Text(
               'This may take a few seconds',
-              style: Theme.of(
-                context,
-              ).textTheme.bodyMedium?.copyWith(color: AppColors.textSecondary),
+              style: AppTypography.bodyMedium
+                  .copyWith(color: AppColors.textSecondary),
             ),
           ],
         ),
@@ -260,34 +312,38 @@ class _ActionChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-        decoration: BoxDecoration(
-          color: AppColors.surface,
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: AppColors.border),
-          boxShadow: [
-            BoxShadow(
-              color: AppColors.primary.withValues(alpha: 0.08),
-              blurRadius: 12,
-              offset: const Offset(0, 4),
-            ),
-          ],
-        ),
-        child: Column(
-          children: [
-            HugeIcon(icon: icon, color: AppColors.primary, size: 40),
-            const SizedBox(height: 8),
-            Text(
-              label,
-              style: const TextStyle(
-                fontWeight: FontWeight.w600,
-                color: AppColors.textPrimary,
+    return Material(
+      color: AppColors.surface,
+      borderRadius: BorderRadius.circular(20),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(20),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: AppColors.border),
+            boxShadow: [
+              BoxShadow(
+                color: AppColors.primary.withValues(alpha: 0.08),
+                blurRadius: 12,
+                offset: const Offset(0, 4),
               ),
-            ),
-          ],
+            ],
+          ),
+          child: Column(
+            children: [
+              HugeIcon(icon: icon, color: AppColors.primary, size: 40),
+              const SizedBox(height: 8),
+              Text(
+                label,
+                style: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.textPrimary,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

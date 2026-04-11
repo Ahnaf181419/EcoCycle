@@ -9,6 +9,7 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_typography.dart';
 import '../../../core/constants/app_constants.dart';
+import '../../../core/extensions/context_extensions.dart';
 
 class RedeemScreen extends ConsumerStatefulWidget {
   const RedeemScreen({super.key});
@@ -38,35 +39,72 @@ class _RedeemScreenState extends ConsumerState<RedeemScreen> {
 
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: AppBar(
-        title: const Text('Redeem Points'),
-        centerTitle: true,
-        elevation: 0,
-        backgroundColor: AppColors.surface,
-        foregroundColor: AppColors.textPrimary,
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(AppSpacing.spaceLG),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              _buildAvailableCard(available),
-              const SizedBox(height: AppSpacing.spaceXL),
-              _buildPresetSelector(available),
-              const SizedBox(height: AppSpacing.spaceXL),
-              _buildCustomInput(),
-              const SizedBox(height: AppSpacing.spaceXL),
-              _buildInfoSection(),
-              const SizedBox(height: AppSpacing.space3XL),
-              _buildRedeemButton(redeemState, available),
-              if (redeemState.error != null) _buildError(redeemState.error!),
-              if (redeemState.redeemedPoints != null)
-                _buildSuccess(redeemState),
-            ],
+      body: CustomScrollView(
+        slivers: [
+          SliverAppBar(
+            expandedHeight: context.responsiveHeight(130, small: 145),
+            pinned: true,
+            backgroundColor: AppColors.primary,
+            foregroundColor: Colors.white,
+            flexibleSpace: FlexibleSpaceBar(
+              background: Container(
+                decoration: const BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [AppColors.primary, AppColors.primaryLight],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                ),
+                child: SafeArea(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(
+                      AppSpacing.spaceLG,
+                      AppSpacing.spaceLG,
+                      AppSpacing.spaceLG,
+                      AppSpacing.spaceSM,
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        Text('Redeem Points',
+                            style: AppTypography.headlineSmall.copyWith(
+                                color: Colors.white,
+                                fontWeight: FontWeight.w700)),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
           ),
-        ),
+          SliverToBoxAdapter(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(AppSpacing.spaceLG),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    _buildAvailableCard(available),
+                    const SizedBox(height: AppSpacing.spaceXL),
+                    _buildPresetSelector(available),
+                    const SizedBox(height: AppSpacing.spaceXL),
+                    _buildCustomInput(),
+                    const SizedBox(height: AppSpacing.spaceXL),
+                    _buildInfoSection(),
+                    const SizedBox(height: AppSpacing.space3XL),
+                    _buildRedeemButton(redeemState, available),
+                    if (redeemState.error != null)
+                      _buildError(redeemState.error!),
+                    if (redeemState.redeemedPoints != null)
+                      _buildSuccess(redeemState),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -145,8 +183,8 @@ class _RedeemScreenState extends ConsumerState<RedeemScreen> {
                     color: isSelected && isEnabled
                         ? AppColors.primary
                         : isEnabled
-                        ? AppColors.textPrimary
-                        : AppColors.textTertiary,
+                            ? AppColors.textPrimary
+                            : AppColors.textTertiary,
                   ),
                 ),
               ),
@@ -232,7 +270,7 @@ class _RedeemScreenState extends ConsumerState<RedeemScreen> {
     );
   }
 
-  Widget _buildRedeemButton(redeemState, int available) {
+  Widget _buildRedeemButton(RedeemState redeemState, int available) {
     return FilledButton.icon(
       onPressed: redeemState.isRedeeming ? null : _onRedeem,
       icon: redeemState.isRedeeming
@@ -347,8 +385,7 @@ class _RedeemScreenState extends ConsumerState<RedeemScreen> {
       return;
     }
 
-    final ok =
-        await ref.read(redeemProvider.notifier).redeemPoints(amount);
+    final ok = await ref.read(redeemProvider.notifier).redeemPoints(amount);
     if (!mounted) return;
 
     if (!ok) {

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hugeicons/hugeicons.dart';
 import '../logic/admin_provider.dart';
 import '../../social/data/models/user_profile_model.dart';
+import '../../../core/extensions/context_extensions.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_typography.dart';
@@ -26,91 +27,140 @@ class _UserManagementScreenState extends ConsumerState<UserManagementScreen> {
 
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: AppBar(
-        title: const Text('User Management'),
-        backgroundColor: AppColors.surface,
-      ),
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(AppSpacing.spaceLG),
-            child: TextField(
-              onChanged: (value) => setState(() => _searchQuery = value),
-              decoration: InputDecoration(
-                hintText: 'Search users...',
-                hintStyle: AppTypography.bodyMedium.copyWith(
-                  color: AppColors.textTertiary,
+      body: CustomScrollView(
+        slivers: [
+          SliverAppBar(
+            expandedHeight: context.responsiveHeight(130, small: 145),
+            pinned: true,
+            backgroundColor: AppColors.primary,
+            foregroundColor: Colors.white,
+            flexibleSpace: FlexibleSpaceBar(
+              background: Container(
+                decoration: const BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [AppColors.primary, AppColors.primaryLight],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
                 ),
-                prefixIcon: const HugeIcon(
-                  icon: HugeIcons.strokeRoundedSearch01,
-                  color: AppColors.textTertiary,
-                  size: 20,
-                  strokeWidth: 1.5,
+                child: SafeArea(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(
+                      AppSpacing.spaceLG,
+                      AppSpacing.spaceLG,
+                      AppSpacing.spaceLG,
+                      AppSpacing.spaceSM,
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        Text('User Management',
+                            style: AppTypography.headlineSmall.copyWith(
+                                color: Colors.white,
+                                fontWeight: FontWeight.w700)),
+                      ],
+                    ),
+                  ),
                 ),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                filled: true,
-                fillColor: AppColors.surface,
               ),
             ),
           ),
-          Expanded(
-            child: usersAsync.when(
-              loading: () => const Center(child: CircularProgressIndicator()),
-              error: (e, _) => ErrorView(
-                message: 'Could not load users',
-                onRetry: () => ref.invalidate(allUsersProvider),
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.all(AppSpacing.spaceLG),
+              child: TextField(
+                onChanged: (value) => setState(() => _searchQuery = value),
+                decoration: InputDecoration(
+                  hintText: 'Search users...',
+                  hintStyle: AppTypography.bodyMedium.copyWith(
+                    color: AppColors.textTertiary,
+                  ),
+                  prefixIcon: const HugeIcon(
+                    icon: HugeIcons.strokeRoundedSearch01,
+                    color: AppColors.textTertiary,
+                    size: 20,
+                    strokeWidth: 1.5,
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  filled: true,
+                  fillColor: AppColors.surface,
+                ),
               ),
-              data: (users) {
-                final filtered = _searchQuery.isEmpty
-                    ? users
-                    : users
-                          .where(
-                            (u) =>
-                                u.displayName.toLowerCase().contains(
+            ),
+          ),
+          ...usersAsync.when(
+            loading: () => [
+              const SliverFillRemaining(
+                child: Center(child: CircularProgressIndicator()),
+              ),
+            ],
+            error: (e, _) => [
+              SliverFillRemaining(
+                child: ErrorView(
+                  message: 'Could not load users',
+                  onRetry: () => ref.invalidate(allUsersProvider),
+                ),
+              ),
+            ],
+            data: (users) {
+              final filtered = _searchQuery.isEmpty
+                  ? users
+                  : users
+                      .where(
+                        (u) =>
+                            u.displayName.toLowerCase().contains(
                                   _searchQuery.toLowerCase(),
                                 ) ||
-                                u.username.toLowerCase().contains(
+                            u.username.toLowerCase().contains(
                                   _searchQuery.toLowerCase(),
                                 ) ||
-                                u.email.toLowerCase().contains(
+                            u.email.toLowerCase().contains(
                                   _searchQuery.toLowerCase(),
                                 ),
-                          )
-                          .toList();
+                      )
+                      .toList();
 
-                if (filtered.isEmpty) {
-                  return Center(
-                    child: Text(
-                      'No users found',
-                      style: AppTypography.bodyLarge.copyWith(
-                        color: AppColors.textSecondary,
+              if (filtered.isEmpty) {
+                return [
+                  SliverFillRemaining(
+                    child: Center(
+                      child: Text(
+                        'No users found',
+                        style: AppTypography.bodyLarge.copyWith(
+                          color: AppColors.textSecondary,
+                        ),
                       ),
                     ),
-                  );
-                }
+                  ),
+                ];
+              }
 
-                return ListView.builder(
+              return [
+                SliverPadding(
                   padding: const EdgeInsets.symmetric(
                     horizontal: AppSpacing.spaceLG,
                   ),
-                  itemCount: filtered.length,
-                  itemBuilder: (context, index) {
-                    return _UserManagementTile(
-                      user: filtered[index],
-                      onRoleChanged: (newRole) {
-                        _showRoleConfirmDialog(
-                          context,
-                          filtered[index],
-                          newRole,
-                        );
-                      },
-                    );
-                  },
-                );
-              },
-            ),
+                  sliver: SliverList.builder(
+                    itemCount: filtered.length,
+                    itemBuilder: (context, index) {
+                      return _UserManagementTile(
+                        user: filtered[index],
+                        onRoleChanged: (newRole) {
+                          _showRoleConfirmDialog(
+                            context,
+                            filtered[index],
+                            newRole,
+                          );
+                        },
+                      );
+                    },
+                  ),
+                ),
+              ];
+            },
           ),
         ],
       ),
@@ -229,13 +279,18 @@ class _UserManagementTile extends StatelessWidget {
             ),
           ),
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.spaceSM),
+            padding: const EdgeInsets.symmetric(
+              horizontal: AppSpacing.spaceSM,
+              vertical: AppSpacing.space2XS,
+            ),
             decoration: BoxDecoration(
               color: _roleColor.withValues(alpha: 0.08),
               borderRadius: BorderRadius.circular(8),
             ),
             child: DropdownButton<String>(
               value: user.role,
+              isDense: true,
+              dropdownColor: AppColors.surface,
               underline: const SizedBox.shrink(),
               icon: const SizedBox.shrink(),
               style: AppTypography.labelSmall.copyWith(

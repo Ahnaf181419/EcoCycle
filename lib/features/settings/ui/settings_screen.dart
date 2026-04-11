@@ -11,6 +11,7 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_typography.dart';
 import '../../../core/constants/route_constants.dart';
+import '../../../core/extensions/context_extensions.dart';
 import '../../../shared/widgets/loading_overlay.dart';
 
 class SettingsScreen extends ConsumerStatefulWidget {
@@ -33,142 +34,186 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       message: 'Updating...',
       child: Scaffold(
         backgroundColor: AppColors.background,
-        appBar: AppBar(
-          title: const Text('Settings'),
-          backgroundColor: AppColors.surface,
-        ),
-        body: ListView(
-          padding: const EdgeInsets.symmetric(vertical: AppSpacing.spaceLG),
-          children: [
-            _SettingsSection(
-              title: 'Profile',
-              children: [
-                ListTile(
-                  leading: const HugeIcon(
-                    icon: HugeIcons.strokeRoundedUserSquare,
-                    color: AppColors.primary,
-                    size: 24,
-                    strokeWidth: 1.5,
-                  ),
-                  title: Text(
-                    'Edit Display Name',
-                    style: AppTypography.bodyLarge.copyWith(
-                      color: AppColors.textPrimary,
+        body: CustomScrollView(
+          slivers: [
+            SliverAppBar(
+              expandedHeight: context.responsiveHeight(130, small: 145),
+              pinned: true,
+              backgroundColor: AppColors.primary,
+              foregroundColor: Colors.white,
+              flexibleSpace: FlexibleSpaceBar(
+                background: Container(
+                  decoration: const BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [AppColors.primary, AppColors.primaryLight],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
                     ),
                   ),
-                  subtitle: Text(
-                    user?.displayName ?? '',
-                    style: AppTypography.bodySmall.copyWith(
-                      color: AppColors.textTertiary,
+                  child: SafeArea(
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(
+                        AppSpacing.spaceLG,
+                        AppSpacing.spaceLG,
+                        AppSpacing.spaceLG,
+                        AppSpacing.spaceSM,
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          Text(
+                            'Settings',
+                            style: AppTypography.headlineSmall.copyWith(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                  trailing: const HugeIcon(
-                    icon: HugeIcons.strokeRoundedArrowRight01,
-                    color: AppColors.textTertiary,
-                    size: 20,
-                    strokeWidth: 1.5,
-                  ),
-                  onTap: () => _showEditNameDialog(context),
                 ),
-              ],
+              ),
             ),
-            _SettingsSection(
-              title: 'Privacy',
-              children: [
-                SwitchListTile(
-                  secondary: const HugeIcon(
-                    icon: HugeIcons.strokeRoundedLockPassword,
-                    color: AppColors.primary,
-                    size: 24,
-                    strokeWidth: 1.5,
+            SliverPadding(
+              padding: const EdgeInsets.symmetric(
+                vertical: AppSpacing.spaceLG,
+              ),
+              sliver: SliverList(
+                delegate: SliverChildListDelegate([
+                  _SettingsSection(
+                    title: 'Profile',
+                    children: [
+                      ListTile(
+                        leading: const HugeIcon(
+                          icon: HugeIcons.strokeRoundedUserSquare,
+                          color: AppColors.primary,
+                          size: 24,
+                          strokeWidth: 1.5,
+                        ),
+                        title: Text(
+                          'Edit Display Name',
+                          style: AppTypography.bodyLarge.copyWith(
+                            color: AppColors.textPrimary,
+                          ),
+                        ),
+                        subtitle: Text(
+                          user?.displayName ?? '',
+                          style: AppTypography.bodySmall.copyWith(
+                            color: AppColors.textTertiary,
+                          ),
+                        ),
+                        trailing: const HugeIcon(
+                          icon: HugeIcons.strokeRoundedArrowRight01,
+                          color: AppColors.textTertiary,
+                          size: 20,
+                          strokeWidth: 1.5,
+                        ),
+                        onTap: () => _showEditNameDialog(context),
+                      ),
+                    ],
                   ),
-                  title: Text(
-                    'Private Profile',
-                    style: AppTypography.bodyLarge.copyWith(
-                      color: AppColors.textPrimary,
-                    ),
+                  _SettingsSection(
+                    title: 'Privacy',
+                    children: [
+                      SwitchListTile(
+                        secondary: const HugeIcon(
+                          icon: HugeIcons.strokeRoundedLockPassword,
+                          color: AppColors.primary,
+                          size: 24,
+                          strokeWidth: 1.5,
+                        ),
+                        title: Text(
+                          'Private Profile',
+                          style: AppTypography.bodyLarge.copyWith(
+                            color: AppColors.textPrimary,
+                          ),
+                        ),
+                        subtitle: Text(
+                          'Hide your activity from other users',
+                          style: AppTypography.bodySmall.copyWith(
+                            color: AppColors.textTertiary,
+                          ),
+                        ),
+                        value: user?.isPrivate ?? false,
+                        activeThumbColor: AppColors.primary,
+                        onChanged: (value) {
+                          ref
+                              .read(privacyToggleProvider.notifier)
+                              .togglePrivacy(value);
+                        },
+                      ),
+                    ],
                   ),
-                  subtitle: Text(
-                    'Hide your activity from other users',
-                    style: AppTypography.bodySmall.copyWith(
-                      color: AppColors.textTertiary,
-                    ),
+                  _SettingsSection(
+                    title: 'Account',
+                    children: [
+                      ListTile(
+                        leading: const HugeIcon(
+                          icon: HugeIcons.strokeRoundedLogout01,
+                          color: AppColors.error,
+                          size: 24,
+                          strokeWidth: 1.5,
+                        ),
+                        title: Text(
+                          'Sign Out',
+                          style: AppTypography.bodyLarge.copyWith(
+                            color: AppColors.error,
+                          ),
+                        ),
+                        onTap: () => _showSignOutDialog(context),
+                      ),
+                      ListTile(
+                        leading: const HugeIcon(
+                          icon: HugeIcons.strokeRoundedDelete01,
+                          color: AppColors.error,
+                          size: 24,
+                          strokeWidth: 1.5,
+                        ),
+                        title: Text(
+                          'Delete Account',
+                          style: AppTypography.bodyLarge.copyWith(
+                            color: AppColors.error,
+                          ),
+                        ),
+                        subtitle: Text(
+                          'Permanently delete your account and data',
+                          style: AppTypography.bodySmall.copyWith(
+                            color: AppColors.textTertiary,
+                          ),
+                        ),
+                        onTap: () => _showDeleteAccountDialog(context),
+                      ),
+                    ],
                   ),
-                  value: user?.isPrivate ?? false,
-                  activeThumbColor: AppColors.primary,
-                  onChanged: (value) {
-                    ref
-                        .read(privacyToggleProvider.notifier)
-                        .togglePrivacy(value);
-                  },
-                ),
-              ],
-            ),
-            _SettingsSection(
-              title: 'Account',
-              children: [
-                ListTile(
-                  leading: const HugeIcon(
-                    icon: HugeIcons.strokeRoundedLogout01,
-                    color: AppColors.error,
-                    size: 24,
-                    strokeWidth: 1.5,
+                  _SettingsSection(
+                    title: 'About',
+                    children: [
+                      ListTile(
+                        leading: const HugeIcon(
+                          icon: HugeIcons.strokeRoundedInformationCircle,
+                          color: AppColors.primary,
+                          size: 24,
+                          strokeWidth: 1.5,
+                        ),
+                        title: Text(
+                          'App Version',
+                          style: AppTypography.bodyLarge.copyWith(
+                            color: AppColors.textPrimary,
+                          ),
+                        ),
+                        trailing: Text(
+                          '1.0.0',
+                          style: AppTypography.bodyMedium.copyWith(
+                            color: AppColors.textTertiary,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                  title: Text(
-                    'Sign Out',
-                    style: AppTypography.bodyLarge.copyWith(
-                      color: AppColors.error,
-                    ),
-                  ),
-                  onTap: () => _showSignOutDialog(context),
-                ),
-                ListTile(
-                  leading: const HugeIcon(
-                    icon: HugeIcons.strokeRoundedDelete01,
-                    color: AppColors.error,
-                    size: 24,
-                    strokeWidth: 1.5,
-                  ),
-                  title: Text(
-                    'Delete Account',
-                    style: AppTypography.bodyLarge.copyWith(
-                      color: AppColors.error,
-                    ),
-                  ),
-                  subtitle: Text(
-                    'Permanently delete your account and data',
-                    style: AppTypography.bodySmall.copyWith(
-                      color: AppColors.textTertiary,
-                    ),
-                  ),
-                  onTap: () => _showDeleteAccountDialog(context),
-                ),
-              ],
-            ),
-            _SettingsSection(
-              title: 'About',
-              children: [
-                ListTile(
-                  leading: const HugeIcon(
-                    icon: HugeIcons.strokeRoundedInformationCircle,
-                    color: AppColors.primary,
-                    size: 24,
-                    strokeWidth: 1.5,
-                  ),
-                  title: Text(
-                    'App Version',
-                    style: AppTypography.bodyLarge.copyWith(
-                      color: AppColors.textPrimary,
-                    ),
-                  ),
-                  trailing: Text(
-                    '1.0.0',
-                    style: AppTypography.bodyMedium.copyWith(
-                      color: AppColors.textTertiary,
-                    ),
-                  ),
-                ),
-              ],
+                ]),
+              ),
             ),
           ],
         ),

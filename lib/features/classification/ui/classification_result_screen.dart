@@ -9,6 +9,8 @@ import '../data/models/submission_model.dart';
 import '../logic/classification_provider.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/theme/app_typography.dart';
+import '../../../../core/extensions/context_extensions.dart';
 import '../../../../core/constants/route_constants.dart';
 import '../../../../shared/widgets/category_badge.dart';
 import '../../../../shared/widgets/confidence_bar.dart';
@@ -25,33 +27,73 @@ class ClassificationResultScreen extends ConsumerWidget {
 
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: AppBar(
-        title: const Text('Result'),
-        centerTitle: true,
-        elevation: 0,
-        backgroundColor: AppColors.surface,
-        foregroundColor: AppColors.textPrimary,
-      ),
-      body: submissionAsync.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, _) => Center(
-          child: Text(
-            'Error: $e',
-            style: const TextStyle(color: AppColors.error),
+      body: CustomScrollView(
+        slivers: [
+          SliverAppBar(
+            expandedHeight: context.responsiveHeight(130, small: 145),
+            pinned: true,
+            backgroundColor: AppColors.primary,
+            foregroundColor: Colors.white,
+            flexibleSpace: FlexibleSpaceBar(
+              background: Container(
+                decoration: const BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [AppColors.primary, AppColors.primaryLight],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                ),
+                child: SafeArea(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(
+                      AppSpacing.spaceLG,
+                      AppSpacing.spaceLG,
+                      AppSpacing.spaceLG,
+                      AppSpacing.spaceSM,
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        Text(
+                          'Classification Result',
+                          style: AppTypography.headlineSmall.copyWith(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
           ),
-        ),
-        data: (submission) {
-          if (submission == null) {
-            return const Center(child: Text('Submission not found'));
-          }
-          return _buildResult(context, ref, submission);
-        },
+          SliverToBoxAdapter(
+            child: submissionAsync.when(
+              loading: () => const Center(child: CircularProgressIndicator()),
+              error: (e, _) => Center(
+                child: Text(
+                  'Error: $e',
+                  style: const TextStyle(color: AppColors.error),
+                ),
+              ),
+              data: (submission) {
+                if (submission == null) {
+                  return const Center(child: Text('Submission not found'));
+                }
+                return _buildResult(context, ref, submission);
+              },
+            ),
+          ),
+        ],
       ),
     );
   }
 
-  Widget _buildResult(BuildContext context, WidgetRef ref, submission) {
-    return SingleChildScrollView(
+  Widget _buildResult(
+      BuildContext context, WidgetRef ref, Submission submission) {
+    return Padding(
       padding: const EdgeInsets.all(AppSpacing.spaceLG),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,

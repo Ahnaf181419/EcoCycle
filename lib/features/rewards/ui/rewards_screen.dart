@@ -9,6 +9,7 @@ import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_typography.dart';
 import '../../../core/constants/route_constants.dart';
 import '../../../core/extensions/datetime_extensions.dart';
+import '../../../core/extensions/context_extensions.dart';
 import '../../../shared/widgets/error_view.dart';
 
 class RewardsScreen extends ConsumerWidget {
@@ -21,13 +22,6 @@ class RewardsScreen extends ConsumerWidget {
 
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: AppBar(
-        title: const Text('Rewards'),
-        centerTitle: true,
-        elevation: 0,
-        backgroundColor: AppColors.surface,
-        foregroundColor: AppColors.textPrimary,
-      ),
       body: RefreshIndicator(
         onRefresh: () async {
           ref.invalidate(rewardHistoryProvider);
@@ -35,21 +29,69 @@ class RewardsScreen extends ConsumerWidget {
           ref.invalidate(totalRedeemedProvider);
         },
         color: AppColors.primary,
-        child: SingleChildScrollView(
+        child: CustomScrollView(
           physics: const AlwaysScrollableScrollPhysics(),
-          padding: const EdgeInsets.all(AppSpacing.spaceLG),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              _buildBalanceCard(context, ref, balanceAsync),
-              const SizedBox(height: AppSpacing.spaceXL),
-              _buildRedeemButton(context, balanceAsync),
-              const SizedBox(height: AppSpacing.spaceXL),
-              _buildHistoryHeader(),
-              const SizedBox(height: AppSpacing.spaceMD),
-              _buildHistoryList(historyAsync, ref),
-            ],
-          ),
+          slivers: [
+            SliverAppBar(
+              expandedHeight: context.responsiveHeight(130, small: 145),
+              pinned: true,
+              backgroundColor: AppColors.primary,
+              foregroundColor: Colors.white,
+              flexibleSpace: FlexibleSpaceBar(
+                background: Container(
+                  decoration: const BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [AppColors.primary, AppColors.primaryLight],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                  ),
+                  child: SafeArea(
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(
+                        AppSpacing.spaceLG,
+                        AppSpacing.spaceLG,
+                        AppSpacing.spaceLG,
+                        AppSpacing.spaceSM,
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          Row(children: [
+                            HugeIcon(
+                                icon: HugeIcons.strokeRoundedCoins01,
+                                color: Colors.white,
+                                size: 24,
+                                strokeWidth: 1.5),
+                            const SizedBox(width: AppSpacing.spaceSM),
+                            Text('Rewards',
+                                style: AppTypography.headlineSmall.copyWith(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w700)),
+                          ]),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            SliverPadding(
+              padding: const EdgeInsets.all(AppSpacing.spaceLG),
+              sliver: SliverList(
+                delegate: SliverChildListDelegate([
+                  _buildBalanceCard(context, ref, balanceAsync),
+                  const SizedBox(height: AppSpacing.spaceXL),
+                  _buildRedeemButton(context, balanceAsync),
+                  const SizedBox(height: AppSpacing.spaceXL),
+                  _buildHistoryHeader(),
+                  const SizedBox(height: AppSpacing.spaceMD),
+                  _buildHistoryList(historyAsync, ref),
+                ]),
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -136,9 +178,8 @@ class RewardsScreen extends ConsumerWidget {
   Widget _buildRedeemButton(BuildContext context, RewardBalance? balance) {
     final available = balance?.available ?? 0;
     return FilledButton.icon(
-      onPressed: available > 0
-          ? () => context.push(RouteConstants.redeem)
-          : null,
+      onPressed:
+          available > 0 ? () => context.push(RouteConstants.redeem) : null,
       icon: const HugeIcon(
         icon: HugeIcons.strokeRoundedCoins01,
         color: Colors.white,
@@ -205,8 +246,11 @@ class RewardsScreen extends ConsumerWidget {
             ),
           );
         }
-        return Column(
-          children: rewards.map((r) => _RewardTile(reward: r)).toList(),
+        return ListView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          itemCount: rewards.length,
+          itemBuilder: (context, index) => _RewardTile(reward: rewards[index]),
         );
       },
     );

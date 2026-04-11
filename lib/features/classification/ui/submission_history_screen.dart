@@ -7,15 +7,16 @@ import 'package:hugeicons/hugeicons.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../data/models/submission_model.dart';
 import '../logic/classification_provider.dart';
-import '../../../../core/theme/app_colors.dart';
-import '../../../../core/theme/app_spacing.dart';
-import '../../../../core/theme/app_typography.dart';
-import '../../../../core/constants/route_constants.dart';
-import '../../../../core/extensions/string_extensions.dart';
-import '../../../../core/extensions/datetime_extensions.dart';
-import '../../../../shared/widgets/category_badge.dart';
-import '../../../../shared/widgets/points_display.dart';
-import '../../../../shared/widgets/error_view.dart';
+import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_spacing.dart';
+import '../../../core/theme/app_typography.dart';
+import '../../../core/constants/route_constants.dart';
+import '../../../core/extensions/string_extensions.dart';
+import '../../../core/extensions/datetime_extensions.dart';
+import '../../../core/extensions/context_extensions.dart';
+import '../../../shared/widgets/category_badge.dart';
+import '../../../shared/widgets/points_display.dart';
+import '../../../shared/widgets/error_view.dart';
 
 class SubmissionHistoryScreen extends ConsumerWidget {
   const SubmissionHistoryScreen({super.key});
@@ -26,23 +27,75 @@ class SubmissionHistoryScreen extends ConsumerWidget {
 
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: AppBar(
-        title: const Text('History'),
-        centerTitle: true,
-        elevation: 0,
-        backgroundColor: AppColors.surface,
-        foregroundColor: AppColors.textPrimary,
-      ),
-      body: historyAsync.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, _) => ErrorView(
-          message: 'Failed to load history',
-          onRetry: () => ref.invalidate(submissionHistoryProvider),
-        ),
-        data: (submissions) {
-          if (submissions.isEmpty) return _buildEmpty(context);
-          return _buildList(context, ref, submissions);
-        },
+      body: CustomScrollView(
+        slivers: [
+          SliverAppBar(
+            expandedHeight: context.responsiveHeight(130, small: 145),
+            pinned: true,
+            backgroundColor: AppColors.primary,
+            foregroundColor: Colors.white,
+            flexibleSpace: FlexibleSpaceBar(
+              background: Container(
+                decoration: const BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [AppColors.primary, AppColors.primaryLight],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                ),
+                child: SafeArea(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(
+                      AppSpacing.spaceLG,
+                      AppSpacing.spaceLG,
+                      AppSpacing.spaceLG,
+                      AppSpacing.spaceSM,
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        Row(
+                          children: [
+                            HugeIcon(
+                                icon: HugeIcons.strokeRoundedTime01,
+                                color: Colors.white,
+                                size: 24,
+                                strokeWidth: 1.5),
+                            const SizedBox(width: AppSpacing.spaceSM),
+                            Text('Submission History',
+                                style: AppTypography.headlineSmall.copyWith(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w700)),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+          ...historyAsync.when(
+            loading: () => [
+              const SliverFillRemaining(
+                  child: Center(child: CircularProgressIndicator()))
+            ],
+            error: (e, _) => [
+              SliverFillRemaining(
+                  child: ErrorView(
+                message: 'Failed to load history',
+                onRetry: () => ref.invalidate(submissionHistoryProvider),
+              ))
+            ],
+            data: (submissions) {
+              if (submissions.isEmpty) {
+                return [SliverFillRemaining(child: _buildEmpty(context))];
+              }
+              return [_buildSliverList(context, ref, submissions)];
+            },
+          ),
+        ],
       ),
     );
   }
@@ -97,21 +150,22 @@ class SubmissionHistoryScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildList(
+  Widget _buildSliverList(
     BuildContext context,
     WidgetRef ref,
     List<Submission> submissions,
   ) {
-    return RefreshIndicator(
-      onRefresh: () async => ref.invalidate(submissionHistoryProvider),
-      color: AppColors.primary,
-      child: ListView.separated(
-        padding: const EdgeInsets.all(AppSpacing.spaceLG),
-        itemCount: submissions.length,
-        separatorBuilder: (_, __) => const SizedBox(height: AppSpacing.spaceSM),
-        itemBuilder: (context, index) {
-          return _SubmissionCard(submission: submissions[index]);
-        },
+    return SliverPadding(
+      padding: const EdgeInsets.all(AppSpacing.spaceLG),
+      sliver: SliverList(
+        delegate: SliverChildBuilderDelegate(
+          (context, index) {
+            if (index.isOdd) return const SizedBox(height: AppSpacing.spaceSM);
+            final itemIndex = index ~/ 2;
+            return _SubmissionCard(submission: submissions[itemIndex]);
+          },
+          childCount: submissions.length * 2 - 1,
+        ),
       ),
     );
   }

@@ -5,6 +5,7 @@ import '../logic/dispute_provider.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_typography.dart';
+import '../../../core/extensions/context_extensions.dart';
 import '../../../core/extensions/string_extensions.dart';
 import '../../../shared/widgets/category_badge.dart';
 import '../../../shared/widgets/confidence_bar.dart';
@@ -43,36 +44,101 @@ class _DisputeDetailScreenState extends ConsumerState<DisputeDetailScreen> {
       message: 'Resolving dispute...',
       child: Scaffold(
         backgroundColor: AppColors.background,
-        appBar: AppBar(
-          title: const Text('Dispute Detail'),
-          backgroundColor: AppColors.surface,
-        ),
-        body: disputeAsync.when(
-          loading: () => const Center(child: CircularProgressIndicator()),
-          error: (e, _) => ErrorView(
-            message: 'Could not load dispute',
-            onRetry: () => ref.invalidate(disputeProvider(widget.disputeId)),
-          ),
-          data: (dispute) {
-            if (dispute == null) {
-              return const ErrorView(message: 'Dispute not found');
-            }
+        body: CustomScrollView(
+          slivers: [
+            SliverAppBar(
+              expandedHeight: context.responsiveHeight(130, small: 145),
+              pinned: true,
+              backgroundColor: AppColors.primary,
+              foregroundColor: Colors.white,
+              flexibleSpace: FlexibleSpaceBar(
+                background: Container(
+                  decoration: const BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        AppColors.primary,
+                        AppColors.primaryLight,
+                      ],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                  ),
+                  child: SafeArea(
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(
+                        AppSpacing.spaceLG,
+                        AppSpacing.spaceLG,
+                        AppSpacing.spaceLG,
+                        AppSpacing.spaceSM,
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          Text(
+                            'Dispute Detail',
+                            style: AppTypography.headlineSmall.copyWith(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            ...disputeAsync.when(
+              loading: () => [
+                const SliverFillRemaining(
+                  child: Center(child: CircularProgressIndicator()),
+                ),
+              ],
+              error: (e, _) => [
+                SliverFillRemaining(
+                  child: ErrorView(
+                    message: 'Could not load dispute',
+                    onRetry: () =>
+                        ref.invalidate(disputeProvider(widget.disputeId)),
+                  ),
+                ),
+              ],
+              data: (dispute) {
+                if (dispute == null) {
+                  return [
+                    const SliverFillRemaining(
+                      child: ErrorView(message: 'Dispute not found'),
+                    ),
+                  ];
+                }
 
-            if (dispute.status != 'PENDING') {
-              return _ResolvedView(dispute: dispute);
-            }
+                if (dispute.status != 'PENDING') {
+                  return [
+                    SliverFillRemaining(
+                      child: _ResolvedView(dispute: dispute),
+                    ),
+                  ];
+                }
 
-            return _PendingView(
-              dispute: dispute,
-              noteController: _noteController,
-              selectedCategory: _selectedCategory,
-              selectedResolution: _selectedResolution,
-              onCategoryChanged: (v) => setState(() => _selectedCategory = v),
-              onResolutionChanged: (v) =>
-                  setState(() => _selectedResolution = v),
-              onResolve: _handleResolve,
-            );
-          },
+                return [
+                  SliverToBoxAdapter(
+                    child: _PendingView(
+                      dispute: dispute,
+                      noteController: _noteController,
+                      selectedCategory: _selectedCategory,
+                      selectedResolution: _selectedResolution,
+                      onCategoryChanged: (v) =>
+                          setState(() => _selectedCategory = v),
+                      onResolutionChanged: (v) =>
+                          setState(() => _selectedResolution = v),
+                      onResolve: _handleResolve,
+                    ),
+                  ),
+                ];
+              },
+            ),
+          ],
         ),
       ),
     );
@@ -105,25 +171,25 @@ class _DisputeDetailScreenState extends ConsumerState<DisputeDetailScreen> {
               : _noteController.text.trim(),
         )
         .then((success) {
-          if (success && mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Dispute resolved successfully'),
-                backgroundColor: AppColors.success,
-              ),
-            );
-          } else if (!success && mounted) {
-            final error = ref.read(disputeResolutionProvider).error;
-            if (error != null) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(error),
-                  backgroundColor: AppColors.error,
-                ),
-              );
-            }
-          }
-        });
+      if (success && mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Dispute resolved successfully'),
+            backgroundColor: AppColors.success,
+          ),
+        );
+      } else if (!success && mounted) {
+        final error = ref.read(disputeResolutionProvider).error;
+        if (error != null) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(error),
+              backgroundColor: AppColors.error,
+            ),
+          );
+        }
+      }
+    });
   }
 }
 

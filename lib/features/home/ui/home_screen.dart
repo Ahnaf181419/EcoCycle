@@ -13,8 +13,8 @@ import '../../../core/theme/app_typography.dart';
 import '../../../core/constants/route_constants.dart';
 import '../../../core/extensions/string_extensions.dart';
 import '../../../core/extensions/datetime_extensions.dart';
+import '../../../core/extensions/context_extensions.dart';
 import '../../../shared/widgets/category_badge.dart';
-import '../../../shared/widgets/user_avatar.dart';
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
@@ -54,7 +54,7 @@ class HomeScreen extends ConsumerWidget {
 
   Widget _buildSliverAppBar(BuildContext context, UserProfile? user) {
     return SliverAppBar(
-      expandedHeight: 160,
+      expandedHeight: context.responsiveHeight(100, small: 110),
       pinned: true,
       backgroundColor: AppColors.primary,
       foregroundColor: Colors.white,
@@ -70,10 +70,10 @@ class HomeScreen extends ConsumerWidget {
           child: SafeArea(
             child: Padding(
               padding: const EdgeInsets.fromLTRB(
-                AppSpacing.spaceXL,
-                AppSpacing.space3XL,
-                AppSpacing.spaceXL,
                 AppSpacing.spaceLG,
+                AppSpacing.spaceLG,
+                AppSpacing.spaceLG,
+                AppSpacing.spaceSM,
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -81,26 +81,32 @@ class HomeScreen extends ConsumerWidget {
                 children: [
                   Row(
                     children: [
-                      UserAvatar(
-                        radius: 24,
-                        photoUrl: user?.photoUrl,
-                        username: user?.displayName ?? 'U',
+                      CircleAvatar(
+                        radius: 18,
+                        backgroundColor:
+                            AppColors.primaryLight.withValues(alpha: 0.3),
+                        child: const Icon(
+                          Icons.person,
+                          color: Colors.white,
+                          size: 18,
+                        ),
                       ),
-                      const SizedBox(width: AppSpacing.spaceLG),
+                      const SizedBox(width: AppSpacing.spaceMD),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
                               'Hello, ${user?.displayName ?? "User"}!',
-                              style: AppTypography.headlineMedium.copyWith(
+                              style: AppTypography.headlineSmall.copyWith(
                                 color: Colors.white,
+                                fontWeight: FontWeight.w700,
                               ),
                               overflow: TextOverflow.ellipsis,
                             ),
                             Text(
                               '@${user?.username ?? "user"}',
-                              style: AppTypography.bodyMedium.copyWith(
+                              style: AppTypography.bodySmall.copyWith(
                                 color: Colors.white.withValues(alpha: 0.8),
                               ),
                             ),
@@ -112,7 +118,7 @@ class HomeScreen extends ConsumerWidget {
                         icon: const HugeIcon(
                           icon: HugeIcons.strokeRoundedSettings01,
                           color: Colors.white,
-                          size: 24,
+                          size: 22,
                           strokeWidth: 1.5,
                         ),
                       ),
@@ -335,11 +341,14 @@ class _StatCard extends StatelessWidget {
         children: [
           HugeIcon(icon: icon, color: color, size: 24, strokeWidth: 1.5),
           const SizedBox(height: AppSpacing.spaceSM),
-          Text(
-            value,
-            style: AppTypography.statMedium.copyWith(
-              fontSize: 18,
-              color: AppColors.textPrimary,
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Text(
+              value,
+              style: AppTypography.statMedium.copyWith(
+                fontSize: 18,
+                color: AppColors.textPrimary,
+              ),
             ),
           ),
           const SizedBox(height: 2),

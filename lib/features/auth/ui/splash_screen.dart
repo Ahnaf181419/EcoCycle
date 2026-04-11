@@ -5,6 +5,7 @@ import '../logic/auth_provider.dart';
 import '../logic/auth_state.dart';
 import '../../../../core/constants/route_constants.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/app_typography.dart';
 
 class SplashScreen extends ConsumerStatefulWidget {
   const SplashScreen({super.key});
@@ -33,7 +34,6 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
       _redirect(next);
     });
 
-    // Handle the "already loaded" case on first build.
     final currentAuth = ref.read(authProvider);
     if (!currentAuth.isLoading && !_redirected) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -41,34 +41,25 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
       });
     }
 
-    return const Scaffold(
+    return Scaffold(
       backgroundColor: AppColors.primary,
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.eco, size: 80, color: Colors.white),
-            SizedBox(height: 16),
+            const Icon(Icons.eco, size: 80, color: Colors.white),
+            const SizedBox(height: 16),
             Text(
               'EcoCycle',
-              style: TextStyle(
-                fontSize: 36,
-                fontWeight: FontWeight.w700,
-                color: Colors.white,
-                fontFamily: 'Outfit',
-              ),
+              style: AppTypography.displayMedium,
             ),
-            SizedBox(height: 8),
+            const SizedBox(height: 8),
             Text(
               'Classify. Earn. Sustain.',
-              style: TextStyle(
-                fontSize: 16,
-                color: Colors.white70,
-                fontFamily: 'DM Sans',
-              ),
+              style: AppTypography.bodyMedium,
             ),
-            SizedBox(height: 32),
-            CircularProgressIndicator(color: Colors.white),
+            const SizedBox(height: 32),
+            const CircularProgressIndicator(color: Colors.white),
           ],
         ),
       ),

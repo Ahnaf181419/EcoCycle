@@ -17,6 +17,20 @@ extension ContextExtensions on BuildContext {
 
   EdgeInsets get padding => MediaQuery.of(this).padding;
 
+  bool get isSmallScreen => screenWidth < 360;
+
+  bool get isMediumScreen => screenWidth >= 360 && screenWidth < 600;
+
+  double responsiveHeight(double base, {double? small}) {
+    if (isSmallScreen) return small ?? base * 0.9;
+    return base;
+  }
+
+  double clampedHeight(double base,
+      {double minMul = 0.85, double maxMul = 1.15}) {
+    return (base * (screenWidth / 400)).clamp(base * minMul, base * maxMul);
+  }
+
   void showSnackBar(String message, {bool isError = false}) {
     ScaffoldMessenger.of(this)
       ..hideCurrentSnackBar()

@@ -10,6 +10,7 @@ import '../data/models/user_profile_model.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_typography.dart';
+import '../../../core/extensions/context_extensions.dart';
 import '../../../shared/widgets/user_avatar.dart';
 import '../../../shared/widgets/rank_badge.dart';
 
@@ -21,15 +22,14 @@ class LeaderboardScreen extends ConsumerWidget {
     final leaderboardAsync = ref.watch(leaderboardProvider);
     final rankAsync = ref.watch(currentUserRankProvider);
     // Narrow: only need the viewer's uid to highlight their row.
-    final currentUid =
-        ref.watch(authProvider.select((s) => s.user?.uid));
+    final currentUid = ref.watch(authProvider.select((s) => s.user?.uid));
 
     return Scaffold(
       backgroundColor: AppColors.background,
       body: CustomScrollView(
         slivers: [
           SliverAppBar(
-            expandedHeight: 220,
+            expandedHeight: context.responsiveHeight(130, small: 145),
             pinned: true,
             backgroundColor: AppColors.primary,
             foregroundColor: Colors.white,
@@ -45,10 +45,10 @@ class LeaderboardScreen extends ConsumerWidget {
                 child: SafeArea(
                   child: Padding(
                     padding: const EdgeInsets.fromLTRB(
-                      AppSpacing.spaceXL,
-                      AppSpacing.space3XL,
-                      AppSpacing.spaceXL,
                       AppSpacing.spaceLG,
+                      AppSpacing.spaceLG,
+                      AppSpacing.spaceLG,
+                      AppSpacing.spaceSM,
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -59,19 +59,20 @@ class LeaderboardScreen extends ConsumerWidget {
                             const HugeIcon(
                               icon: HugeIcons.strokeRoundedMedal01,
                               color: Colors.white,
-                              size: 32,
+                              size: 24,
                               strokeWidth: 1.5,
                             ),
                             const SizedBox(width: AppSpacing.spaceSM),
                             Text(
                               'Leaderboard',
-                              style: AppTypography.headlineLarge.copyWith(
+                              style: AppTypography.headlineSmall.copyWith(
                                 color: Colors.white,
+                                fontWeight: FontWeight.w700,
                               ),
                             ),
                           ],
                         ),
-                        const SizedBox(height: AppSpacing.spaceLG),
+                        const SizedBox(height: AppSpacing.spaceSM),
                         rankAsync.when(
                           loading: () => const SizedBox.shrink(),
                           error: (_, __) => const SizedBox.shrink(),
@@ -213,23 +214,29 @@ class _PodiumSection extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
           if (topThree.length >= 2)
-            _PodiumCard(
-              user: topThree[1],
-              rank: 2,
-              isCurrentUser: topThree[1].uid == currentUid,
+            Expanded(
+              child: _PodiumCard(
+                user: topThree[1],
+                rank: 2,
+                isCurrentUser: topThree[1].uid == currentUid,
+              ),
             ),
           if (topThree.isNotEmpty)
-            _PodiumCard(
-              user: topThree[0],
-              rank: 1,
-              isCurrentUser: topThree[0].uid == currentUid,
-              isCenter: true,
+            Expanded(
+              child: _PodiumCard(
+                user: topThree[0],
+                rank: 1,
+                isCurrentUser: topThree[0].uid == currentUid,
+                isCenter: true,
+              ),
             ),
           if (topThree.length >= 3)
-            _PodiumCard(
-              user: topThree[2],
-              rank: 3,
-              isCurrentUser: topThree[2].uid == currentUid,
+            Expanded(
+              child: _PodiumCard(
+                user: topThree[2],
+                rank: 3,
+                isCurrentUser: topThree[2].uid == currentUid,
+              ),
             ),
         ],
       ),
@@ -325,7 +332,7 @@ class _PodiumCard extends StatelessWidget {
           ),
           const SizedBox(height: AppSpacing.spaceXS),
           SizedBox(
-            width: 80,
+            width: 72,
             child: Text(
               user.displayName,
               style: AppTypography.labelSmall.copyWith(
@@ -336,11 +343,14 @@ class _PodiumCard extends StatelessWidget {
               overflow: TextOverflow.ellipsis,
             ),
           ),
-          Text(
-            '${user.points} pts',
-            style: AppTypography.statSmall.copyWith(
-              fontSize: 13,
-              color: _medalColor,
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Text(
+              '${user.points} pts',
+              style: AppTypography.statSmall.copyWith(
+                fontSize: 13,
+                color: _medalColor,
+              ),
             ),
           ),
         ],

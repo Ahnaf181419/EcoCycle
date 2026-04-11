@@ -15,7 +15,7 @@ import '../../../core/theme/app_typography.dart';
 import '../../../core/constants/route_constants.dart';
 import '../../../core/extensions/string_extensions.dart';
 import '../../../core/extensions/datetime_extensions.dart';
-import '../../../shared/widgets/user_avatar.dart';
+import '../../../core/extensions/context_extensions.dart';
 import '../../../shared/widgets/category_badge.dart';
 
 class OwnProfileScreen extends ConsumerWidget {
@@ -23,7 +23,6 @@ class OwnProfileScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // Narrow: only react to profile changes, not transient loading flags.
     final user = ref.watch(authProvider.select((s) => s.user));
     final balance = ref.watch(rewardBalanceProvider);
     final recentAsync = ref.watch(recentSubmissionsProvider);
@@ -33,7 +32,7 @@ class OwnProfileScreen extends ConsumerWidget {
       body: CustomScrollView(
         slivers: [
           SliverAppBar(
-            expandedHeight: 260,
+            expandedHeight: context.responsiveHeight(180, small: 200),
             pinned: true,
             backgroundColor: AppColors.primary,
             foregroundColor: Colors.white,
@@ -61,68 +60,78 @@ class OwnProfileScreen extends ConsumerWidget {
                   child: Padding(
                     padding: const EdgeInsets.fromLTRB(
                       AppSpacing.spaceXL,
-                      AppSpacing.space3XL,
+                      AppSpacing.spaceXL,
                       AppSpacing.spaceXL,
                       0,
                     ),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const SizedBox(height: AppSpacing.spaceXL),
-                        UserAvatar(
-                          photoUrl: user?.photoUrl,
-                          username: user?.displayName ?? 'U',
-                          radius: 44,
-                        ),
                         const SizedBox(height: AppSpacing.spaceMD),
+                        CircleAvatar(
+                          radius: 28,
+                          backgroundColor:
+                              AppColors.primaryLight.withValues(alpha: 0.3),
+                          child: const Icon(
+                            Icons.person,
+                            color: Colors.white,
+                            size: 28,
+                          ),
+                        ),
+                        const SizedBox(height: AppSpacing.spaceSM),
                         Text(
                           user?.displayName ?? 'User',
-                          style: AppTypography.headlineMedium.copyWith(
+                          style: AppTypography.headlineSmall.copyWith(
                             color: Colors.white,
+                            fontWeight: FontWeight.w700,
                           ),
                         ),
                         Text(
                           '@${user?.username ?? "user"}',
-                          style: AppTypography.bodyMedium.copyWith(
+                          style: AppTypography.bodySmall.copyWith(
                             color: Colors.white.withValues(alpha: 0.8),
                           ),
                         ),
-                        const SizedBox(height: AppSpacing.spaceLG),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            _ProfileStat(
-                              label: 'Points',
-                              value: '${balance?.available ?? 0}',
-                            ),
-                            Container(
-                              width: 1,
-                              height: 32,
-                              color: Colors.white.withValues(alpha: 0.2),
-                            ),
-                            _ProfileStat(
-                              label: 'Classified',
-                              value: '${user?.classificationCount ?? 0}',
-                            ),
-                            Container(
-                              width: 1,
-                              height: 32,
-                              color: Colors.white.withValues(alpha: 0.2),
-                            ),
-                            _ProfileStat(
-                              label: 'Followers',
-                              value: '${user?.followerCount ?? 0}',
-                            ),
-                            Container(
-                              width: 1,
-                              height: 32,
-                              color: Colors.white.withValues(alpha: 0.2),
-                            ),
-                            _ProfileStat(
-                              label: 'Following',
-                              value: '${user?.followingCount ?? 0}',
-                            ),
-                          ],
+                        const SizedBox(height: AppSpacing.spaceMD),
+                        FittedBox(
+                          fit: BoxFit.scaleDown,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              _ProfileStat(
+                                label: 'Points',
+                                value: '${balance?.available ?? 0}',
+                              ),
+                              Container(
+                                width: 1,
+                                height: 24,
+                                color: Colors.white.withValues(alpha: 0.2),
+                              ),
+                              _ProfileStat(
+                                label: 'Classified',
+                                value: '${user?.classificationCount ?? 0}',
+                              ),
+                              Container(
+                                width: 1,
+                                height: 24,
+                                color: Colors.white.withValues(alpha: 0.2),
+                              ),
+                              _ProfileStat(
+                                label: 'Followers',
+                                value: '${user?.followerCount ?? 0}',
+                              ),
+                              Container(
+                                width: 1,
+                                height: 24,
+                                color: Colors.white.withValues(alpha: 0.2),
+                              ),
+                              _ProfileStat(
+                                label: 'Following',
+                                value: '${user?.followingCount ?? 0}',
+                              ),
+                            ],
+                          ),
                         ),
                       ],
                     ),
@@ -199,7 +208,8 @@ class OwnProfileScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildQuickStats(BuildContext context, UserProfile? user, RewardBalance? balance) {
+  Widget _buildQuickStats(
+      BuildContext context, UserProfile? user, RewardBalance? balance) {
     final accuracy = user?.accuracyRate ?? 0.0;
 
     return Padding(
@@ -263,20 +273,25 @@ class _ProfileStat extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.spaceLG),
+      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.spaceSM),
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
-          Text(
-            value,
-            style: AppTypography.statMedium.copyWith(
-              fontSize: 18,
-              color: Colors.white,
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Text(
+              value,
+              style: AppTypography.statMedium.copyWith(
+                fontSize: 16,
+                color: Colors.white,
+              ),
             ),
           ),
           Text(
             label,
             style: AppTypography.labelSmall.copyWith(
               color: Colors.white.withValues(alpha: 0.7),
+              fontSize: 10,
             ),
           ),
         ],
