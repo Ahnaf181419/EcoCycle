@@ -54,25 +54,30 @@ class SupabaseFunctionService {
     required int points,
     required String idempotencyKey,
   }) async {
-    final user = _client.auth.currentUser;
-    if (user == null) {
-      throw Exception('User not authenticated');
-    }
-
+    // Delegate to the `rewards` edge function. It calls
+    // `atomic_redeem_points(p_user_id, p_points, p_idempotency_key)` with the
+    // current parameter names, writes the audit log, and returns a shape we
+    // can consume directly. Calling the RPC from the client would require
+    // keeping the parameter names in sync with every migration.
     try {
-      final result = await _client.rpc(
-        'atomic_redeem_points',
-        params: {'target_uid': user.id, 'redeem_amount': points},
+      final response = await _client.functions.invoke(
+        EdgeFunctionNames.rewards,
+        body: {
+          'action': 'redeem',
+          'points': points,
+          'idempotencyKey': idempotencyKey,
+        },
       );
 
-      final success = result['success'] as bool? ?? false;
-      if (!success) {
-        final message = result['message'] as String? ?? 'Redemption failed';
-        throw Exception(message);
+      final data = response.data;
+      if (data is! Map) {
+        throw Exception('Unexpected response from rewards function');
       }
-
-      final newAvailable = result['new_balance'] as int? ?? 0;
-      return {'availableBalance': newAvailable, 'success': true};
+      final map = Map<String, dynamic>.from(data);
+      if (map['error'] != null) {
+        throw Exception(map['error'].toString());
+      }
+      return map;
     } on Exception {
       rethrow;
     } catch (e) {
