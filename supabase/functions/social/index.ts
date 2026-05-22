@@ -1,5 +1,14 @@
+// Runs in Deno (Supabase Edge Functions). VS Code's default TS server can't
+// resolve jsr: specifiers or the Deno global, so silence IDE-only diagnostics.
+// @ts-ignore - jsr specifier resolved by Deno at runtime
 import 'jsr:@supabase/functions-js@2/edge-runtime.d.ts';
+// @ts-ignore - jsr specifier resolved by Deno at runtime
 import { createClient } from 'jsr:@supabase/supabase-js@2';
+
+declare const Deno: {
+  env: { get(key: string): string | undefined };
+  serve(handler: (req: Request) => Response | Promise<Response>): void;
+};
 
 function corsHeaders() {
   return {
@@ -90,7 +99,8 @@ Deno.serve(async (req: Request) => {
 
     throw new Error('Unknown action');
   } catch (error) {
-    return new Response(JSON.stringify({ error: error.message }), {
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    return new Response(JSON.stringify({ error: errorMessage }), {
       status: 400,
       headers: { ...corsHeaders(), 'Content-Type': 'application/json' },
     });

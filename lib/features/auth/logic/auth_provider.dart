@@ -23,11 +23,6 @@ void _log(String message) {
   if (kDebugMode) debugPrint('[Auth] $message');
 }
 
-String _maskId(String? id) {
-  if (id == null || id.length < 8) return '***';
-  return '${id.substring(0, 4)}...${id.substring(id.length - 4)}';
-}
-
 class AuthNotifier extends StateNotifier<AuthState> {
   final AuthRepository _repository;
   StreamSubscription<dynamic>? _authSubscription;

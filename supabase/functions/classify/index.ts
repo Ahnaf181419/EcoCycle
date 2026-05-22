@@ -1,5 +1,14 @@
+// Runs in Deno (Supabase Edge Functions). VS Code's default TS server can't
+// resolve jsr: specifiers or the Deno global, so silence IDE-only diagnostics.
+// @ts-ignore - jsr specifier resolved by Deno at runtime
 import 'jsr:@supabase/functions-js@2/edge-runtime.d.ts';
+// @ts-ignore - jsr specifier resolved by Deno at runtime
 import { createClient } from 'jsr:@supabase/supabase-js@2';
+
+declare const Deno: {
+  env: { get(key: string): string | undefined };
+  serve(handler: (req: Request) => Response | Promise<Response>): void;
+};
 
 const GEMINI_API_KEY = Deno.env.get('GEMINI_API_KEY')!;
 
@@ -155,7 +164,7 @@ Deno.serve(async (req: Request) => {
           category: finalCategory,
           subcategory: finalSubcategory,
           confidence: finalConfidence,
-          model_version: 'gemini-1.5-flash',
+          model_version: 'gemini-2.5-flash',
           raw_response: geminiResult.rawResponse,
         });
 
@@ -226,7 +235,7 @@ Deno.serve(async (req: Request) => {
         category: finalCategory,
         subcategory: finalSubcategory,
         confidence: finalConfidence,
-        model_version: 'gemini-1.5-flash',
+        model_version: 'gemini-2.5-flash',
         raw_response: geminiResult.rawResponse,
       });
 
@@ -255,7 +264,8 @@ Deno.serve(async (req: Request) => {
 
     throw new Error('Unknown action');
   } catch (error) {
-    return new Response(JSON.stringify({ error: error.message }), {
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    return new Response(JSON.stringify({ error: errorMessage }), {
       status: 400,
       headers: { ...corsHeaders(), 'Content-Type': 'application/json' },
     });
@@ -279,7 +289,7 @@ async function classifyWithGemini(imageUrl: string) {
   const base64Image = btoa(binary);
 
   const response = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`,
+    `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`,
     {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
